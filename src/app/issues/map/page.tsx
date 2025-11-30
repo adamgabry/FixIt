@@ -28,9 +28,44 @@ const IssuesMapPage = () => {
     }, []);
 
 	return (
-		<div className="flex h-screen w-full">
-			{/* Left Section - Form Fields */}
-			<div className="flex flex-col gap-4 p-6 w-1/2 overflow-y-auto">
+		<div className="flex flex-col md:flex-row min-h-screen w-full">
+			{/* Map Section - First on mobile, right side on desktop */}
+			<div className="flex flex-col w-full md:w-1/2 order-1 md:order-2">
+				{/* Header/Toolbar */}
+				<div className="border-b p-4 flex items-center justify-between">
+					<div className="flex items-center gap-2">
+						<EditButton onClick={() => setIsEditing(!isEditing)} />
+						<DeleteButton />
+						<div className="w-8 h-8 bg-gray-300 rounded"></div>
+						<span className="text-sm text-gray-500">xxx</span>
+					</div>
+				</div>
+
+				{/* Location Name */}
+				<div className="p-4 border-b">
+					<span className="text-sm font-medium">Location name: xxx</span>
+				</div>
+
+				{/* Map Component */}
+				<div className="relative w-full h-[400px] md:h-[500px] lg:flex-1 p-4 md:p-6">
+					{isMapReady ? (
+						<MapComponent 
+							center={[48.1486, 17.1077]} // TODO: Get location from the backend
+							zoom={20} 
+							style={{ height: "100%", width: "100%", borderRadius: "0.5rem" }} 
+							initialMarkers={initialMarkers} // TODO: Get markers from the backend
+							canCreateMarker={false} 
+						/>
+					) : (
+						<div className="flex items-center justify-center h-full">
+							<span className="text-sm text-gray-500">Loading map...</span>
+						</div>
+					)}
+				</div>
+			</div>
+
+			{/* Form Fields Section - Second on mobile, left side on desktop */}
+			<div className="flex flex-col gap-4 p-6 w-full md:w-1/2 overflow-y-auto order-2 md:order-1">
 				{/* Title */}
 				<div className="flex flex-col gap-2">
 					<label className="text-sm font-medium">Title</label>
@@ -135,41 +170,6 @@ const IssuesMapPage = () => {
                         </Button>
                     </div>
                 )}
-			</div>
-
-			{/* Right Section - Map */}
-			<div className="flex flex-col w-1/2">
-				{/* Header/Toolbar */}
-				<div className="border-b p-4 flex items-center justify-between">
-					<div className="flex items-center gap-2">
-						<EditButton onClick={() => setIsEditing(!isEditing)} />
-						<DeleteButton />
-						<div className="w-8 h-8 bg-gray-300 rounded"></div>
-						<span className="text-sm text-gray-500">xxx</span>
-					</div>
-				</div>
-
-				{/* Location Name */}
-				<div className="p-4 border-b">
-					<span className="text-sm font-medium">Location name: xxx</span>
-				</div>
-
-				{/* Map Component */}
-				<div className="flex-1 relative">
-					{isMapReady ? (
-						<MapComponent 
-							center={[48.1486, 17.1077]} // TODO: Get location from the backend
-							zoom={20} 
-							style={{ height: "80%", width: "100%" }} 
-							initialMarkers={initialMarkers} // TODO: Get markers from the backend
-							canCreateMarker={false} 
-						/>
-					) : (
-						<div className="flex items-center justify-center h-full">
-							<span className="text-sm text-gray-500">Loading map...</span>
-						</div>
-					)}
-				</div>
 			</div>
 		</div>
 	);
