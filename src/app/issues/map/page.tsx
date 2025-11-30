@@ -47,7 +47,7 @@ const IssuesMapPage = () => {
 				</div>
 
 				{/* Map Component */}
-				<div className="relative w-full h-[400px] md:h-[500px] lg:flex-1 p-4 md:p-6">
+				<div className="relative w-full h-[400px] md:h-[500px] lg:h-[500px] p-4 md:p-6">
 					{isMapReady ? (
 						<MapComponent 
 							center={[48.1486, 17.1077]} // TODO: Get location from the backend
@@ -65,7 +65,7 @@ const IssuesMapPage = () => {
 			</div>
 
 			{/* Form Fields Section - Second on mobile, left side on desktop */}
-			<div className="flex flex-col gap-4 p-6 w-full md:w-1/2 overflow-y-auto order-2 md:order-1">
+			<div className="flex flex-col gap-4 p-6 w-full md:w-1/2 overflow-y-auto lg:max-h-screen order-2 md:order-1">
 				{/* Title */}
 				<div className="flex flex-col gap-2">
 					<label className="text-sm font-medium">Title</label>
