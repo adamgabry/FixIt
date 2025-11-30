@@ -16,7 +16,8 @@ type IssuesDetailPageProps = {
 	params: Promise<{ issueId: string }>;
 };
 
-const IssuesDetailPage = ({ params }: IssuesDetailPageProps) => {
+const IssuesDetailPage = async ({ params }: IssuesDetailPageProps) => {
+    const { issueId } = await params;
     const [isEditing, setIsEditing] = useState(false);
     const [initialMarkers, setInitialMarkers] = useState<LatLng[]>([]);
     const [isMapReady, setIsMapReady] = useState(false);
