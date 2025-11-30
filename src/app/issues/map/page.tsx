@@ -1,17 +1,27 @@
 "use client";
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/cn";
 import { EditButton } from "@/components/edit-button";
 import { DeleteButton } from "@/components/delete-button";
-import { LatLng } from "leaflet";
+import type { LatLng } from "leaflet";
+import { Input } from "@/components/input";
+import { Button } from "@/components/button";
 
 const MapComponent = dynamic(() => import("@/components/map"), {
   ssr: false,
 });
 
 const IssuesMapPage = () => {
-	const [state, setState] = useState("");
+    const [isEditing, setIsEditing] = useState(false);
+    const [initialMarkers, setInitialMarkers] = useState<LatLng[]>([]);
+
+    useEffect(() => {
+        // Dynamically import LatLng only on the client side
+        import("leaflet").then((L) => {
+            setInitialMarkers([new L.LatLng(48.1486, 17.1077)]);
+        });
+    }, []);
 
 	return (
 		<div className="flex h-screen w-full">
@@ -20,22 +30,31 @@ const IssuesMapPage = () => {
 				{/* Title */}
 				<div className="flex flex-col gap-2">
 					<label className="text-sm font-medium">Title</label>
-					<div className="px-3 py-2 rounded-md border border-input bg-background text-sm">
-						Broken Traffic Light at Main St
-					</div>
+                    {isEditing ? (
+                        // TODO: Change onChange to update the title
+                        <Input value="Broken Traffic Light at Main St" onChange={(e) => console.log(e.target.value)} />
+                    ) : (
+                        <div className="px-3 py-2 rounded-md border border-input bg-background text-sm">
+                            Broken Traffic Light at Main St
+                        </div>
+                    )}
 				</div>
 
 				{/* State Selector */}
 				<div className="flex flex-col gap-2">
 					<label className="text-sm font-medium">State</label>
 					<select
-						value={state}
-						onChange={(e) => setState(e.target.value)}
+						// TODO: Change value to the state
+						value="OPEN"
+						// TODO: Change onChange to update the state
+						onChange={(e) => console.log(e.target.value)}
+						disabled={!isEditing}
 						className={cn(
 							"border-input bg-background ring-offset-background",
 							"flex h-10 w-full rounded-md border px-3 py-2 text-sm",
 							"focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-							"focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50"
+							"focus-visible:outline-hidden",
+							!isEditing && "appearance-none"
 						)}
 					>
 						<option value="OPEN">Open</option>
@@ -47,35 +66,44 @@ const IssuesMapPage = () => {
 				{/* Type */}
 				<div className="flex flex-col gap-2">
 					<label className="text-sm font-medium">Type</label>
-					<div className="px-3 py-2 rounded-md border border-input bg-background text-sm">
-						Traffic Light
-					</div>
+					{isEditing ? (
+                        // TODO: Change onChange to update the type
+                        <Input value="Traffic Light" onChange={(e) => console.log(e.target.value)} />
+                    ) : (
+                        <div className="px-3 py-2 rounded-md border border-input bg-background text-sm">
+                            Traffic Light
+                        </div>
+                    )}
 				</div>
 
 				{/* Reported by */}
 				<div className="flex flex-col gap-2">
 					<label className="text-sm font-medium">Reported by</label>
-					<div className="px-3 py-2 rounded-md border border-input bg-background text-sm">
-                        John Doe
-                    </div>
+					{isEditing ? (
+                        // TODO: Change onChange to update the reported by
+                        <Input value="John Doe" onChange={(e) => console.log(e.target.value)} />
+                    ) : (
+                        <div className="px-3 py-2 rounded-md border border-input bg-background text-sm">
+                            John Doe
+                        </div>
+                    )}
 				</div>
 
 				{/* Description */}
 				<div className="flex flex-col gap-2">
 					<label className="text-sm font-medium">Description</label>
-					{/* <textarea
-						placeholder="Enter description"
-						className={cn(
-							"border-input bg-background ring-offset-background",
-							"flex min-h-[120px] w-full rounded-md border px-3 py-2 text-sm",
-							"focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-							"focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50",
-							"resize-none"
-						)}
-					/> */}
-                    <div className="px-3 py-2 rounded-md border border-input bg-background text-sm">
-                        The traffic light is not working properly.
-                    </div>
+                        <textarea
+                            // TODO: Change value to the description
+                            value="The traffic light is not working properly."
+                            readOnly={!isEditing}
+                            className={cn(
+                                "border-input bg-background ring-offset-background",
+                                "flex min-h-[120px] w-full rounded-md border px-3 py-2 text-sm",
+                                "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                                "focus-visible:outline-hidden resize-none",
+                                !isEditing && "pointer-events-none cursor-default"
+                            )}
+                        />
 				</div>
 
 				{/* Image Placeholders */}
@@ -93,6 +121,16 @@ const IssuesMapPage = () => {
 						<span className="text-xs text-gray-400">Image 3</span>
 					</div>
 				</div>
+
+                {/* Bottom Button */}
+                {isEditing && (
+                    <div className="mt-auto pt-4">
+                        {/* TODO: Change onClick to submit the form */}
+                        <Button className="w-full h-12 rounded-lg" onClick={() => console.log("Submit")}>
+                            Submit
+                        </Button>
+                    </div>
+                )}
 			</div>
 
 			{/* Right Section - Map */}
@@ -100,7 +138,7 @@ const IssuesMapPage = () => {
 				{/* Header/Toolbar */}
 				<div className="border-b p-4 flex items-center justify-between">
 					<div className="flex items-center gap-2">
-						<EditButton />
+						<EditButton onClick={() => setIsEditing(!isEditing)} />
 						<DeleteButton />
 						<div className="w-8 h-8 bg-gray-300 rounded"></div>
 						<span className="text-sm text-gray-500">xxx</span>
@@ -118,7 +156,7 @@ const IssuesMapPage = () => {
 						center={[48.1486, 17.1077]} // TODO: Get location from the backend
 						zoom={20} 
 						style={{ height: "80%", width: "100%" }} 
-						initialMarkers={[new LatLng(48.1486, 17.1077)]} // TODO: Get markers from the backend
+						initialMarkers={initialMarkers} // TODO: Get markers from the backend
 						canCreateMarker={false} 
 					/>
 				</div>
