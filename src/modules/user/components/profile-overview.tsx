@@ -20,6 +20,9 @@ export const ProfileOverview = ({ user }: ProfileOverviewProps) => (
 			<li>
 				<LabeledItem label="Role"> {user.role}</LabeledItem>
 			</li>
+			<li>
+				<LabeledItem label="Number of reported issues"> 1</LabeledItem>
+			</li>
 		</ul>
 	</div>
 );
