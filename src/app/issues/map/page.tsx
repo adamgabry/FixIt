@@ -100,12 +100,12 @@ const IssuesMapPage = () => {
                             // TODO: Change value to the description
                             value="The traffic light is not working properly."
                             readOnly={!isEditing}
+                            disabled={!isEditing}
                             className={cn(
                                 "border-input bg-background ring-offset-background",
                                 "flex min-h-[120px] w-full rounded-md border px-3 py-2 text-sm",
                                 "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                                 "focus-visible:outline-hidden resize-none",
-                                !isEditing && "pointer-events-none"
                             )}
                         />
 				</div>
