@@ -15,12 +15,16 @@ const MapComponent = dynamic(() => import("@/components/map"), {
 const IssuesMapPage = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [initialMarkers, setInitialMarkers] = useState<LatLng[]>([]);
+    const [isMapReady, setIsMapReady] = useState(false);
 
     useEffect(() => {
         // Dynamically import LatLng only on the client side
-        import("leaflet").then((L) => {
-            setInitialMarkers([new L.LatLng(48.1486, 17.1077)]);
-        });
+        if (typeof window !== "undefined") {
+            import("leaflet").then((L) => {
+                setInitialMarkers([new L.LatLng(48.1486, 17.1077)]);
+                setIsMapReady(true);
+            });
+        }
     }, []);
 
 	return (
@@ -101,7 +105,7 @@ const IssuesMapPage = () => {
                                 "flex min-h-[120px] w-full rounded-md border px-3 py-2 text-sm",
                                 "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                                 "focus-visible:outline-hidden resize-none",
-                                !isEditing && "pointer-events-none cursor-default"
+                                !isEditing && "pointer-events-none"
                             )}
                         />
 				</div>
@@ -152,13 +156,19 @@ const IssuesMapPage = () => {
 
 				{/* Map Component */}
 				<div className="flex-1 relative">
-					<MapComponent 
-						center={[48.1486, 17.1077]} // TODO: Get location from the backend
-						zoom={20} 
-						style={{ height: "80%", width: "100%" }} 
-						initialMarkers={initialMarkers} // TODO: Get markers from the backend
-						canCreateMarker={false} 
-					/>
+					{isMapReady ? (
+						<MapComponent 
+							center={[48.1486, 17.1077]} // TODO: Get location from the backend
+							zoom={20} 
+							style={{ height: "80%", width: "100%" }} 
+							initialMarkers={initialMarkers} // TODO: Get markers from the backend
+							canCreateMarker={false} 
+						/>
+					) : (
+						<div className="flex items-center justify-center h-full">
+							<span className="text-sm text-gray-500">Loading map...</span>
+						</div>
+					)}
 				</div>
 			</div>
 		</div>
