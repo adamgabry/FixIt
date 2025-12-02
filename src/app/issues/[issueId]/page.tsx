@@ -7,17 +7,15 @@ import { DeleteButton } from "@/components/delete-button";
 import type { LatLng } from "leaflet";
 import { Input } from "@/components/input";
 import { Button } from "@/components/button";
+import { useParams } from "next/navigation";
 
 const MapComponent = dynamic(() => import("@/components/map"), {
   ssr: false,
 });
 
-type IssuesDetailPageProps = {
-	params: Promise<{ issueId: string }>;
-};
 
-const IssuesDetailPage = async ({ params }: IssuesDetailPageProps) => {
-    const { issueId } = await params;
+const IssuesDetailPage = () => {
+    const { issueId } = useParams<{ issueId: string }>();
     const [isEditing, setIsEditing] = useState(false);
     const [initialMarkers, setInitialMarkers] = useState<LatLng[]>([]);
     const [isMapReady, setIsMapReady] = useState(false);
