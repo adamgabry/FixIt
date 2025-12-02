@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
+
 import { SidebarFilter } from '@/components/sidebar-filter';
 import {
 	DEFAULT_FILTERS,
@@ -14,7 +15,7 @@ import { IssueStatus, IssueType, type Issue } from '@/modules/issue/schema';
 const IssuesMapContainer = dynamic(
 	() =>
 		import('@/components/issue/issues-map-container').then(
-			(mod) => mod.IssuesMapContainer
+			mod => mod.IssuesMapContainer
 		),
 	{
 		ssr: false,
@@ -57,7 +58,8 @@ const MOCK_ISSUES: Issue[] = [
 	{
 		id: 3,
 		title: 'Fallen tree blocking path',
-		description: 'Large tree fell during storm, blocking the walking path in central park.',
+		description:
+			'Large tree fell during storm, blocking the walking path in central park.',
 		location: '48.1450, 17.1040',
 		status: IssueStatus.OPEN,
 		type: IssueType.NATURE_PROBLEM,
@@ -109,7 +111,8 @@ const MOCK_ISSUES: Issue[] = [
 	{
 		id: 7,
 		title: 'Broken streetlight',
-		description: 'Streetlight has been out for a week, safety concern at night.',
+		description:
+			'Streetlight has been out for a week, safety concern at night.',
 		location: '48.1495, 17.1095',
 		status: IssueStatus.OPEN,
 		type: IssueType.BROKEN,
@@ -165,4 +168,3 @@ const Home = () => {
 };
 
 export default Home;
-

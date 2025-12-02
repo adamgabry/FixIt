@@ -2,6 +2,7 @@
 
 import { MapContainer, TileLayer } from 'react-leaflet';
 import L from 'leaflet';
+
 import 'leaflet/dist/leaflet.css';
 import { type Issue } from '@/modules/issue/schema';
 import { IssueMarker } from '@/components/issue/issue-marker';
@@ -14,8 +15,7 @@ if (typeof window !== 'undefined') {
 		iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
 		iconRetinaUrl:
 			'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-		shadowUrl:
-			'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png'
+		shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png'
 	});
 }
 
@@ -29,11 +29,9 @@ type IssuesMapContainerProps = {
  * Parse location string to coordinates
  * Expected format: "lat,lng" or just returns default if parsing fails
  */
-const parseLocation = (
-	location: string
-): [number, number] | null => {
+const parseLocation = (location: string): [number, number] | null => {
 	try {
-		const parts = location.split(',').map((s) => parseFloat(s.trim()));
+		const parts = location.split(',').map(s => parseFloat(s.trim()));
 		if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
 			return [parts[0], parts[1]];
 		}
@@ -58,12 +56,10 @@ export const IssuesMapContainer = ({
 			attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 			url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 		/>
-		{issues.map((issue) => {
+		{issues.map(issue => {
 			const position = parseLocation(issue.location);
 			if (!position) return null;
-			return (
-				<IssueMarker key={issue.id} issue={issue} position={position} />
-			);
+			return <IssueMarker key={issue.id} issue={issue} position={position} />;
 		})}
 	</MapContainer>
 );

@@ -3,14 +3,15 @@
 import { Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import { useRouter } from 'next/navigation';
-import { type Issue, IssueType } from '@/modules/issue/schema';
+import { ArrowRight } from 'lucide-react';
+
+import { type Issue, type IssueType } from '@/modules/issue/schema';
 import {
 	ISSUE_TYPE_COLORS,
 	ISSUE_TYPE_LABELS,
 	ISSUE_STATUS_LABELS,
 	createColoredMarkerSvg
 } from '@/lib/issue-utils';
-import { Button } from '@/components/button';
 
 type IssueMarkerProps = {
 	issue: Issue;
@@ -41,7 +42,7 @@ export const IssueMarker = ({ issue, position }: IssueMarkerProps) => {
 	return (
 		<Marker position={position} icon={icon}>
 			<Popup>
-				<div className="min-w-[200px] max-w-[280px]">
+				<div className="min-w-[220px] max-w-[280px]">
 					<h3 className="font-semibold text-sm mb-1 text-gray-900">
 						{issue.title}
 					</h3>
@@ -49,26 +50,32 @@ export const IssueMarker = ({ issue, position }: IssueMarkerProps) => {
 						<span
 							className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium text-white"
 							style={{
-								backgroundColor:
-									ISSUE_TYPE_COLORS[issue.type as IssueType]
+								backgroundColor: ISSUE_TYPE_COLORS[issue.type as IssueType]
 							}}
 						>
 							{ISSUE_TYPE_LABELS[issue.type as IssueType]}
 						</span>
 						<span className="text-xs text-gray-500">
-							{ISSUE_STATUS_LABELS[issue.status as keyof typeof ISSUE_STATUS_LABELS]}
+							{
+								ISSUE_STATUS_LABELS[
+									issue.status as keyof typeof ISSUE_STATUS_LABELS
+								]
+							}
 						</span>
 					</div>
-					<p className="text-xs text-gray-600 mb-2 line-clamp-2">
+					<p className="text-xs text-gray-600 mb-3 line-clamp-2">
 						{issue.description}
 					</p>
-					<Button
-						size="sm"
-						className="w-full text-xs"
+					<button
 						onClick={handleViewDetails}
+						className="group w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium text-white transition-all duration-200 hover:gap-3 hover:shadow-md active:scale-[0.98]"
+						style={{
+							backgroundColor: ISSUE_TYPE_COLORS[issue.type as IssueType]
+						}}
 					>
 						View Details
-					</Button>
+						<ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+					</button>
 				</div>
 			</Popup>
 		</Marker>

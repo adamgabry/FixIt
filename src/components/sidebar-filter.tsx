@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+
 import { IssueType, IssueStatus } from '@/modules/issue/schema';
 import {
 	ISSUE_TYPE_LABELS,
@@ -29,14 +30,14 @@ export const SidebarFilter = ({
 
 	const toggleType = (type: IssueType) => {
 		const newTypes = filters.types.includes(type)
-			? filters.types.filter((t) => t !== type)
+			? filters.types.filter(t => t !== type)
 			: [...filters.types, type];
 		onFiltersChange({ ...filters, types: newTypes });
 	};
 
 	const toggleStatus = (status: IssueStatus) => {
 		const newStatuses = filters.statuses.includes(status)
-			? filters.statuses.filter((s) => s !== status)
+			? filters.statuses.filter(s => s !== status)
 			: [...filters.statuses, status];
 		onFiltersChange({ ...filters, statuses: newStatuses });
 	};
@@ -113,9 +114,7 @@ export const SidebarFilter = ({
 
 					{/* Search */}
 					<div className="space-y-2">
-						<label className="text-sm font-medium text-gray-300">
-							Search
-						</label>
+						<label className="text-sm font-medium text-gray-300">Search</label>
 						<Input
 							type="text"
 							placeholder="Search issues..."
@@ -131,7 +130,7 @@ export const SidebarFilter = ({
 							Issue Type
 						</label>
 						<div className="space-y-1">
-							{Object.values(IssueType).map((type) => (
+							{Object.values(IssueType).map(type => (
 								<button
 									key={type}
 									onClick={() => toggleType(type)}
@@ -171,11 +170,9 @@ export const SidebarFilter = ({
 
 					{/* Status filter */}
 					<div className="space-y-2">
-						<label className="text-sm font-medium text-gray-300">
-							Status
-						</label>
+						<label className="text-sm font-medium text-gray-300">Status</label>
 						<div className="space-y-1">
-							{Object.values(IssueStatus).map((status) => (
+							{Object.values(IssueStatus).map(status => (
 								<button
 									key={status}
 									onClick={() => toggleStatus(status)}
@@ -218,11 +215,9 @@ export const SidebarFilter = ({
 
 					{/* Legend */}
 					<div className="pt-4 border-t border-gray-700 space-y-2">
-						<label className="text-sm font-medium text-gray-300">
-							Legend
-						</label>
+						<label className="text-sm font-medium text-gray-300">Legend</label>
 						<div className="space-y-1">
-							{Object.values(IssueType).map((type) => (
+							{Object.values(IssueType).map(type => (
 								<div
 									key={type}
 									className="flex items-center gap-2 text-sm text-gray-400"
