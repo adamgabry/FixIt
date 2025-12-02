@@ -212,27 +212,6 @@ export const SidebarFilter = ({
 					>
 						Reset Filters
 					</Button>
-
-					{/* Legend */}
-					<div className="pt-4 border-t border-gray-700 space-y-2">
-						<label className="text-sm font-medium text-gray-300">Legend</label>
-						<div className="space-y-1">
-							{Object.values(IssueType).map(type => (
-								<div
-									key={type}
-									className="flex items-center gap-2 text-sm text-gray-400"
-								>
-									<span
-										className="w-3 h-3 rounded-full"
-										style={{
-											backgroundColor: ISSUE_TYPE_COLORS[type]
-										}}
-									/>
-									<span>{ISSUE_TYPE_LABELS[type]}</span>
-								</div>
-							))}
-						</div>
-					</div>
 				</div>
 			)}
 		</div>
