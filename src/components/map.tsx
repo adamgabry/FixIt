@@ -1,17 +1,19 @@
-"use client";
-import { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
-import type { LatLng } from "leaflet";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
+'use client';
+import { useState, useMemo } from 'react';
+import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import type { LatLng } from 'leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
 // Fix for default marker icon in Next.js
-if (typeof window !== "undefined") {
+if (typeof window !== 'undefined') {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	delete (L.Icon.Default.prototype as any)._getIconUrl;
 	L.Icon.Default.mergeOptions({
-		iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-		iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-		shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+		iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+		iconRetinaUrl:
+			'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+		shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png'
 	});
 }
 
@@ -19,52 +21,57 @@ type MapComponentProps = {
 	center: [number, number];
 	zoom: number;
 	style?: React.CSSProperties;
-    canCreateMarker?: boolean;
-    initialMarkers?: LatLng[];
+	canCreateMarker?: boolean;
+	initialMarkers?: LatLng[];
 };
 
-function ClickMarker({ onAdd }: { onAdd: (latlng: LatLng) => void }) {
-  useMapEvents({
-    click(e) {
-      onAdd(e.latlng);
-    },
-  });
-  return null;
-}
+const ClickMarker = ({ onAdd }: { onAdd: (latlng: LatLng) => void }) => {
+	useMapEvents({
+		click: e => {
+			onAdd(e.latlng);
+		}
+	});
+	return null;
+};
 
-const MapComponent = ({ center, zoom, style, canCreateMarker = true, initialMarkers = [] }: MapComponentProps) => {
-  const [markers, setMarkers] = useState<LatLng[]>(initialMarkers);
+const MapComponent = ({
+	center,
+	zoom,
+	style,
+	canCreateMarker = true,
+	initialMarkers = []
+}: MapComponentProps) => {
+	// Use useMemo to derive initial state from props without useEffect
+	const [addedMarkers, setAddedMarkers] = useState<LatLng[]>([]);
+	const markers = useMemo(
+		() => [...initialMarkers, ...addedMarkers],
+		[initialMarkers, addedMarkers]
+	);
 
-  useEffect(() => {
-    if (initialMarkers.length > 0) {
-      setMarkers(initialMarkers);
-    }
-  }, [initialMarkers]);
+	const addMarker = (latlng: LatLng) => {
+		setAddedMarkers(prev => [...prev, latlng]);
+		// You can also send it to your backend here
+	};
 
-  const addMarker = (latlng: LatLng) => {
-    setMarkers(prev => [...prev, latlng]);
-    // You can also send it to your backend here
-  };
+	return (
+		<MapContainer
+			key={`map-${center[0]}-${center[1]}`}
+			center={center}
+			zoom={zoom}
+			style={style}
+		>
+			<TileLayer
+				attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+				url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+			/>
 
-  return (
-    <MapContainer 
-      key={`map-${center[0]}-${center[1]}`}
-      center={center} 
-      zoom={zoom} 
-      style={style}
-    >
-        <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-      
-        {canCreateMarker && <ClickMarker onAdd={addMarker} />}
+			{canCreateMarker && <ClickMarker onAdd={addMarker} />}
 
-        {markers.map((pos, idx) => (
-            <Marker key={idx} position={pos} />
-        ))}
-    </MapContainer>
-  );
-}
+			{markers.map((pos, idx) => (
+				<Marker key={idx} position={pos} />
+			))}
+		</MapContainer>
+	);
+};
 
 export default MapComponent;

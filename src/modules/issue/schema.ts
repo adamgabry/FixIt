@@ -7,9 +7,11 @@ export enum IssueStatus {
 }
 
 export enum IssueType {
-	BUG = 'BUG',
-	FEATURE = 'FEATURE',
-	TASK = 'TASK'
+	HOOLIGANISM = 'HOOLIGANISM',
+	IMPROVEMENT_IDEA = 'IMPROVEMENT_IDEA',
+	NATURE_PROBLEM = 'NATURE_PROBLEM',
+	BROKEN = 'BROKEN',
+	ROAD = 'ROAD'
 }
 
 export const issueSchema = z.object({
