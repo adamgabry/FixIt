@@ -5,7 +5,7 @@ export const userSchema = z.object({
 	name: z.string(),
 	email: z.string().email().min(1),
 	password: z.string().min(1),
-	role: z.array(z.enum(['ADMIN', 'STUFF', 'USER']))
+	role: z.enum(['ADMIN', 'STAFF', 'USER'])
 });
 
 export type User = z.infer<typeof userSchema>;
