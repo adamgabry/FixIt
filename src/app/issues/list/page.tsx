@@ -9,6 +9,8 @@ import {
 	type IssueFilters
 } from '@/lib/issue-utils';
 import { type Issue, IssueStatus, IssueType } from '@/modules/issue/schema';
+import { FloatingAddButton } from '@/components/floating-add-button';
+import { RowFilter } from '@/components/filters/row-filter';
 
 const MOCK_ISSUES: Issue[] = [
 	{
@@ -129,28 +131,13 @@ const IssuesListPage = () => {
 	);
 	return (
 		<div>
-			<div className="space-y-2">
-				<label className="text-sm font-medium text-gray-300">Search</label>
-				{/* TODO Search */}
-				<label className="text-sm font-medium text-gray-300">
-					Filter by state
-				</label>
-				{/*TODO  Filter by state */}
-				<label className="text-sm font-medium text-gray-300">
-					Filter by type
-				</label>
-				{/* TODO Filter by type */}
-				<label className="text-sm font-medium text-gray-300">
-					Sort by rating
-				</label>
-				{/* TODO Sort by rating */}
-			</div>
+			<RowFilter filters={filters} onFiltersChangeAction={setFilters} />
 			<ul className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-				{issues.map(issue => (
+				{filteredIssues.map(issue => (
 					<IssueListItem key={issue.id} issue={issue} />
 				))}
 			</ul>
-			{/* TODO floating button for create new issue*/}
+			<FloatingAddButton />
 		</div>
 	);
 };

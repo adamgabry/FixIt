@@ -15,10 +15,6 @@ export const IssueListItem = ({ issue }: { issue: Issue }) => {
 		console.log('Edit clicked', issue.id);
 	};
 
-	const handleDelete = (e: React.MouseEvent) => {
-		console.log('Delete clicked', issue.id);
-	};
-
 	const handleLike = (e: React.MouseEvent) => {
 		console.log('Like clicked', issue.id);
 	};
@@ -47,7 +43,7 @@ export const IssueListItem = ({ issue }: { issue: Issue }) => {
 						{`Like ${issue.numberOfUpvotes}`}
 					</Button>
 
-					{/* TODO show only for admins and users who are crators of this*/}
+					{/* TODO show only for admins and users who are creators of this + TODO redirect to issue edit/remove*/}
 					<Button variant="outline" size="sm" onClick={handleEdit}>
 						Edit
 					</Button>

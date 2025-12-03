@@ -3,13 +3,14 @@
 import { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 
-import { SidebarFilter } from '@/components/sidebar-filter';
+import { SidebarFilter } from '@/components/filters/sidebar-filter';
 import {
 	DEFAULT_FILTERS,
 	filterIssues,
 	type IssueFilters
 } from '@/lib/issue-utils';
 import { IssueStatus, IssueType, type Issue } from '@/modules/issue/schema';
+import { FloatingAddButton } from '@/components/floating-add-button';
 
 // Dynamic import to avoid SSR issues with Leaflet
 const IssuesMapContainer = dynamic(
@@ -154,7 +155,7 @@ const Home = () => {
 			{/* Sidebar Filter */}
 			<SidebarFilter
 				filters={filters}
-				onFiltersChange={setFilters}
+				onFiltersChangeAction={setFilters}
 				issueCount={issues.length}
 				filteredCount={filteredIssues.length}
 			/>
@@ -163,6 +164,8 @@ const Home = () => {
 			<div className="flex-1 relative">
 				<IssuesMapContainer issues={filteredIssues} />
 			</div>
+
+			<FloatingAddButton />
 		</div>
 	);
 };
