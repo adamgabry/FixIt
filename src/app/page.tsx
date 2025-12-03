@@ -38,7 +38,7 @@ const MOCK_ISSUES: Issue[] = [
 		type: IssueType.HOOLIGANISM,
 		pictures: '',
 		createdAt: new Date(),
-		upddatedAt: new Date(),
+		updatedAt: new Date(),
 		reportedBy: 1,
 		numberOfUpvotes: 5
 	},
@@ -51,7 +51,7 @@ const MOCK_ISSUES: Issue[] = [
 		type: IssueType.IMPROVEMENT_IDEA,
 		pictures: '',
 		createdAt: new Date(),
-		upddatedAt: new Date(),
+		updatedAt: new Date(),
 		reportedBy: 2,
 		numberOfUpvotes: 12
 	},
@@ -65,7 +65,7 @@ const MOCK_ISSUES: Issue[] = [
 		type: IssueType.NATURE_PROBLEM,
 		pictures: '',
 		createdAt: new Date(),
-		upddatedAt: new Date(),
+		updatedAt: new Date(),
 		reportedBy: 3,
 		numberOfUpvotes: 8
 	},
@@ -78,7 +78,7 @@ const MOCK_ISSUES: Issue[] = [
 		type: IssueType.BROKEN,
 		pictures: '',
 		createdAt: new Date(),
-		upddatedAt: new Date(),
+		updatedAt: new Date(),
 		reportedBy: 1,
 		numberOfUpvotes: 3
 	},
@@ -91,7 +91,7 @@ const MOCK_ISSUES: Issue[] = [
 		type: IssueType.ROAD,
 		pictures: '',
 		createdAt: new Date(),
-		upddatedAt: new Date(),
+		updatedAt: new Date(),
 		reportedBy: 4,
 		numberOfUpvotes: 15
 	},
@@ -104,7 +104,7 @@ const MOCK_ISSUES: Issue[] = [
 		type: IssueType.IMPROVEMENT_IDEA,
 		pictures: '',
 		createdAt: new Date(),
-		upddatedAt: new Date(),
+		updatedAt: new Date(),
 		reportedBy: 5,
 		numberOfUpvotes: 20
 	},
@@ -118,7 +118,7 @@ const MOCK_ISSUES: Issue[] = [
 		type: IssueType.BROKEN,
 		pictures: '',
 		createdAt: new Date(),
-		upddatedAt: new Date(),
+		updatedAt: new Date(),
 		reportedBy: 6,
 		numberOfUpvotes: 10
 	},
@@ -131,7 +131,7 @@ const MOCK_ISSUES: Issue[] = [
 		type: IssueType.NATURE_PROBLEM,
 		pictures: '',
 		createdAt: new Date(),
-		upddatedAt: new Date(),
+		updatedAt: new Date(),
 		reportedBy: 7,
 		numberOfUpvotes: 4
 	}
