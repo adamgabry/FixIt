@@ -1,8 +1,9 @@
 import { z } from 'zod';
 
 export enum IssueStatus {
-	OPEN = 'OPEN',
+	REPORTED = 'REPORTED',
 	IN_PROGRESS = 'IN_PROGRESS',
+	FIXED = 'FIXED',
 	CLOSED = 'CLOSED'
 }
 

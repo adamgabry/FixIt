@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed": "dotenv -e .env -- tsx scripts/seed.ts"
   },
   "dependencies": {
     "@libsql/client": "^0.15.15",
@@ -44,6 +45,8 @@
     "eslint-plugin-react": "^7.37.5",
     "prettier": "^3.7.1",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "tsx": "^4.19.2",
+    "typescript": "^5",
+    "dotenv-cli": "^7.4.2"
   }
 }
