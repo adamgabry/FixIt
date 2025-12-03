@@ -3,7 +3,7 @@ import { integer, primaryKey, real, sqliteTable, text } from 'drizzle-orm/sqlite
 import { z } from 'zod';
 import { IssueStatus, IssueType } from '@/modules/issue/schema';
 
-const roleValues = ['user', 'stuff', 'admin'] as const;
+const roleValues = ['user', 'staff', 'admin'] as const;
 const roleSchema = z.enum(roleValues);
 
 const statusValues = Object.values(IssueStatus) as [IssueStatus, ...IssueStatus[]];

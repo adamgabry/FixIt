@@ -24,9 +24,9 @@ export const seedDatabase = async () => {
 		{
 			id: '2',
 			name: 'Stuff',
-			username: 'stuff',
-			password: 'stuff123',
-			role: 'stuff',
+			username: 'staff',
+			password: 'staff123',
+			role: 'staff',
 			isLoggedIn: false
 		},
 		{
