@@ -26,7 +26,8 @@ export const ISSUE_TYPE_LABELS: Record<IssueType, string> = {
  * Human-readable labels for issue statuses
  */
 export const ISSUE_STATUS_LABELS: Record<IssueStatus, string> = {
-	[IssueStatus.OPEN]: 'Open',
+	[IssueStatus.REPORTED]: 'Reported',
+	[IssueStatus.FIXED]: 'Fixed',
 	[IssueStatus.IN_PROGRESS]: 'In Progress',
 	[IssueStatus.CLOSED]: 'Closed'
 };
