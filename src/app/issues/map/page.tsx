@@ -1,3 +1,3 @@
-const IssuesMapPage = () => 'Issues - map view';
+const MapPage = () => 'Map - view';
 
-export default IssuesMapPage;
+export default MapPage;
