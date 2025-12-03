@@ -23,7 +23,7 @@ export const issueSchema = z.object({
 	type: IssueType,
 	pictures: z.string().min(1),
 	createdAt: z.date(),
-	upddatedAt: z.date(),
+	updatedAt: z.date(),
 	reportedBy: z.number(),
 	numberOfUpvotes: z.number()
 });
