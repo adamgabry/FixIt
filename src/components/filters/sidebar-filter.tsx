@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 import { IssueType, IssueStatus } from '@/modules/issue/schema';
 import {
@@ -10,19 +10,19 @@ import {
 	type IssueFilters
 } from '@/lib/issue-utils';
 import { Button } from '@/components/button';
-import { Input } from '@/components/input';
 import { cn } from '@/lib/cn';
+import { SearchFilter } from '@/components/filters/search-filter';
 
 type SidebarFilterProps = {
 	filters: IssueFilters;
-	onFiltersChange: (filters: IssueFilters) => void;
+	onFiltersChangeAction: (filters: IssueFilters) => void;
 	issueCount: number;
 	filteredCount: number;
 };
 
 export const SidebarFilter = ({
 	filters,
-	onFiltersChange,
+	onFiltersChangeAction,
 	issueCount,
 	filteredCount
 }: SidebarFilterProps) => {
@@ -32,22 +32,18 @@ export const SidebarFilter = ({
 		const newTypes = filters.types.includes(type)
 			? filters.types.filter(t => t !== type)
 			: [...filters.types, type];
-		onFiltersChange({ ...filters, types: newTypes });
+		onFiltersChangeAction({ ...filters, types: newTypes });
 	};
 
 	const toggleStatus = (status: IssueStatus) => {
 		const newStatuses = filters.statuses.includes(status)
 			? filters.statuses.filter(s => s !== status)
 			: [...filters.statuses, status];
-		onFiltersChange({ ...filters, statuses: newStatuses });
-	};
-
-	const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		onFiltersChange({ ...filters, searchQuery: e.target.value });
+		onFiltersChangeAction({ ...filters, statuses: newStatuses });
 	};
 
 	const resetFilters = () => {
-		onFiltersChange({
+		onFiltersChangeAction({
 			types: Object.values(IssueType),
 			statuses: Object.values(IssueStatus),
 			searchQuery: ''
@@ -113,16 +109,12 @@ export const SidebarFilter = ({
 					</div>
 
 					{/* Search */}
-					<div className="space-y-2">
-						<label className="text-sm font-medium text-gray-300">Search</label>
-						<Input
-							type="text"
-							placeholder="Search issues..."
-							value={filters.searchQuery}
-							onChange={handleSearchChange}
-							className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-500"
-						/>
-					</div>
+					<SearchFilter
+						value={filters.searchQuery}
+						onChangeAction={value =>
+							onFiltersChangeAction({ ...filters, searchQuery: value })
+						}
+					/>
 
 					{/* Type filter */}
 					<div className="space-y-2">

@@ -3,13 +3,14 @@
 import { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 
-import { SidebarFilter } from '@/components/sidebar-filter';
+import { SidebarFilter } from '@/components/filters/sidebar-filter';
 import {
 	DEFAULT_FILTERS,
 	filterIssues,
 	type IssueFilters
 } from '@/lib/issue-utils';
 import { IssueStatus, IssueType, type Issue } from '@/modules/issue/schema';
+import { FloatingAddButton } from '@/components/floating-add-button';
 
 // Dynamic import to avoid SSR issues with Leaflet
 const IssuesMapContainer = dynamic(
@@ -38,7 +39,7 @@ const MOCK_ISSUES: Issue[] = [
 		type: IssueType.HOOLIGANISM,
 		pictures: '',
 		createdAt: new Date(),
-		upddatedAt: new Date(),
+		updatedAt: new Date(),
 		reportedBy: 1,
 		numberOfUpvotes: 5
 	},
@@ -51,7 +52,7 @@ const MOCK_ISSUES: Issue[] = [
 		type: IssueType.IMPROVEMENT_IDEA,
 		pictures: '',
 		createdAt: new Date(),
-		upddatedAt: new Date(),
+		updatedAt: new Date(),
 		reportedBy: 2,
 		numberOfUpvotes: 12
 	},
@@ -65,7 +66,7 @@ const MOCK_ISSUES: Issue[] = [
 		type: IssueType.NATURE_PROBLEM,
 		pictures: '',
 		createdAt: new Date(),
-		upddatedAt: new Date(),
+		updatedAt: new Date(),
 		reportedBy: 3,
 		numberOfUpvotes: 8
 	},
@@ -78,7 +79,7 @@ const MOCK_ISSUES: Issue[] = [
 		type: IssueType.BROKEN,
 		pictures: '',
 		createdAt: new Date(),
-		upddatedAt: new Date(),
+		updatedAt: new Date(),
 		reportedBy: 1,
 		numberOfUpvotes: 3
 	},
@@ -91,7 +92,7 @@ const MOCK_ISSUES: Issue[] = [
 		type: IssueType.ROAD,
 		pictures: '',
 		createdAt: new Date(),
-		upddatedAt: new Date(),
+		updatedAt: new Date(),
 		reportedBy: 4,
 		numberOfUpvotes: 15
 	},
@@ -104,7 +105,7 @@ const MOCK_ISSUES: Issue[] = [
 		type: IssueType.IMPROVEMENT_IDEA,
 		pictures: '',
 		createdAt: new Date(),
-		upddatedAt: new Date(),
+		updatedAt: new Date(),
 		reportedBy: 5,
 		numberOfUpvotes: 20
 	},
@@ -118,7 +119,7 @@ const MOCK_ISSUES: Issue[] = [
 		type: IssueType.BROKEN,
 		pictures: '',
 		createdAt: new Date(),
-		upddatedAt: new Date(),
+		updatedAt: new Date(),
 		reportedBy: 6,
 		numberOfUpvotes: 10
 	},
@@ -131,7 +132,7 @@ const MOCK_ISSUES: Issue[] = [
 		type: IssueType.NATURE_PROBLEM,
 		pictures: '',
 		createdAt: new Date(),
-		upddatedAt: new Date(),
+		updatedAt: new Date(),
 		reportedBy: 7,
 		numberOfUpvotes: 4
 	}
@@ -154,7 +155,7 @@ const Home = () => {
 			{/* Sidebar Filter */}
 			<SidebarFilter
 				filters={filters}
-				onFiltersChange={setFilters}
+				onFiltersChangeAction={setFilters}
 				issueCount={issues.length}
 				filteredCount={filteredIssues.length}
 			/>
@@ -163,6 +164,8 @@ const Home = () => {
 			<div className="flex-1 relative">
 				<IssuesMapContainer issues={filteredIssues} />
 			</div>
+
+			<FloatingAddButton />
 		</div>
 	);
 };
