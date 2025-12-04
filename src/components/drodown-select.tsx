@@ -6,13 +6,18 @@ type DropdownOption = {
 type DropdownSelectProps = {
 	options: DropdownOption[];
 	selectedOption?: string;
+	onChange?: (value: string) => void;
 };
 
 export const DropdownSelect = ({
 	options,
-	selectedOption
+	selectedOption,
+	onChange
 }: DropdownSelectProps) => (
-	<select value={selectedOption ?? ''}>
+	<select
+		value={selectedOption ?? ''}
+		onChange={e => onChange?.(e.target.value)}
+	>
 		<option value="" disabled>
 			--
 		</option>

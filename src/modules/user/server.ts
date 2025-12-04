@@ -1,72 +1,42 @@
-import { promises as fs } from 'fs';
-import path from 'path';
-
-import { z } from 'zod';
+import { eq } from 'drizzle-orm';
 
 import { type User, userSchema } from '@/modules/user/schema';
-
-const FILE_PATH = path.join(process.cwd(), 'users.json');
-const SLEEP_TIME_MS = 1500;
-
-const sleep = () => new Promise(resolve => setTimeout(resolve, SLEEP_TIME_MS));
-
-const parseUsers = (input: string) =>
-	z.array(userSchema).parse(JSON.parse(input || '[]'));
-
-const safeRead = async () => {
-	try {
-		const file = await fs.readFile(FILE_PATH, 'utf8');
-		return parseUsers(file);
-	} catch {
-		return [];
-	}
-};
+import { db } from '@/db';
+import { users } from '@/db/schema/users';
 
 export const getUsers = async () => {
-	await sleep();
-	return safeRead();
+	return db.select().from(users);
+};
+
+export const getUserById = async (id: number) => {
+	const rows = await db.select().from(users).where(eq(users.id, id)).limit(1);
+	return rows.length > 0 ? rows[0] : null;
 };
 
 export const createUser = async (data: Omit<User, 'id'>) => {
-	const users = await safeRead();
+	const validated = userSchema.omit({ id: true }).parse(data);
 
-	const nextId = users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1;
+	const result = await db.insert(users).values(validated).returning();
 
-	const newUser: User = {
-		id: nextId,
-		...data
-	};
-
-	const validated = userSchema.parse(newUser);
-
-	await fs.writeFile(FILE_PATH, JSON.stringify([...users, validated], null, 2));
-	await sleep();
-
-	return validated;
+	return result[0];
 };
 
 export const updateUser = async (id: number, data: Partial<User>) => {
-	const users = await safeRead();
+	const validated = userSchema.partial().parse(data);
 
-	const existing = users.find(u => u.id === id);
-	if (!existing) throw new Error(`User with id ${id} not found.`);
+	const result = await db
+		.update(users)
+		.set(validated)
+		.where(eq(users.id, id))
+		.returning();
 
-	const updated = userSchema.parse({ ...existing, ...data });
+	if (result.length === 0) {
+		throw new Error(`User with id ${id} not found.`);
+	}
 
-	const newUsers = users.map(u => (u.id === id ? updated : u));
-
-	await fs.writeFile(FILE_PATH, JSON.stringify(newUsers, null, 2));
-	await sleep();
-
-	return updated;
+	return result[0];
 };
 
 export const deleteUser = async (id: number) => {
-	const users = await safeRead();
-	const newUsers = users.filter(u => u.id !== id);
-
-	await fs.writeFile(FILE_PATH, JSON.stringify(newUsers, null, 2));
-	await sleep();
-
-	return newUsers;
+	await db.delete(users).where(eq(users.id, id));
 };

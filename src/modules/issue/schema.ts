@@ -1,32 +1,58 @@
 import { z } from 'zod';
 
 export enum IssueStatus {
-	REPORTED = 'REPORTED',
-	IN_PROGRESS = 'IN_PROGRESS',
-	FIXED = 'FIXED',
-	CLOSED = 'CLOSED'
+	REPORTED = 'reported',
+	IN_PROGRESS = 'in_progress',
+	FIXED = 'fixed',
+	CLOSED = 'closed'
 }
 
 export enum IssueType {
-	HOOLIGANISM = 'HOOLIGANISM',
-	IMPROVEMENT_IDEA = 'IMPROVEMENT_IDEA',
-	NATURE_PROBLEM = 'NATURE_PROBLEM',
-	BROKEN = 'BROKEN',
-	ROAD = 'ROAD'
+	HOOLIGANISM = 'hooliganism',
+	IMPROVEMENT_IDEA = 'improvement_idea',
+	NATURE_PROBLEM = 'nature_problem',
+	BROKEN = 'broken',
+	ROAD = 'road'
 }
+
+export const ISSUE_STATUS_VALUES = Object.values(IssueStatus) as [
+	IssueStatus,
+	...IssueStatus[]
+];
+export const ISSUE_TYPE_VALUES = Object.values(IssueType) as [
+	IssueType,
+	...IssueType[]
+];
 
 export const issueSchema = z.object({
 	id: z.number(),
 	title: z.string().min(1),
-	description: z.string().min(1),
-	location: z.string().min(1),
-	status: IssueStatus,
-	type: IssueType,
-	pictures: z.string().min(1),
+	description: z.string(),
+	latitude: z.number().min(-90).max(90),
+	longitude: z.number().min(-180).max(180),
+	status: z.enum(ISSUE_STATUS_VALUES),
+	type: z.enum(ISSUE_TYPE_VALUES),
+	pictureUrls: z.array(z.string()),
 	createdAt: z.date(),
 	updatedAt: z.date(),
-	reportedBy: z.number(),
+	//TODO: correct type - User
+	reporter: z.object({}),
 	numberOfUpvotes: z.number()
 });
 
+// used only when selecting, map DB row to this type, perform counting of likes, extracting urls from pictures,...
 export type Issue = z.infer<typeof issueSchema>;
+
+//TODO: used for inserts and updates
+export const issueValuesSchema = z.object({
+	title: z.string().min(1),
+	description: z.string().min(1),
+	latitude: z.number().min(-90).max(90),
+	longitude: z.number().min(-180).max(180),
+	type: z.enum(ISSUE_TYPE_VALUES),
+	status: z.enum(ISSUE_STATUS_VALUES),
+	pictures: z.array(z.instanceof(File)),
+	reporterId: z.number()
+});
+
+export type IssueValuesSchema = z.infer<typeof issueValuesSchema>;

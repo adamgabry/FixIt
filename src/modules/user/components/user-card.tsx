@@ -1,6 +1,7 @@
 import { LabeledItem } from '@/components/labeled-item';
 import { type User } from '@/modules/user/schema';
-import { UserRoleDropdown } from '@/modules/user/components/user-role-dropdown';
+import { DeleteUserButton } from '@/modules/user/components/delete-user-button';
+import { UserRoleChanger } from '@/modules/user/components/user-role-changer';
 
 type UserCardProps = {
 	user: User;
@@ -16,7 +17,12 @@ export const UserCard = ({ user }: UserCardProps) => (
 		</li>
 		<li>
 			<LabeledItem label="Role">
-				<UserRoleDropdown selectedRole={user.role} />
+				<UserRoleChanger user={user} />
+			</LabeledItem>
+		</li>
+		<li>
+			<LabeledItem label="Delete">
+				<DeleteUserButton userId={user.id} />
 			</LabeledItem>
 		</li>
 	</ul>
