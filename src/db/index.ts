@@ -1,9 +1,15 @@
-'server-only';
+('server-only');
 
 import { createClient } from '@libsql/client';
 import { drizzle } from 'drizzle-orm/libsql';
 
-import * as schema from './schema';
+import { users, usersRelations } from '@/db/schema/users';
+import { issueLikes, issueLikesRelations } from '@/db/schema/likes';
+import { issues, issuesRelations } from '@/db/schema/issues';
+import {
+	issuePictures,
+	issuePicturesRelations
+} from '@/db/schema/issue-pictures';
 
 if (!process.env.DATABASE_URL) {
 	throw new Error('DATABASE_URL is not set');
@@ -16,12 +22,14 @@ const client = createClient({
 
 export const db = drizzle(client, {
 	schema: {
-		users: schema.users,
-		issues: schema.issues,
-		likes: schema.likes,
+		users,
+		issues,
+		issueLikes,
+		issuePictures,
 		// relations
-		usersRelations: schema.usersRelations,
-		issuesRelations: schema.issuesRelations,
-		likesRelations: schema.likesRelations,
+		usersRelations,
+		issuesRelations,
+		issueLikesRelations,
+		issuePicturesRelations
 	}
 });

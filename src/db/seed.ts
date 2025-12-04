@@ -1,78 +1,78 @@
-'server-only';
+import {IssueStatus, IssueType} from "@/modules/issue/schema";
+import {issueLikes} from '@/db/schema/likes';
+import {users} from '@/db/schema/users';
+import {issues} from '@/db/schema/issues';
 
-import { users, issues, likes } from './schema';
+import {db} from './index';
 
-import { db } from './index';
-import { IssueStatus, IssueType } from '@/modules/issue/schema';
+('server-only');
 
 export const seedDatabase = async () => {
 	// Clear existing data
 	await db.delete(issues);
-	await db.delete(likes);
+	await db.delete(issueLikes);
 	await db.delete(users);
 
 	// Insert users
 	await db.insert(users).values([
 		{
-			id: '1',
+			id: 1,
 			name: 'User',
-			username: 'user',
+			email: 'user@user.sk',
 			password: 'user123',
-			role: 'user',
-			isLoggedIn: false
+			role: 'user'
 		},
 		{
-			id: '2',
+			id: 2,
 			name: 'Stuff',
-			username: 'staff',
+			email: 'staff@staff.sk',
 			password: 'staff123',
-			role: 'staff',
-			isLoggedIn: false
+			role: 'staff'
 		},
 		{
-			id: '3',
+			id: 3,
 			name: 'Admin',
-			username: 'admin',
+			email: 'admin@admin.sk',
 			password: 'admin123',
-			role: 'admin',
-			isLoggedIn: false
+			role: 'admin'
 		}
 	]);
 
 	// Insert issues
 	await db.insert(issues).values([
 		{
-			id: '1',
 			title: 'Graffiti on City Hall',
 			description: 'Vandalism with spray paint on the main entrance.',
 			latitude: 48.1486,
 			longitude: 17.1077,
 			status: IssueStatus.REPORTED,
 			type: IssueType.HOOLIGANISM,
-			pictures: ['1'],
-			createdBy: '1',
+			reporterId: 1,
+			createdAt: 1,
+			updatedAt: 1
 		},
 		{
-			id: '2',
 			title: 'Fallen tree blocking path',
-			description: 'Large tree fell during storm, blocking the walking path in central park.',
-			latitude: 48.1520,
-			longitude: 17.1120,
+			description:
+				'Large tree fell during storm, blocking the walking path in central park.',
+			latitude: 48.152,
+			longitude: 17.112,
 			status: IssueStatus.REPORTED,
 			type: IssueType.NATURE_PROBLEM,
-			pictures: ['2'],
-			createdBy: '1',
+			reporterId: 1,
+			createdAt: 1,
+			updatedAt: 1
 		},
 		{
-			id: '3',
 			title: 'Large pothole on Main Street',
 			description: 'Deep pothole causing damage to vehicles, safety hazard.',
-			latitude: 48.1500,
-			longitude: 17.1000,
+			latitude: 48.15,
+			longitude: 17.1,
 			status: IssueStatus.REPORTED,
-			type: IssueType.ROAD,
-			pictures: ['3'],
-			createdBy: '1',
-		},
+			type: IssueType.NATURE_PROBLEM,
+			reporterId: 1,
+			createdAt: 1,
+			updatedAt: 1
+		}
 	]);
 };
