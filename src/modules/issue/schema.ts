@@ -1,8 +1,6 @@
 import { z } from 'zod';
-import type { InferSelectModel } from 'drizzle-orm';
 
 import { userSchema } from '@/modules/user/schema';
-import { type issues } from '@/db/schema/issues';
 
 export enum IssueStatus {
 	REPORTED = 'reported',
@@ -40,7 +38,8 @@ export const issueSchema = z.object({
 	createdAt: z.date(),
 	updatedAt: z.date(),
 	reporter: userSchema,
-	numberOfUpvotes: z.number()
+	numberOfUpvotes: z.number(),
+	upvoters: z.array(userSchema)
 });
 
 // TODO used only when selecting, map DB row to this type, perform counting of likes, extracting urls from pictures,...

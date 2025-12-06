@@ -40,6 +40,7 @@ export const seedDatabase = async () => {
 	// Insert issues
 	await db.insert(issues).values([
 		{
+			id: 1,
 			title: 'Graffiti on City Hall',
 			description: 'Vandalism with spray paint on the main entrance.',
 			latitude: 48.1486,
@@ -51,6 +52,7 @@ export const seedDatabase = async () => {
 			updatedAt: 1
 		},
 		{
+			id: 2,
 			title: 'Fallen tree blocking path',
 			description:
 				'Large tree fell during storm, blocking the walking path in central park.',
@@ -63,6 +65,7 @@ export const seedDatabase = async () => {
 			updatedAt: 1
 		},
 		{
+			id: 3,
 			title: 'Large pothole on Main Street',
 			description: 'Deep pothole causing damage to vehicles, safety hazard.',
 			latitude: 48.15,
@@ -72,6 +75,35 @@ export const seedDatabase = async () => {
 			reporterId: 1,
 			createdAt: 1,
 			updatedAt: 1
+		}
+	]);
+
+	// Insert likes
+	await db.insert(issueLikes).values([
+		// User 1 likes issues 1 and 2
+		{
+			userId: '1',
+			issueId: '1'
+		},
+		{
+			userId: '1',
+			issueId: '2'
+		},
+
+		// User 2 likes issues 1 and 3
+		{
+			userId: '2',
+			issueId: '1'
+		},
+		{
+			userId: '2',
+			issueId: '3'
+		},
+
+		// User 3 likes issue 2
+		{
+			userId: '3',
+			issueId: '2'
 		}
 	]);
 };
