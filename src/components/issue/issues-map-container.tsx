@@ -6,6 +6,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { type Issue } from '@/modules/issue/schema';
 import { IssueMarker } from '@/components/issue/issue-marker';
+import { LocationButton } from '@/components/location-button';
 
 // Fix for default marker icon in Next.js
 if (typeof window !== 'undefined') {
@@ -40,6 +41,7 @@ export const IssuesMapContainer = ({
 			attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 			url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 		/>
+		<LocationButton />
 		{issues.map(issue => (
 			<IssueMarker
 				key={issue.id}
