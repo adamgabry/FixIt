@@ -5,20 +5,9 @@ import { issues } from '@/db/schema/issues';
 import { type IssueValuesSchema } from '@/modules/issue/schema';
 
 export const getIssues = async () => db.query.issues.findMany();
-/*
-	db.query.issues.findMany({
-		with: { pictures: true, likes: true }
-	});
-*/
 
 export const getIssueById = async (id: number) =>
 	db.query.issues.findFirst({ where: eq(issues.id, id) });
-/*
-	db.query.issues.findFirst({
-		where: eq(issues.id, id),
-		with: { pictures: true, likes: true, reporter: true }
-	});
- */
 
 export const createIssue = async (newIssueData: IssueValuesSchema) => {
 	const timestamp = Math.floor(Date.now() / 1000);

@@ -6,6 +6,7 @@ import {
 	updateIssue
 } from '@/modules/issue/server';
 import { type Issue, type IssueValuesSchema } from '@/modules/issue/schema';
+import { getUsersWhoLikedIssueFacade } from '@/modules/issueLike/facade';
 import { getUserByIdFacade } from '@/modules/user/facade';
 import { type IssueRow } from '@/db/schema/issues';
 
@@ -16,10 +17,8 @@ const mapIssueValuesSchemaToIssue = async (issue: IssueRow): Promise<Issue> => {
 			`Reporter with id ${issue.reporterId} not found for issue ${issue.id}`
 		);
 	}
-	/*
-	const pictures = await db.select().from(issuePictures).where(eq(issuePictures.issueId, id));
-	const likes = await db.select().from(issueLikes).where(eq(issueLikes.issueId, id));
-	*/
+
+	const upvoters = await getUsersWhoLikedIssueFacade(issue.id);
 
 	return {
 		id: issue.id,
@@ -29,8 +28,9 @@ const mapIssueValuesSchemaToIssue = async (issue: IssueRow): Promise<Issue> => {
 		longitude: issue.longitude,
 		type: issue.type,
 		status: issue.status,
-		pictureUrls: [], // TODO map real pictures: issue.pictures.map(p => p.url)
-		numberOfUpvotes: 100, // TODO count likes
+		pictureUrls: [], // TODO map real pictures
+		upvoters,
+		numberOfUpvotes: upvoters.length,
 		reporter,
 		createdAt: new Date(issue.createdAt * 1000),
 		updatedAt: new Date(issue.updatedAt * 1000)
