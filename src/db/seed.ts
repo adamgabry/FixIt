@@ -1,11 +1,10 @@
-import {IssueStatus, IssueType} from "@/modules/issue/schema";
-import {issueLikes} from '@/db/schema/likes';
-import {users} from '@/db/schema/users';
-import {issues} from '@/db/schema/issues';
+import 'dotenv/config.js';
+import { IssueStatus, IssueType } from '@/modules/issue/schema';
+import { issueLikes } from '@/db/schema/likes';
+import { users } from '@/db/schema/users';
+import { issues } from '@/db/schema/issues';
 
-import {db} from './index';
-
-('server-only');
+import { db } from './index';
 
 export const seedDatabase = async () => {
 	// Clear existing data
@@ -59,7 +58,7 @@ export const seedDatabase = async () => {
 			longitude: 17.112,
 			status: IssueStatus.REPORTED,
 			type: IssueType.NATURE_PROBLEM,
-			reporterId: 1,
+			reporterId: 2,
 			createdAt: 1,
 			updatedAt: 1
 		},
