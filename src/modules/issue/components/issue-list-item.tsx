@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import React from 'react';
 
@@ -6,8 +8,8 @@ import {
 	type IssueStatus,
 	type IssueType
 } from '@/modules/issue/schema';
-import { IssueStatusBadge } from '@/components/list/issue-status-badge';
-import { IssueTypeBadge } from '@/components/list/issue-type-badge';
+import { IssueStatusBadge } from '@/modules/issue/components/issue-status-badge';
+import { IssueTypeBadge } from '@/modules/issue/components/issue-type-badge';
 import { Button } from '@/components/button';
 
 export const IssueListItem = ({ issue }: { issue: Issue }) => {

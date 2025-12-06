@@ -4,9 +4,7 @@ import { type User, userSchema } from '@/modules/user/schema';
 import { db } from '@/db';
 import { users } from '@/db/schema/users';
 
-export const getUsers = async () => {
-	return db.select().from(users);
-};
+export const getUsers = async () => db.select().from(users);
 
 export const getUserById = async (id: number) => {
 	const rows = await db.select().from(users).where(eq(users.id, id)).limit(1);

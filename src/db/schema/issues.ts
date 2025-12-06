@@ -1,5 +1,5 @@
 import { integer, real, sqliteTable, text } from 'drizzle-orm/sqlite-core';
-import { relations } from 'drizzle-orm';
+import { type InferSelectModel, relations } from 'drizzle-orm';
 
 import { users } from '@/db/schema/users';
 import { ISSUE_STATUS_VALUES, ISSUE_TYPE_VALUES } from '@/modules/issue/schema';
@@ -29,3 +29,5 @@ export const issuesRelations = relations(issues, ({ one, many }) => ({
 	likes: many(issueLikes),
 	pictures: many(issuePictures)
 }));
+
+export type IssueRow = InferSelectModel<typeof issues>;

@@ -1,4 +1,8 @@
 import { z } from 'zod';
+import type { InferSelectModel } from 'drizzle-orm';
+
+import { userSchema } from '@/modules/user/schema';
+import { type issues } from '@/db/schema/issues';
 
 export enum IssueStatus {
 	REPORTED = 'reported',
@@ -30,17 +34,16 @@ export const issueSchema = z.object({
 	description: z.string(),
 	latitude: z.number().min(-90).max(90),
 	longitude: z.number().min(-180).max(180),
-	status: z.enum(ISSUE_STATUS_VALUES),
 	type: z.enum(ISSUE_TYPE_VALUES),
+	status: z.enum(ISSUE_STATUS_VALUES),
 	pictureUrls: z.array(z.string()),
 	createdAt: z.date(),
 	updatedAt: z.date(),
-	//TODO: correct type - User
-	reporter: z.object({}),
+	reporter: userSchema,
 	numberOfUpvotes: z.number()
 });
 
-// used only when selecting, map DB row to this type, perform counting of likes, extracting urls from pictures,...
+// TODO used only when selecting, map DB row to this type, perform counting of likes, extracting urls from pictures,...
 export type Issue = z.infer<typeof issueSchema>;
 
 //TODO: used for inserts and updates
