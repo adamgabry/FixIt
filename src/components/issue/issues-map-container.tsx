@@ -37,7 +37,20 @@ const MapClickHandler = ({
 	onMapClick?: (coords: { lat: number; lng: number }) => void;
 }) => {
 	useMapEvents({
-		click: (e: { latlng: LatLng }) => {
+		click: (e: L.LeafletMouseEvent) => {
+			// Check if the click originated from the location button or its children
+			const target = e.originalEvent.target as HTMLElement;
+			if (target) {
+				// Check if the click target is within the location button container
+				const locationButtonContainer = target.closest(
+					'[data-location-button]'
+				);
+				if (locationButtonContainer) {
+					// Ignore clicks from location button
+					return;
+				}
+			}
+
 			if (onMapClick) {
 				onMapClick({
 					lat: e.latlng.lat,

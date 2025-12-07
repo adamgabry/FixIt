@@ -21,12 +21,17 @@ export const LocationButton = () => {
 		}
 	}, [coords, map]);
 
-	const handleClick = () => {
+	const handleClick = (e: React.MouseEvent) => {
+		e.stopPropagation();
 		requestLocation();
 	};
 
 	return (
-		<div className="absolute bottom-4 left-4 z-[1000]">
+		<div
+			className="absolute bottom-4 left-4 z-[1000]"
+			data-location-button
+			onClick={e => e.stopPropagation()}
+		>
 			<Button
 				onClick={handleClick}
 				disabled={loading}
