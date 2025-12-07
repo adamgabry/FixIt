@@ -113,7 +113,7 @@ export const IssueCreator = ({
 		<>
 			{/* Backdrop */}
 			<div
-				className={`fixed inset-0 bg-black/40 z-50 transition-opacity duration-300 ${
+				className={`fixed inset-0 bg-black/60 backdrop-blur-sm z-50 transition-opacity duration-300 ${
 					isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
 				}`}
 				onClick={onClose}
@@ -121,22 +121,22 @@ export const IssueCreator = ({
 
 			{/* Sliding Panel */}
 			<div
-				className={`fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-xl z-50 transition-transform duration-300 ease-out overflow-y-auto ${
+				className={`fixed right-0 top-0 h-full w-full max-w-md bg-white/90 backdrop-blur-md shadow-2xl border-l-2 border-orange-200/50 z-50 transition-transform duration-300 ease-out overflow-y-auto ${
 					isOpen ? 'translate-x-0' : 'translate-x-full'
 				}`}
 				onClick={e => e.stopPropagation()}
 			>
-				<div className="p-6">
+				<div className="p-6 bg-gradient-to-br from-orange-50/30 via-amber-50/30 to-orange-50/30 min-h-full">
 					{/* Header */}
-					<div className="flex items-center justify-between mb-6">
-						<h2 className="text-2xl font-semibold text-gray-900">
+					<div className="flex items-center justify-between mb-6 pb-4 border-b border-orange-200/50">
+						<h2 className="text-2xl font-bold text-gray-900">
 							Create Issue
 						</h2>
 						<Button
 							variant="ghost"
 							size="icon"
 							onClick={onClose}
-							className="h-8 w-8"
+							className="h-8 w-8 hover:bg-orange-100 rounded-lg"
 						>
 							<X className="h-5 w-5" />
 						</Button>
@@ -144,7 +144,7 @@ export const IssueCreator = ({
 
 					{/* Location Picker Map */}
 					<div className="mb-6">
-						<label className="block text-sm font-medium mb-2 text-gray-700">
+						<label className="block text-sm font-semibold mb-2 text-gray-700">
 							Location <span className="text-red-500">*</span>
 						</label>
 						<LocationPickerMap
@@ -152,22 +152,22 @@ export const IssueCreator = ({
 							onCoordsChange={setCoords}
 							height="200px"
 						/>
-						<p className="mt-2 text-xs text-gray-500 text-center">
+						<p className="mt-2 text-xs text-gray-600 text-center font-medium">
 							Click on the map to select or adjust the issue location
 						</p>
 					</div>
 
 					{/* Error Message */}
 					{error && (
-						<div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-							<p className="text-sm text-red-600">{error}</p>
+						<div className="mb-4 p-3 bg-red-50 border-2 border-red-200 rounded-lg backdrop-blur-sm">
+							<p className="text-sm text-red-700 font-medium">{error}</p>
 						</div>
 					)}
 
 					{/* Form */}
 					<form onSubmit={handleSubmit} className="flex flex-col gap-4">
 						<div>
-							<label className="block text-sm font-medium mb-2 text-gray-700">
+							<label className="block text-sm font-semibold mb-2 text-gray-700">
 								Title <span className="text-red-500">*</span>
 							</label>
 							<input
@@ -175,19 +175,19 @@ export const IssueCreator = ({
 								required
 								value={title}
 								onChange={e => setTitle(e.target.value)}
-								className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+								className="w-full border-2 border-orange-200 bg-white/80 backdrop-blur-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-400 transition-all duration-200"
 								placeholder="Enter issue title"
 							/>
 						</div>
 
 						<div>
-							<label className="block text-sm font-medium mb-2 text-gray-700">
+							<label className="block text-sm font-semibold mb-2 text-gray-700">
 								Type <span className="text-red-500">*</span>
 							</label>
 							<select
 								value={type}
 								onChange={e => setType(e.target.value as IssueType)}
-								className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+								className="w-full border-2 border-orange-200 bg-white/80 backdrop-blur-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-400 transition-all duration-200"
 							>
 								{Object.values(IssueType).map(typeValue => (
 									<option key={typeValue} value={typeValue}>
@@ -200,7 +200,7 @@ export const IssueCreator = ({
 						</div>
 
 						<div>
-							<label className="block text-sm font-medium mb-2 text-gray-700">
+							<label className="block text-sm font-semibold mb-2 text-gray-700">
 								Description <span className="text-red-500">*</span>
 							</label>
 							<textarea
@@ -208,13 +208,13 @@ export const IssueCreator = ({
 								required
 								value={description}
 								onChange={e => setDescription(e.target.value)}
-								className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+								className="w-full border-2 border-orange-200 bg-white/80 backdrop-blur-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-400 resize-none transition-all duration-200"
 								placeholder="Describe the issue..."
 							/>
 						</div>
 
 						<div>
-							<label className="block text-sm font-medium mb-2 text-gray-700">
+							<label className="block text-sm font-semibold mb-2 text-gray-700">
 								Images
 							</label>
 							<input
@@ -222,31 +222,57 @@ export const IssueCreator = ({
 								accept="image/*"
 								multiple
 								onChange={e => setImages(Array.from(e.target.files ?? []))}
-								className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+								className="w-full border-2 border-orange-200 bg-white/80 backdrop-blur-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-400 transition-all duration-200"
 							/>
 							{images.length > 0 && (
-								<p className="mt-2 text-xs text-gray-500">
+								<p className="mt-2 text-xs text-gray-600 font-medium">
 									{images.length} file(s) selected
 								</p>
 							)}
 						</div>
 
-						<div className="flex gap-3 mt-4">
+						<div className="flex gap-3 mt-6 pt-4 border-t border-orange-200/50">
 							<Button
 								type="button"
 								variant="outline"
 								onClick={onClose}
-								className="flex-1"
+								className="flex-1 border-orange-200 hover:bg-orange-50 hover:border-orange-300"
 								disabled={isSubmitting}
 							>
 								Cancel
 							</Button>
 							<Button
 								type="submit"
-								className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+								className="flex-1 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold shadow-md hover:shadow-lg border-2 border-orange-400/60 hover:border-orange-500 transition-all duration-200"
 								disabled={isSubmitting}
 							>
-								{isSubmitting ? 'Creating...' : 'Create Issue'}
+								{isSubmitting ? (
+									<span className="flex items-center justify-center gap-2">
+										<svg
+											className="animate-spin h-4 w-4"
+											xmlns="http://www.w3.org/2000/svg"
+											fill="none"
+											viewBox="0 0 24 24"
+										>
+											<circle
+												className="opacity-25"
+												cx="12"
+												cy="12"
+												r="10"
+												stroke="currentColor"
+												strokeWidth="4"
+											/>
+											<path
+												className="opacity-75"
+												fill="currentColor"
+												d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+											/>
+										</svg>
+										Creating...
+									</span>
+								) : (
+									'Create Issue'
+								)}
 							</Button>
 						</div>
 					</form>
