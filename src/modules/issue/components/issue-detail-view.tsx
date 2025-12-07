@@ -257,10 +257,19 @@ const IssueDetailView = ({ issue: initialIssue, initialEditMode = false }: Issue
 					<div className="mb-6">
 						<div className="bg-white/50 backdrop-blur-sm rounded-xl shadow-md border border-orange-200/50 p-4 sm:p-6">
 							<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-								<div className="flex-1">
-									<h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-										{issue.title}
-									</h1>
+								<div className="flex-1 w-full">
+									{isEditing ? (
+										<Input
+											value={issue.title}
+											onChange={e => setIssue({ ...issue, title: e.target.value })}
+											className="text-2xl sm:text-3xl font-bold mb-2 bg-white/80 backdrop-blur-sm border-orange-200 h-auto py-2 px-3 border-2"
+											placeholder="Issue title"
+										/>
+									) : (
+										<h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+											{issue.title}
+										</h1>
+									)}
 									<div className="flex flex-wrap items-center gap-3 text-sm text-gray-600">
 										<span className="flex items-center gap-1.5">
 											<span className="font-medium">Reported by:</span>
