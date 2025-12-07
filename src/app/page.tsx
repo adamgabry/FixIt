@@ -2,6 +2,7 @@
 import { MapView } from '@/modules/issue/components/map-view';
 import { FloatingAddButton } from '@/components/floating-add-button';
 import { getIssuesFacade } from '@/modules/issue/facade';
+
 import { MapPageClient } from './map-page-client';
 
 const Home = async () => {
