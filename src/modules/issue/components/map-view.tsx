@@ -6,6 +6,7 @@ import type { MutableRefObject } from 'react';
 
 import { type Issue } from '@/modules/issue/schema';
 import { IssueCreator } from '@/components/issue/issue-create';
+import { useLocation } from '@/lib/use-location';
 
 // Dynamic import for Leaflet map
 const IssuesMapContainer = dynamic(
@@ -47,6 +48,17 @@ export const MapView: React.FC<MapViewProps> = ({
 	const getMapCenterRef = useRef<(() => { lat: number; lng: number }) | null>(
 		null
 	);
+	
+	// Get user's current location
+	const { coords: userCoords, requestLocation } = useLocation();
+	
+	// Request location when component mounts
+	useEffect(() => {
+		if (typeof window !== 'undefined' && navigator.geolocation) {
+			requestLocation();
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	const handleMapClick = useCallback(
 		(clickedCoords: { lat: number; lng: number }) => {
@@ -57,16 +69,21 @@ export const MapView: React.FC<MapViewProps> = ({
 	);
 
 	const handleOpenCreator = useCallback(() => {
-		// If no coords set, use current map center or default location
-		if (!coords) {
-			if (getMapCenterRef.current) {
-				setCoords(getMapCenterRef.current());
-			} else {
-				setCoords({ lat: 48.1486, lng: 17.1077 }); // Default: Bratislava
-			}
+		// Request fresh location when opening creator
+		if (typeof window !== 'undefined' && navigator.geolocation) {
+			requestLocation();
+		}
+		
+		// Priority: user location > map center > default
+		if (userCoords) {
+			setCoords(userCoords);
+		} else if (getMapCenterRef.current) {
+			setCoords(getMapCenterRef.current());
+		} else {
+			setCoords({ lat: 48.1486, lng: 17.1077 }); // Default: Bratislava
 		}
 		setIsCreatorOpen(true);
-	}, [coords]);
+	}, [coords, userCoords, requestLocation]);
 
 	const handleCloseCreator = useCallback(() => {
 		setIsCreatorOpen(false);
