@@ -13,11 +13,7 @@ const IssueDetailPage = async ({
 	const issue = await getIssueByIdFacade(Number(id));
 	if (!issue) return NotFound();
 
-	return (
-		<div className="min-h-screen w-full flex justify-center">
-			<IssueDetailView issue={issue} />
-		</div>
-	);
+	return <IssueDetailView issue={issue} />;
 };
 
 export default IssueDetailPage;
