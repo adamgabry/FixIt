@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import React from 'react';
 
 import {
@@ -13,11 +14,11 @@ import { IssueTypeBadge } from '@/modules/issue/components/issue-type-badge';
 import { Button } from '@/components/button';
 
 export const IssueListItem = ({ issue }: { issue: Issue }) => {
-	const handleEdit = (e: React.MouseEvent) => {
+	const handleEdit = (_e: React.MouseEvent) => {
 		console.log('Edit clicked', issue.id);
 	};
 
-	const handleLike = (e: React.MouseEvent) => {
+	const handleLike = (_e: React.MouseEvent) => {
 		console.log('Like clicked', issue.id);
 	};
 
@@ -52,11 +53,12 @@ export const IssueListItem = ({ issue }: { issue: Issue }) => {
 				</div>
 			</div>
 
-			<Link href={`/issues/${issue.id}`} className="w-full h-48">
-				<img
-					className="w-full h-full object-cover rounded-b-base"
+			<Link href={`/issues/${issue.id}`} className="w-full h-48 relative">
+				<Image
+					className="object-cover rounded-b-base"
 					src="/issue-placeholder.jpg"
 					alt="Here should be picture"
+					fill
 				/>
 			</Link>
 		</li>

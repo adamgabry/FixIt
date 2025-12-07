@@ -32,7 +32,7 @@ export const LocationButton = () => {
 				disabled={loading}
 				variant="default"
 				size="icon"
-				title={error || 'Get current location'}
+				title={error ?? 'Get current location'}
 				className="bg-white hover:bg-gray-100 text-gray-800 shadow-lg"
 			>
 				{loading ? (

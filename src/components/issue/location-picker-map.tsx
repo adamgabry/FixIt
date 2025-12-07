@@ -96,7 +96,6 @@ export const LocationPickerMap = ({
 	height = '200px'
 }: LocationPickerMapProps) => {
 	const [isExpanded, setIsExpanded] = useState(false);
-	const [isHovered, setIsHovered] = useState(false);
 
 	if (isExpanded) {
 		return (
