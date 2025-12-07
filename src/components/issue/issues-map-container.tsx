@@ -3,7 +3,6 @@
 import React from 'react';
 import { MapContainer, TileLayer, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import type { LatLng } from 'leaflet';
 
 import 'leaflet/dist/leaflet.css';
 import { type Issue } from '@/modules/issue/schema';
