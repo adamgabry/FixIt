@@ -73,8 +73,11 @@ const IssueDetailView = ({ issue: initialIssue }: IssueDetailViewProps) => {
 				isDeleting={isDeleting}
 			/>
 
-			<div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-orange-50 -mx-4 sm:-mx-6 lg:-mx-8 -my-8 px-4 sm:px-6 lg:px-8 py-6">
-				<div className="container mx-auto">
+			{/* Full viewport background */}
+			<div className="fixed inset-0 bg-gradient-to-br from-orange-50 via-amber-50 to-orange-50 -z-10" />
+			{/* Content */}
+			<div className="relative min-h-screen z-10">
+				<div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
 					{/* Header Section */}
 					<div className="mb-6">
 						<div className="bg-white/50 backdrop-blur-sm rounded-xl shadow-md border border-orange-200/50 p-4 sm:p-6">
