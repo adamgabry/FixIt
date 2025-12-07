@@ -131,10 +131,13 @@ const IssueDetailView = ({ issue: initialIssue }: IssueDetailViewProps) => {
 		setIsDeleting(true);
 		try {
 			await deleteIssueAction(issue.id);
+			// Close dialog
+			setShowDeleteConfirm(false);
+			// Navigate away - use replace to avoid back button issues
 			router.replace('/');
-			router.refresh();
 		} catch (error) {
 			console.error('Error deleting issue:', error);
+			alert(`Failed to delete issue: ${error instanceof Error ? error.message : 'Unknown error'}`);
 			setIsDeleting(false);
 			setShowDeleteConfirm(false);
 		}
