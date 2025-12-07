@@ -1,4 +1,9 @@
-import { primaryKey, sqliteTable, integer } from 'drizzle-orm/sqlite-core';
+import {
+	primaryKey,
+	sqliteTable,
+	integer,
+	text
+} from 'drizzle-orm/sqlite-core';
 import { relations } from 'drizzle-orm';
 
 import { users } from '@/db/schema/users';
@@ -7,7 +12,7 @@ import { issues } from '@/db/schema/issues';
 export const issueLikes = sqliteTable(
 	'issueLikes',
 	{
-		userId: integer('userId')
+		userId: text('userId')
 			.notNull()
 			.references(() => users.id),
 		issueId: integer('issueId')
