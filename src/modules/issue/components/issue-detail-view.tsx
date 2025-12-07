@@ -10,6 +10,7 @@ import { DeleteButton } from '@/components/delete-button';
 import { Input } from '@/components/input';
 import { Button } from '@/components/button';
 import { type Issue } from '@/modules/issue/schema';
+import { IssueVoteControls } from '@/modules/issue/components/issue-vote-controls';
 
 const MapComponent = dynamic(() => import('@/components/map'), {
 	ssr: false
@@ -17,9 +18,21 @@ const MapComponent = dynamic(() => import('@/components/map'), {
 
 type IssueDetailViewProps = {
 	issue: Issue;
+	currentUserId: number | null;
+	initialVoteValue: number;
+	initialVoteCounts: {
+		upvotes: number;
+		downvotes: number;
+		score: number;
+	};
 };
 
-const IssueDetailView = ({ issue: initialIssue }: IssueDetailViewProps) => {
+const IssueDetailView = ({
+	issue: initialIssue,
+	currentUserId,
+	initialVoteValue,
+	initialVoteCounts
+}: IssueDetailViewProps) => {
 	const [issue, setIssue] = useState(initialIssue);
 	const [isEditing, setIsEditing] = useState(false);
 
@@ -78,10 +91,24 @@ const IssueDetailView = ({ issue: initialIssue }: IssueDetailViewProps) => {
 				</div>
 			</div>
 
-			{/* DETAILS SECTION */}
-			<div className="flex flex-col gap-4 p-6 w-full md:w-1/2 overflow-y-auto lg:max-h-screen order-2 md:order-1">
-				{/* Title */}
-				<div className="flex flex-col gap-2">
+		{/* DETAILS SECTION */}
+		<div className="flex flex-col gap-4 p-6 w-full md:w-1/2 overflow-y-auto lg:max-h-screen order-2 md:order-1">
+			{/* Voting Controls */}
+			<div className="flex flex-col gap-2">
+				<label className="text-sm font-medium">Community Vote</label>
+				<IssueVoteControls
+					issueId={issue.id}
+					reporterId={issue.reporter.id}
+					currentUserId={currentUserId}
+					initialVoteValue={initialVoteValue}
+					initialUpvotes={initialVoteCounts.upvotes}
+					initialDownvotes={initialVoteCounts.downvotes}
+					initialScore={initialVoteCounts.score}
+				/>
+			</div>
+
+			{/* Title */}
+			<div className="flex flex-col gap-2">
 					<label className="text-sm font-medium">Title</label>
 					{isEditing ? (
 						<Input

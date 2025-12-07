@@ -38,6 +38,34 @@ export const createLike = async (newLike: IssueLikeValuesSchema) => {
 	return result[0];
 };
 
+export const upsertVote = async (newLike: IssueLikeValuesSchema) => {
+	const existing = await db.query.issueLikes.findFirst({
+		where: and(
+			eq(issueLikes.userId, newLike.userId),
+			eq(issueLikes.issueId, newLike.issueId)
+		)
+	});
+
+	if (existing) {
+		// Update existing vote
+		const result = await db
+			.update(issueLikes)
+			.set({ voteValue: newLike.voteValue })
+			.where(
+				and(
+					eq(issueLikes.userId, newLike.userId),
+					eq(issueLikes.issueId, newLike.issueId)
+				)
+			)
+			.returning();
+		return result[0];
+	}
+
+	// Create new vote
+	const result = await db.insert(issueLikes).values(newLike).returning();
+	return result[0];
+};
+
 export const updateLike = async (
 	userId: number,
 	issueId: number,
@@ -60,4 +88,37 @@ export const deleteLike = async (userId: number, issueId: number) => {
 	await db
 		.delete(issueLikes)
 		.where(and(eq(issueLikes.userId, userId), eq(issueLikes.issueId, issueId)));
+};
+
+/**
+ * Get vote score (sum of all vote values) for an issue
+ * Returns the total score (upvotes - downvotes)
+ */
+export const getIssueVoteScore = async (issueId: number): Promise<number> => {
+	const votes = await db.query.issueLikes.findMany({
+		where: eq(issueLikes.issueId, issueId)
+	});
+
+	return votes.reduce((sum, vote) => sum + vote.voteValue, 0);
+};
+
+/**
+ * Get vote counts for an issue
+ * Returns { upvotes, downvotes, score }
+ */
+export const getIssueVoteCounts = async (
+	issueId: number
+): Promise<{ upvotes: number; downvotes: number; score: number }> => {
+	const votes = await db.query.issueLikes.findMany({
+		where: eq(issueLikes.issueId, issueId)
+	});
+
+	const upvotes = votes.filter(v => v.voteValue === 1).length;
+	const downvotes = votes.filter(v => v.voteValue === -1).length;
+
+	return {
+		upvotes,
+		downvotes,
+		score: upvotes - downvotes
+	};
 };

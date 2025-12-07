@@ -12,10 +12,14 @@ import {
 	ISSUE_STATUS_LABELS,
 	createColoredMarkerSvg
 } from '@/lib/issue-utils';
+import { IssueVoteControlsCompact } from '@/modules/issue/components/issue-vote-controls-compact';
 
 type IssueMarkerProps = {
 	issue: Issue;
 	position: [number, number];
+	currentUserId?: number | null;
+	userVoteValue?: number;
+	voteScore?: number;
 };
 
 /**
@@ -31,7 +35,13 @@ const createIssueIcon = (type: IssueType): L.Icon => {
 	});
 };
 
-export const IssueMarker = ({ issue, position }: IssueMarkerProps) => {
+export const IssueMarker = ({
+	issue,
+	position,
+	currentUserId,
+	userVoteValue = 0,
+	voteScore = 0
+}: IssueMarkerProps) => {
 	const router = useRouter();
 	const icon = createIssueIcon(issue.type as IssueType);
 
@@ -66,6 +76,15 @@ export const IssueMarker = ({ issue, position }: IssueMarkerProps) => {
 					<p className="text-xs text-gray-600 mb-3 line-clamp-2">
 						{issue.description}
 					</p>
+					<div className="flex items-center gap-2 mb-3">
+						<IssueVoteControlsCompact
+							issueId={issue.id}
+							reporterId={issue.reporter.id}
+							currentUserId={currentUserId ?? null}
+							initialVoteValue={userVoteValue}
+							initialScore={voteScore}
+						/>
+					</div>
 					<button
 						onClick={handleViewDetails}
 						className="group w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium text-white transition-all duration-200 hover:gap-3 hover:shadow-md active:scale-[0.98]"

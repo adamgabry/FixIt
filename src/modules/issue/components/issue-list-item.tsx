@@ -11,8 +11,21 @@ import {
 import { IssueStatusBadge } from '@/modules/issue/components/issue-status-badge';
 import { IssueTypeBadge } from '@/modules/issue/components/issue-type-badge';
 import { Button } from '@/components/button';
+import { IssueVoteControlsCompact } from '@/modules/issue/components/issue-vote-controls-compact';
 
-export const IssueListItem = ({ issue }: { issue: Issue }) => {
+type IssueListItemProps = {
+	issue: Issue;
+	currentUserId: number | null;
+	userVoteValue: number;
+	voteScore: number;
+};
+
+export const IssueListItem = ({
+	issue,
+	currentUserId,
+	userVoteValue,
+	voteScore
+}: IssueListItemProps) => {
 	const handleEdit = (e: React.MouseEvent) => {
 		console.log('Edit clicked', issue.id);
 	};
@@ -36,14 +49,13 @@ export const IssueListItem = ({ issue }: { issue: Issue }) => {
 				</Link>
 
 				<div className="flex flex-col gap-1 items-end">
-					<Button
-						variant="secondary"
-						size="sm"
-						onClick={handleLike}
-						className="flex items-center gap-1"
-					>
-						{`Like ${issue.numberOfUpvotes}`}
-					</Button>
+					<IssueVoteControlsCompact
+						issueId={issue.id}
+						reporterId={issue.reporter.id}
+						currentUserId={currentUserId}
+						initialVoteValue={userVoteValue}
+						initialScore={voteScore}
+					/>
 
 					{/* TODO show only for admins and users who are creators of this + TODO redirect to issue edit/remove*/}
 					<Button variant="outline" size="sm" onClick={handleEdit}>

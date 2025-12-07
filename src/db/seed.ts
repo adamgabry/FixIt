@@ -7,9 +7,9 @@ import { issues } from '@/db/schema/issues';
 import { db } from './index';
 
 export const seedDatabase = async () => {
-	// Clear existing data
-	await db.delete(issues);
+	// Clear existing data in correct order (respect foreign keys)
 	await db.delete(issueLikes);
+	await db.delete(issues);
 	await db.delete(users);
 
 	// Insert users
@@ -78,32 +78,39 @@ export const seedDatabase = async () => {
 		}
 	]);
 
-	// Insert likes
+	// Insert likes/votes
 	await db.insert(issueLikes).values([
-		// User 1 likes issues 1 and 2
 		{
-			userId: '1',
-			issueId: '1'
+			userId: 1,
+			issueId: 1,
+			voteValue: 1
 		},
 		{
-			userId: '1',
-			issueId: '2'
-		},
-
-		// User 2 likes issues 1 and 3
-		{
-			userId: '2',
-			issueId: '1'
-		},
-		{
-			userId: '2',
-			issueId: '3'
+			userId: 1,
+			issueId: 2,
+			voteValue: -1
 		},
 
-		// User 3 likes issue 2
 		{
-			userId: '3',
-			issueId: '2'
+			userId: 2,
+			issueId: 1,
+			voteValue: 1
+		},
+		{
+			userId: 2,
+			issueId: 3,
+			voteValue: 1
+		},
+
+		{
+			userId: 3,
+			issueId: 2,
+			voteValue: 1
+		},
+		{
+			userId: 3,
+			issueId: 1,
+			voteValue: -1
 		}
 	]);
 };

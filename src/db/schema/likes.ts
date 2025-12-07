@@ -12,7 +12,8 @@ export const issueLikes = sqliteTable(
 			.references(() => users.id),
 		issueId: integer('issueId')
 			.notNull()
-			.references(() => issues.id)
+			.references(() => issues.id),
+		voteValue: integer('voteValue').notNull().default(1) // -1 = downvote, 1 = upvote
 	},
 	table => ({
 		pk: primaryKey({ columns: [table.userId, table.issueId] })

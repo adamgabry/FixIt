@@ -4,6 +4,12 @@ import dynamic from 'next/dynamic';
 
 import { type Issue } from '@/modules/issue/schema';
 
+type IssueWithVotes = {
+	issue: Issue;
+	userVoteValue: number;
+	voteScore: number;
+};
+
 // Dynamic import for Leaflet map
 const IssuesMapContainer = dynamic(
 	() =>
@@ -21,11 +27,12 @@ const IssuesMapContainer = dynamic(
 );
 
 type MapViewProps = {
-	issues: Issue[];
+	issues: IssueWithVotes[];
+	currentUserId?: number | null;
 };
 
-export const MapView: React.FC<MapViewProps> = ({ issues }) => (
+export const MapView: React.FC<MapViewProps> = ({ issues, currentUserId }) => (
 	<div className="flex-1 relative">
-		<IssuesMapContainer issues={issues} />
+		<IssuesMapContainer issues={issues} currentUserId={currentUserId} />
 	</div>
 );

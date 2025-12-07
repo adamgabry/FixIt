@@ -7,6 +7,12 @@ import 'leaflet/dist/leaflet.css';
 import { type Issue } from '@/modules/issue/schema';
 import { IssueMarker } from '@/components/issue/issue-marker';
 
+type IssueWithVotes = {
+	issue: Issue;
+	userVoteValue: number;
+	voteScore: number;
+};
+
 // Fix for default marker icon in Next.js
 if (typeof window !== 'undefined') {
 	delete (L.Icon.Default.prototype as unknown as { _getIconUrl?: unknown })
@@ -20,13 +26,15 @@ if (typeof window !== 'undefined') {
 }
 
 type IssuesMapContainerProps = {
-	issues: Issue[];
+	issues: IssueWithVotes[];
+	currentUserId?: number | null;
 	center?: [number, number];
 	zoom?: number;
 };
 
 export const IssuesMapContainer = ({
 	issues,
+	currentUserId,
 	center = [48.1486, 17.1077], // Default: Bratislava
 	zoom = 13
 }: IssuesMapContainerProps) => (
@@ -40,11 +48,14 @@ export const IssuesMapContainer = ({
 			attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 			url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 		/>
-		{issues.map(issue => (
+		{issues.map(({ issue, userVoteValue, voteScore }) => (
 			<IssueMarker
 				key={issue.id}
 				issue={issue}
 				position={[issue.latitude, issue.longitude]}
+				currentUserId={currentUserId}
+				userVoteValue={userVoteValue}
+				voteScore={voteScore}
 			/>
 		))}
 	</MapContainer>

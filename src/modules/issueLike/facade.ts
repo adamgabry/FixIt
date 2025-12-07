@@ -4,7 +4,10 @@ import {
 	getIssuesLikedByUser,
 	getLikeByUserAndIssue,
 	getUsersWhoLikedIssue,
-	updateLike
+	updateLike,
+	upsertVote,
+	getIssueVoteScore,
+	getIssueVoteCounts
 } from '@/modules/issueLike/server';
 import { type User } from '@/modules/user/schema';
 import { getUserByIdFacade } from '@/modules/user/facade';
@@ -91,4 +94,84 @@ export const updateLikeFacade = async (
 
 export const deleteLikeFacade = async (userId: number, issueId: number) => {
 	await deleteLike(userId, issueId);
+};
+
+/**
+ * Toggle vote for an issue following the state machine:
+ * - Neutral → click upvote → Upvoted (+1)
+ * - Upvoted → click upvote → Neutral (delete)
+ * - Neutral → click downvote → Downvoted (-1)
+ * - Downvoted → click downvote → Neutral (delete)
+ * - Upvoted → click downvote → Downvoted (-1)
+ * - Downvoted → click upvote → Upvoted (+1)
+ *
+ * @param userId - The user performing the vote
+ * @param issueId - The issue being voted on
+ * @param voteType - 'upvote' or 'downvote'
+ * @param reporterId - The ID of the issue creator (to prevent self-voting)
+ * @returns Updated vote state and counts
+ */
+export const toggleVoteFacade = async (
+	userId: number,
+	issueId: number,
+	voteType: 'upvote' | 'downvote',
+	reporterId: number
+): Promise<{
+	voteValue: number; // Current user's vote: -1, 0, or 1
+	upvotes: number;
+	downvotes: number;
+	score: number;
+}> => {
+	// Prevent issue creator from voting on their own issue
+	if (userId === reporterId) {
+		throw new Error('Issue creator cannot vote on their own issue');
+	}
+
+	const targetValue = voteType === 'upvote' ? 1 : -1;
+	const existingVote = await getLikeByUserAndIssue(userId, issueId);
+
+	let newVoteValue = 0;
+
+	if (!existingVote) {
+		// Neutral → Upvoted or Downvoted
+		await upsertVote({ userId, issueId, voteValue: targetValue });
+		newVoteValue = targetValue;
+	} else if (existingVote.voteValue === targetValue) {
+		// Upvoted → click upvote → Neutral (remove vote)
+		// Downvoted → click downvote → Neutral (remove vote)
+		await deleteLike(userId, issueId);
+		newVoteValue = 0;
+	} else {
+		// Upvoted → click downvote → Downvoted
+		// Downvoted → click upvote → Upvoted
+		await upsertVote({ userId, issueId, voteValue: targetValue });
+		newVoteValue = targetValue;
+	}
+
+	// Get updated counts
+	const counts = await getIssueVoteCounts(issueId);
+
+	return {
+		voteValue: newVoteValue,
+		...counts
+	};
+};
+
+/**
+ * Get the current user's vote value for an issue
+ * Returns -1 (downvote), 0 (no vote), or 1 (upvote)
+ */
+export const getUserVoteValueFacade = async (
+	userId: number,
+	issueId: number
+): Promise<number> => {
+	const vote = await getLikeByUserAndIssue(userId, issueId);
+	return vote?.voteValue ?? 0;
+};
+
+/**
+ * Get vote counts for an issue
+ */
+export const getIssueVoteCountsFacade = async (issueId: number) => {
+	return await getIssueVoteCounts(issueId);
 };
