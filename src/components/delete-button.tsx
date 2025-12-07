@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { Trash2 } from 'lucide-react';
 
-import { Button, type ButtonProps } from './button';
 import { cn } from '@/lib/cn';
+
+import { Button, type ButtonProps } from './button';
 
 export type DeleteButtonProps = Omit<ButtonProps, 'variant'> & {
 	showIcon?: boolean;
@@ -10,7 +11,7 @@ export type DeleteButtonProps = Omit<ButtonProps, 'variant'> & {
 
 const DeleteButton = React.forwardRef<HTMLButtonElement, DeleteButtonProps>(
 	({ children, showIcon = true, className, size, ...props }, ref) => {
-		const buttonSize = size || 'default';
+		const buttonSize = size ?? 'default';
 
 		return (
 			<Button
@@ -41,7 +42,7 @@ const DeleteButton = React.forwardRef<HTMLButtonElement, DeleteButtonProps>(
 						)}
 					/>
 				)}
-				{children || 'Delete'}
+				{children ?? 'Delete'}
 			</Button>
 		);
 	}

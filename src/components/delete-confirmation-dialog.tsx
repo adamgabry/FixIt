@@ -1,8 +1,9 @@
 'use client';
 
+import { AlertTriangle } from 'lucide-react';
+
 import { Button } from '@/components/button';
 import { cn } from '@/lib/cn';
-import { AlertTriangle } from 'lucide-react';
 
 type DeleteConfirmationDialogProps = {
 	isOpen: boolean;
@@ -98,4 +99,3 @@ export const DeleteConfirmationDialog = ({
 		</div>
 	);
 };
-

@@ -1,4 +1,5 @@
 import { IssueList } from '@/modules/issue/components/issue-list';
+
 import { IssuesListClient } from './issues-list-client';
 
 const IssuesListPage = () => (

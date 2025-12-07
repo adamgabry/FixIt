@@ -16,10 +16,10 @@ export type Address = {
  * @param lng - Longitude
  * @returns Promise resolving to an address object or null if geocoding fails
  */
-export async function reverseGeocode(
+export const reverseGeocode = async (
 	lat: number,
 	lng: number
-): Promise<Address | null> {
+): Promise<Address | null> => {
 	try {
 		// Use Nominatim API (free, no API key required)
 		// Rate limit: 1 request per second
@@ -38,39 +38,35 @@ export async function reverseGeocode(
 
 		const data = await response.json();
 
-		if (!data || !data.address) {
+		if (!data?.address) {
 			return null;
 		}
 
 		const address = data.address;
-		const displayName = data.display_name || '';
+		const displayName = data.display_name ?? '';
 
 		// Extract address components
-		const street = [
-			address.road,
-			address.house_number
-		]
+		const street = [address.road, address.house_number]
 			.filter(Boolean)
 			.join(' ');
 
 		const city =
-			address.city ||
-			address.town ||
-			address.village ||
-			address.municipality ||
+			address.city ??
+			address.town ??
+			address.village ??
+			address.municipality ??
 			'';
 
-		const country = address.country || '';
+		const country = address.country ?? '';
 
 		return {
 			displayName,
-			street: street || undefined,
-			city: city || undefined,
-			country: country || undefined
+			street: street ?? undefined,
+			city: city ?? undefined,
+			country: country ?? undefined
 		};
 	} catch (error) {
 		console.error('Reverse geocoding error:', error);
 		return null;
 	}
-}
-
+};

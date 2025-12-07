@@ -48,10 +48,10 @@ export const MapView: React.FC<MapViewProps> = ({
 	const getMapCenterRef = useRef<(() => { lat: number; lng: number }) | null>(
 		null
 	);
-	
+
 	// Get user's current location
 	const { coords: userCoords, requestLocation } = useLocation();
-	
+
 	// Request location when component mounts
 	useEffect(() => {
 		if (typeof window !== 'undefined' && navigator.geolocation) {
@@ -73,7 +73,7 @@ export const MapView: React.FC<MapViewProps> = ({
 		if (typeof window !== 'undefined' && navigator.geolocation) {
 			requestLocation();
 		}
-		
+
 		// Priority: user location > map center > default
 		if (userCoords) {
 			setCoords(userCoords);
@@ -83,7 +83,7 @@ export const MapView: React.FC<MapViewProps> = ({
 			setCoords({ lat: 48.1486, lng: 17.1077 }); // Default: Bratislava
 		}
 		setIsCreatorOpen(true);
-	}, [coords, userCoords, requestLocation]);
+	}, [userCoords, requestLocation]);
 
 	const handleCloseCreator = useCallback(() => {
 		setIsCreatorOpen(false);

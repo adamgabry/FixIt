@@ -1,6 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { LatLng } from 'leaflet';
@@ -28,7 +29,10 @@ type IssueDetailViewProps = {
 	initialEditMode?: boolean;
 };
 
-const IssueDetailView = ({ issue: initialIssue, initialEditMode = false }: IssueDetailViewProps) => {
+const IssueDetailView = ({
+	issue: initialIssue,
+	initialEditMode = false
+}: IssueDetailViewProps) => {
 	const router = useRouter();
 	const [issue, setIssue] = useState(initialIssue);
 	const [isEditing, setIsEditing] = useState(initialEditMode);
@@ -41,11 +45,13 @@ const IssueDetailView = ({ issue: initialIssue, initialEditMode = false }: Issue
 	const [isMapReady, setIsMapReady] = useState(false);
 	const [address, setAddress] = useState<Address | null>(null);
 	const [isLoadingAddress, setIsLoadingAddress] = useState(false);
-	
+
 	// Image management
-	const [existingImages, setExistingImages] = useState<string[]>(issue.pictureUrls || []);
+	const [existingImages, setExistingImages] = useState<string[]>(
+		issue.pictureUrls ?? []
+	);
 	const [newImages, setNewImages] = useState<File[]>([]);
-	const [deletedImageUrls, setDeletedImageUrls] = useState<string[]>([]);
+	const [_deletedImageUrls, setDeletedImageUrls] = useState<string[]>([]);
 
 	const lat = issue.latitude;
 	const lng = issue.longitude;
@@ -138,7 +144,9 @@ const IssueDetailView = ({ issue: initialIssue, initialEditMode = false }: Issue
 			router.replace('/');
 		} catch (error) {
 			console.error('Error deleting issue:', error);
-			alert(`Failed to delete issue: ${error instanceof Error ? error.message : 'Unknown error'}`);
+			alert(
+				`Failed to delete issue: ${error instanceof Error ? error.message : 'Unknown error'}`
+			);
 			setIsDeleting(false);
 			setShowDeleteConfirm(false);
 		}
@@ -193,7 +201,7 @@ const IssueDetailView = ({ issue: initialIssue, initialEditMode = false }: Issue
 	const handleCancel = () => {
 		// Reset to original issue data
 		setIssue(initialIssue);
-		setExistingImages(initialIssue.pictureUrls || []);
+		setExistingImages(initialIssue.pictureUrls ?? []);
 		setNewImages([]);
 		setDeletedImageUrls([]);
 		setIsEditing(false);
@@ -210,7 +218,7 @@ const IssueDetailView = ({ issue: initialIssue, initialEditMode = false }: Issue
 
 	// Image management functions
 	const handleAddImages = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const files = Array.from(e.target.files || []);
+		const files = Array.from(e.target.files ?? []);
 		setNewImages(prev => [...prev, ...files]);
 	};
 
@@ -225,15 +233,15 @@ const IssueDetailView = ({ issue: initialIssue, initialEditMode = false }: Issue
 
 	// Combine existing and new images for display
 	const allImages = [
-		...existingImages.map((url, idx) => ({ 
-			type: 'existing' as const, 
-			url, 
+		...existingImages.map((url, idx) => ({
+			type: 'existing' as const,
+			url,
 			id: `existing-${idx}`,
 			index: idx
 		})),
-		...newImages.map((file, idx) => ({ 
-			type: 'new' as const, 
-			file, 
+		...newImages.map((file, idx) => ({
+			type: 'new' as const,
+			file,
 			id: `new-${idx}`,
 			index: idx
 		}))
@@ -261,7 +269,9 @@ const IssueDetailView = ({ issue: initialIssue, initialEditMode = false }: Issue
 									{isEditing ? (
 										<Input
 											value={issue.title}
-											onChange={e => setIssue({ ...issue, title: e.target.value })}
+											onChange={e =>
+												setIssue({ ...issue, title: e.target.value })
+											}
 											className="text-2xl sm:text-3xl font-bold mb-2 bg-white/80 backdrop-blur-sm border-orange-200 h-auto py-2 px-3 border-2"
 											placeholder="Issue title"
 										/>
@@ -273,21 +283,31 @@ const IssueDetailView = ({ issue: initialIssue, initialEditMode = false }: Issue
 									<div className="flex flex-wrap items-center gap-3 text-sm text-gray-600">
 										<span className="flex items-center gap-1.5">
 											<span className="font-medium">Reported by:</span>
-											<span className="text-gray-800">{issue.reporter?.name ?? 'Unknown'}</span>
+											<span className="text-gray-800">
+												{issue.reporter?.name ?? 'Unknown'}
+											</span>
 										</span>
 										<span className="text-gray-400">•</span>
 										<span className="flex items-center gap-1.5">
 											<span className="font-medium">Location:</span>
 											{isLoadingAddress ? (
-												<span className="text-gray-500 italic">Loading address...</span>
+												<span className="text-gray-500 italic">
+													Loading address...
+												</span>
 											) : address ? (
-												<span className="text-gray-800" title={`${lat.toFixed(6)}, ${lng.toFixed(6)}`}>
+												<span
+													className="text-gray-800"
+													title={`${lat.toFixed(6)}, ${lng.toFixed(6)}`}
+												>
 													{address.street && address.city
 														? `${address.street}, ${address.city}${address.country ? `, ${address.country}` : ''}`
-														: address.displayName || `${lat.toFixed(6)}, ${lng.toFixed(6)}`}
+														: address.displayName ||
+															`${lat.toFixed(6)}, ${lng.toFixed(6)}`}
 												</span>
 											) : (
-												<span className="text-gray-800">{lat.toFixed(6)}, {lng.toFixed(6)}</span>
+												<span className="text-gray-800">
+													{lat.toFixed(6)}, {lng.toFixed(6)}
+												</span>
 											)}
 										</span>
 									</div>
@@ -330,8 +350,10 @@ const IssueDetailView = ({ issue: initialIssue, initialEditMode = false }: Issue
 									) : (
 										<div className="flex items-center justify-center h-full bg-gradient-to-br from-orange-100 to-amber-100">
 											<div className="text-center">
-												<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto mb-2"></div>
-												<span className="text-sm text-gray-600">Loading map...</span>
+												<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto mb-2" />
+												<span className="text-sm text-gray-600">
+													Loading map...
+												</span>
 											</div>
 										</div>
 									)}
@@ -350,7 +372,10 @@ const IssueDetailView = ({ issue: initialIssue, initialEditMode = false }: Issue
 									<select
 										value={issue.status}
 										onChange={e =>
-											setIssue({ ...issue, status: e.target.value as Issue['status'] })
+											setIssue({
+												...issue,
+												status: e.target.value as Issue['status']
+											})
 										}
 										disabled={!isEditing}
 										className={cn(
@@ -366,7 +391,9 @@ const IssueDetailView = ({ issue: initialIssue, initialEditMode = false }: Issue
 											<option key={status} value={status}>
 												{status
 													.split('_')
-													.map(word => word.charAt(0).toUpperCase() + word.slice(1))
+													.map(
+														word => word.charAt(0).toUpperCase() + word.slice(1)
+													)
 													.join(' ')}
 											</option>
 										))}
@@ -381,7 +408,10 @@ const IssueDetailView = ({ issue: initialIssue, initialEditMode = false }: Issue
 									<select
 										value={issue.type}
 										onChange={e =>
-											setIssue({ ...issue, type: e.target.value as Issue['type'] })
+											setIssue({
+												...issue,
+												type: e.target.value as Issue['type']
+											})
 										}
 										disabled={!isEditing}
 										className={cn(
@@ -397,7 +427,9 @@ const IssueDetailView = ({ issue: initialIssue, initialEditMode = false }: Issue
 											<option key={type} value={type}>
 												{type
 													.split('_')
-													.map(word => word.charAt(0).toUpperCase() + word.slice(1))
+													.map(
+														word => word.charAt(0).toUpperCase() + word.slice(1)
+													)
 													.join(' ')}
 											</option>
 										))}
@@ -413,7 +445,9 @@ const IssueDetailView = ({ issue: initialIssue, initialEditMode = false }: Issue
 										value={issue.description || ''}
 										readOnly={!isEditing}
 										disabled={!isEditing}
-										onChange={e => setIssue({ ...issue, description: e.target.value })}
+										onChange={e =>
+											setIssue({ ...issue, description: e.target.value })
+										}
 										className={cn(
 											'border border-orange-200 bg-white/80 backdrop-blur-sm',
 											'flex min-h-[120px] w-full rounded-lg px-3 py-2 text-sm resize-none',
@@ -438,12 +472,15 @@ const IssueDetailView = ({ issue: initialIssue, initialEditMode = false }: Issue
 													className="aspect-square relative group border-2 border-orange-200 rounded-lg overflow-hidden bg-gray-100"
 												>
 													{img.type === 'existing' ? (
-														<img
+														<Image
 															src={img.url}
 															alt={`Issue image ${idx + 1}`}
-															className="w-full h-full object-cover"
+															fill
+															className="object-cover"
+															unoptimized
 														/>
 													) : (
+														// eslint-disable-next-line @next/next/no-img-element
 														<img
 															src={URL.createObjectURL(img.file)}
 															alt={`New image ${idx + 1}`}

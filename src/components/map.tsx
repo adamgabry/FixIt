@@ -46,7 +46,7 @@ const DraggableMarker = ({
 }) => {
 	const eventHandlers = useMemo(
 		() => ({
-			dragend(e: { target: L.Marker }) {
+			dragend: (e: { target: L.Marker }) => {
 				if (onDragEnd) {
 					const { lat, lng } = e.target.getLatLng();
 					onDragEnd(lat, lng);
@@ -56,13 +56,7 @@ const DraggableMarker = ({
 		[onDragEnd]
 	);
 
-	return (
-		<Marker
-			position={position}
-			draggable={true}
-			eventHandlers={eventHandlers}
-		/>
-	);
+	return <Marker position={position} draggable eventHandlers={eventHandlers} />;
 };
 
 const MapComponent = ({

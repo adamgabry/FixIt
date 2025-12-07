@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { Pencil } from 'lucide-react';
 
-import { Button, type ButtonProps } from './button';
 import { cn } from '@/lib/cn';
+
+import { Button, type ButtonProps } from './button';
 
 export type EditButtonProps = Omit<ButtonProps, 'variant'> & {
 	showIcon?: boolean;
@@ -10,7 +11,7 @@ export type EditButtonProps = Omit<ButtonProps, 'variant'> & {
 
 const EditButton = React.forwardRef<HTMLButtonElement, EditButtonProps>(
 	({ children, showIcon = true, className, size, ...props }, ref) => {
-		const buttonSize = size || 'default';
+		const buttonSize = size ?? 'default';
 
 		return (
 			<Button
@@ -41,7 +42,7 @@ const EditButton = React.forwardRef<HTMLButtonElement, EditButtonProps>(
 						)}
 					/>
 				)}
-				{children || 'Edit'}
+				{children ?? 'Edit'}
 			</Button>
 		);
 	}

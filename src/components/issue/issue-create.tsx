@@ -129,9 +129,7 @@ export const IssueCreator = ({
 				<div className="p-6 bg-gradient-to-br from-orange-50/30 via-amber-50/30 to-orange-50/30 min-h-full">
 					{/* Header */}
 					<div className="flex items-center justify-between mb-6 pb-4 border-b border-orange-200/50">
-						<h2 className="text-2xl font-bold text-gray-900">
-							Create Issue
-						</h2>
+						<h2 className="text-2xl font-bold text-gray-900">Create Issue</h2>
 						<Button
 							variant="ghost"
 							size="icon"

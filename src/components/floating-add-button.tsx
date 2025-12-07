@@ -1,7 +1,8 @@
 'use client';
 
-import { Button } from '@/components/button';
 import { Plus } from 'lucide-react';
+
+import { Button } from '@/components/button';
 
 type FloatingAddButtonProps = {
 	onClick?: () => void;

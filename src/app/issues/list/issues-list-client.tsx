@@ -10,15 +10,15 @@ import { useLocation } from '@/lib/use-location';
 export const IssuesListClient = () => {
 	const router = useRouter();
 	const [isCreatorOpen, setIsCreatorOpen] = useState(false);
-	
+
 	// Default coordinates: Bratislava (fallback)
 	const defaultCoords = { lat: 48.1486, lng: 17.1077 };
-	
+
 	// Get user's current location
 	const { coords: userCoords, requestLocation } = useLocation();
-	
+
 	// Use current location if available, otherwise fallback to default
-	const coords = userCoords || defaultCoords;
+	const coords = userCoords ?? defaultCoords;
 
 	// Request location when component mounts
 	useEffect(() => {
@@ -60,4 +60,3 @@ export const IssuesListClient = () => {
 		</>
 	);
 };
-
