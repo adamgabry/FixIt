@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import type { LatLng } from 'leaflet';
 
 import { cn } from '@/lib/cn';
+import { reverseGeocode, type Address } from '@/lib/geocoding';
 import { EditButton } from '@/components/edit-button';
 import { DeleteButton } from '@/components/delete-button';
 import { Input } from '@/components/input';
@@ -35,21 +36,53 @@ const IssueDetailView = ({ issue: initialIssue }: IssueDetailViewProps) => {
 
 	const [initialMarkers, setInitialMarkers] = useState<LatLng[]>([]);
 	const [isMapReady, setIsMapReady] = useState(false);
+	const [address, setAddress] = useState<Address | null>(null);
+	const [isLoadingAddress, setIsLoadingAddress] = useState(false);
 
+	const lat = issue.latitude;
+	const lng = issue.longitude;
+
+	// Initialize map markers
 	useEffect(() => {
 		if (typeof window !== 'undefined') {
 			import('leaflet').then(L => {
-				const lat = issue.latitude;
-				const lng = issue.longitude;
-
 				setInitialMarkers([new L.LatLng(lat, lng)]);
 				setIsMapReady(true);
 			});
 		}
-	}, [issue.latitude, issue.longitude]);
+	}, [lat, lng]);
 
-	const lat = issue.latitude;
-	const lng = issue.longitude;
+	// Fetch address when coordinates change
+	useEffect(() => {
+		let isMounted = true;
+
+		const fetchAddress = async () => {
+			setIsLoadingAddress(true);
+			try {
+				// Add a small delay to respect Nominatim rate limit (1 req/sec)
+				await new Promise(resolve => setTimeout(resolve, 1100));
+				const result = await reverseGeocode(lat, lng);
+				if (isMounted) {
+					setAddress(result);
+				}
+			} catch (error) {
+				console.error('Failed to fetch address:', error);
+				if (isMounted) {
+					setAddress(null);
+				}
+			} finally {
+				if (isMounted) {
+					setIsLoadingAddress(false);
+				}
+			}
+		};
+
+		fetchAddress();
+
+		return () => {
+			isMounted = false;
+		};
+	}, [lat, lng]);
 
 	const handleDelete = async () => {
 		setIsDeleting(true);
@@ -94,7 +127,17 @@ const IssueDetailView = ({ issue: initialIssue }: IssueDetailViewProps) => {
 										<span className="text-gray-400">•</span>
 										<span className="flex items-center gap-1.5">
 											<span className="font-medium">Location:</span>
-											<span className="text-gray-800">{lat.toFixed(6)}, {lng.toFixed(6)}</span>
+											{isLoadingAddress ? (
+												<span className="text-gray-500 italic">Loading address...</span>
+											) : address ? (
+												<span className="text-gray-800" title={`${lat.toFixed(6)}, ${lng.toFixed(6)}`}>
+													{address.street && address.city
+														? `${address.street}, ${address.city}${address.country ? `, ${address.country}` : ''}`
+														: address.displayName || `${lat.toFixed(6)}, ${lng.toFixed(6)}`}
+												</span>
+											) : (
+												<span className="text-gray-800">{lat.toFixed(6)}, {lng.toFixed(6)}</span>
+											)}
 										</span>
 									</div>
 								</div>
