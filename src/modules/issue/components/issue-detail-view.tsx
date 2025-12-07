@@ -108,7 +108,7 @@ const IssueDetailView = ({ issue: initialIssue }: IssueDetailViewProps) => {
 
 					<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 						{/* MAP SECTION */}
-						<div className="order-2 lg:order-1">
+						<div className="order-1 lg:order-1">
 							<div className="bg-white/50 backdrop-blur-sm rounded-xl shadow-md border border-orange-200/50 overflow-hidden">
 								<div className="relative w-full h-[400px] md:h-[500px] lg:h-[600px]">
 									{isMapReady ? (
@@ -132,7 +132,7 @@ const IssueDetailView = ({ issue: initialIssue }: IssueDetailViewProps) => {
 						</div>
 
 						{/* DETAILS SECTION */}
-						<div className="order-1 lg:order-2">
+						<div className="order-2 lg:order-2">
 							<div className="bg-white/50 backdrop-blur-sm rounded-xl shadow-md border border-orange-200/50 p-4 sm:p-6 space-y-6">
 								{/* Status */}
 								<div className="flex flex-col gap-2">
