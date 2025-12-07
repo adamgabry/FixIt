@@ -9,7 +9,11 @@ import { EditButton } from '@/components/edit-button';
 import { DeleteButton } from '@/components/delete-button';
 import { Input } from '@/components/input';
 import { Button } from '@/components/button';
-import { type Issue } from '@/modules/issue/schema';
+import {
+	type Issue,
+	ISSUE_STATUS_VALUES,
+	ISSUE_TYPE_VALUES
+} from '@/modules/issue/schema';
 
 const MapComponent = dynamic(() => import('@/components/map'), {
 	ssr: false
@@ -108,22 +112,39 @@ const IssueDetailView = ({ issue: initialIssue }: IssueDetailViewProps) => {
 							'border bg-background flex h-10 w-full rounded-md px-3 py-2 text-sm'
 						)}
 					>
-						<option value="OPEN">Open</option>
-						<option value="IN_PROGRESS">In Progress</option>
-						<option value="CLOSED">Closed</option>
+						{ISSUE_STATUS_VALUES.map(status => (
+							<option key={status} value={status}>
+								{status
+									.split('_')
+									.map(word => word.charAt(0).toUpperCase() + word.slice(1))
+									.join(' ')}
+							</option>
+						))}
 					</select>
 				</div>
 
 				{/* Type */}
 				<div className="flex flex-col gap-2">
 					<label className="text-sm font-medium">Type</label>
-					<Input
+					<select
 						value={issue.type}
-						readOnly={!isEditing}
 						onChange={e =>
 							setIssue({ ...issue, type: e.target.value as Issue['type'] })
 						}
-					/>
+						disabled={!isEditing}
+						className={cn(
+							'border bg-background flex h-10 w-full rounded-md px-3 py-2 text-sm'
+						)}
+					>
+						{ISSUE_TYPE_VALUES.map(type => (
+							<option key={type} value={type}>
+								{type
+									.split('_')
+									.map(word => word.charAt(0).toUpperCase() + word.slice(1))
+									.join(' ')}
+							</option>
+						))}
+					</select>
 				</div>
 
 				{/* Reporter */}
