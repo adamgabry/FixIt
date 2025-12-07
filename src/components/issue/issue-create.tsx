@@ -52,7 +52,6 @@ export const IssueCreator = ({
 	const [type, setType] = useState<IssueType>(
 		Object.values(IssueType)[0] as IssueType
 	);
-	const [status, setStatus] = useState<IssueStatus>(IssueStatus.REPORTED);
 	const [description, setDescription] = useState('');
 	const [images, setImages] = useState<File[]>([]);
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -78,7 +77,7 @@ export const IssueCreator = ({
 			const issueData: IssueValuesSchema = {
 				title,
 				type,
-				status,
+				status: IssueStatus.REPORTED,
 				description,
 				latitude: coords.lat,
 				longitude: coords.lng,
@@ -91,7 +90,6 @@ export const IssueCreator = ({
 			// Reset form
 			setTitle('');
 			setType(Object.values(IssueType)[0] as IssueType);
-			setStatus(IssueStatus.REPORTED);
 			setDescription('');
 			setImages([]);
 
@@ -194,25 +192,6 @@ export const IssueCreator = ({
 								{Object.values(IssueType).map(typeValue => (
 									<option key={typeValue} value={typeValue}>
 										{typeValue
-											.replace(/_/g, ' ')
-											.replace(/\b\w/g, l => l.toUpperCase())}
-									</option>
-								))}
-							</select>
-						</div>
-
-						<div>
-							<label className="block text-sm font-medium mb-2 text-gray-700">
-								Status
-							</label>
-							<select
-								value={status}
-								onChange={e => setStatus(e.target.value as IssueStatus)}
-								className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-							>
-								{Object.values(IssueStatus).map(statusValue => (
-									<option key={statusValue} value={statusValue}>
-										{statusValue
 											.replace(/_/g, ' ')
 											.replace(/\b\w/g, l => l.toUpperCase())}
 									</option>
