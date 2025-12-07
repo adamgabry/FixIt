@@ -55,12 +55,15 @@ const IssueDetailView = ({ issue: initialIssue }: IssueDetailViewProps) => {
 	// Fetch address when coordinates change
 	useEffect(() => {
 		let isMounted = true;
+		let timeoutId: NodeJS.Timeout;
 
 		const fetchAddress = async () => {
 			setIsLoadingAddress(true);
 			try {
 				// Add a small delay to respect Nominatim rate limit (1 req/sec)
-				await new Promise(resolve => setTimeout(resolve, 1100));
+				await new Promise(resolve => {
+					timeoutId = setTimeout(resolve, 1100);
+				});
 				const result = await reverseGeocode(lat, lng);
 				if (isMounted) {
 					setAddress(result);
@@ -81,8 +84,26 @@ const IssueDetailView = ({ issue: initialIssue }: IssueDetailViewProps) => {
 
 		return () => {
 			isMounted = false;
+			if (timeoutId) {
+				clearTimeout(timeoutId);
+			}
 		};
 	}, [lat, lng]);
+
+	// Handle marker drag end
+	const handleMarkerDragEnd = (newLat: number, newLng: number) => {
+		setIssue({
+			...issue,
+			latitude: newLat,
+			longitude: newLng
+		});
+		// Update markers for map
+		if (typeof window !== 'undefined') {
+			import('leaflet').then(L => {
+				setInitialMarkers([new L.LatLng(newLat, newLng)]);
+			});
+		}
+	};
 
 	const handleDelete = async () => {
 		setIsDeleting(true);
@@ -158,13 +179,24 @@ const IssueDetailView = ({ issue: initialIssue }: IssueDetailViewProps) => {
 							<div className="bg-white/50 backdrop-blur-sm rounded-xl shadow-md border border-orange-200/50 overflow-hidden">
 								<div className="relative w-full h-[400px] md:h-[500px] lg:h-[600px]">
 									{isMapReady ? (
-										<MapComponent
-											center={[lat, lng]}
-											zoom={20}
-											style={{ height: '100%', width: '100%' }}
-											initialMarkers={initialMarkers}
-											canCreateMarker={false}
-										/>
+										<>
+											<MapComponent
+												center={[lat, lng]}
+												zoom={20}
+												style={{ height: '100%', width: '100%' }}
+												initialMarkers={initialMarkers}
+												canCreateMarker={false}
+												draggableMarker={isEditing}
+												onMarkerDragEnd={handleMarkerDragEnd}
+											/>
+											{isEditing && (
+												<div className="absolute top-4 left-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg z-[1000] pointer-events-none">
+													<p className="text-sm text-gray-700 text-center font-medium">
+														Drag the marker to change the location
+													</p>
+												</div>
+											)}
+										</>
 									) : (
 										<div className="flex items-center justify-center h-full bg-gradient-to-br from-orange-100 to-amber-100">
 											<div className="text-center">
