@@ -1,23 +1,17 @@
-import { IssueList } from '@/modules/issue/components/issue-list';
+import { IssueListFilters } from '@/modules/issue/components/issue-list-filters';
+import { getIssuesFacade } from '@/modules/issue/facade';
 
 import { IssuesListClient } from './issues-list-client';
 
-const IssuesListPage = () => (
-	/*
-	const [filters, setFilters] = useState<IssueFilters>(DEFAULT_FILTERS);
+const IssuesListPage = async () => {
+	const issues = await getIssuesFacade();
 
-	const issues = MOCK_ISSUES as Issue[];
-	const filteredIssues = useMemo(
-		() => filterIssues(issues, filters),
-		[issues, filters]
+	return (
+		<div>
+			<IssueListFilters initialIssues={issues} />
+			<IssuesListClient />
+		</div>
 	);
-	*/
-	<div>
-		{
-			// <RowFilter filters={filters} onFiltersChangeAction={setFilters} />
-		}
-		<IssueList />
-		<IssuesListClient />
-	</div>
-);
+};
+
 export default IssuesListPage;

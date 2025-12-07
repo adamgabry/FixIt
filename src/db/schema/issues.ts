@@ -31,3 +31,6 @@ export const issuesRelations = relations(issues, ({ one, many }) => ({
 }));
 
 export type IssueRow = InferSelectModel<typeof issues>;
+
+export type IssueStatusRow = IssueRow['status'];
+export type IssueTypeRow = IssueRow['type'];
