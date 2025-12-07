@@ -38,7 +38,7 @@ export const LocationButton = () => {
 				variant="default"
 				size="icon"
 				title={error ?? 'Get current location'}
-				className="bg-white hover:bg-gray-100 text-gray-800 shadow-lg"
+				className="h-12 w-12 rounded-xl bg-white/90 backdrop-blur-sm hover:bg-white border-2 border-orange-200/60 hover:border-orange-300 text-orange-700 hover:text-orange-800 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95"
 			>
 				{loading ? (
 					<svg

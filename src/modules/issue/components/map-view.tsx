@@ -116,7 +116,7 @@ export const MapView: React.FC<MapViewProps> = ({
 	}, [onOpenCreatorRef, handleOpenCreator]);
 
 	return (
-		<div className="flex-1 relative">
+		<div className="w-full h-full relative">
 			<IssuesMapContainer
 				issues={issues}
 				onMapClick={handleMapClick}
