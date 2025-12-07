@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 export const useLocation = (autoRequest = false) => {
 	const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(
@@ -9,7 +9,7 @@ export const useLocation = (autoRequest = false) => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
-	const requestLocation = () => {
+	const requestLocation = useCallback(() => {
 		if (!navigator.geolocation) {
 			setError('Location is not supported');
 			return;
@@ -29,11 +29,17 @@ export const useLocation = (autoRequest = false) => {
 			},
 			{ enableHighAccuracy: true }
 		);
-	};
+	}, []);
 
 	useEffect(() => {
-		if (autoRequest) requestLocation();
-	}, [autoRequest]);
+		if (autoRequest) {
+			// Use setTimeout to defer the state update outside of the effect
+			const timeoutId = setTimeout(() => {
+				requestLocation();
+			}, 0);
+			return () => clearTimeout(timeoutId);
+		}
+	}, [autoRequest, requestLocation]);
 
 	return {
 		coords,

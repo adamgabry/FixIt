@@ -13,7 +13,7 @@ export const createIssue = async (newIssueData: IssueValuesSchema) => {
 	const timestamp = Math.floor(Date.now() / 1000);
 
 	// remove pictures before inserting into DB
-	const { pictures, ...issueValues } = newIssueData;
+	const { pictures: _pictures, ...issueValues } = newIssueData;
 
 	const result = await db
 		.insert(issues)
@@ -38,7 +38,7 @@ export const updateIssue = async (
 	const timestamp = Math.floor(Date.now() / 1000);
 
 	// remove pictures before inserting into DB
-	const { pictures, ...issueValues } = updatedFormData;
+	const { pictures: _pictures, ...issueValues } = updatedFormData;
 
 	const result = await db
 		.update(issues)

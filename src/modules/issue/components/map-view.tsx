@@ -40,6 +40,10 @@ export const MapView: React.FC<MapViewProps> = ({
 	const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(
 		null
 	);
+	const [defaultCoords, setDefaultCoords] = useState<{
+		lat: number;
+		lng: number;
+	}>({ lat: 48.1486, lng: 17.1077 }); // Default: Bratislava
 	const getMapCenterRef = useRef<(() => { lat: number; lng: number }) | null>(
 		null
 	);
@@ -79,6 +83,10 @@ export const MapView: React.FC<MapViewProps> = ({
 	const handleMapReady = useCallback(
 		(getCenter: () => { lat: number; lng: number }) => {
 			getMapCenterRef.current = getCenter;
+			// Update default coords when map is ready
+			if (getMapCenterRef.current) {
+				setDefaultCoords(getMapCenterRef.current());
+			}
 		},
 		[]
 	);
@@ -99,12 +107,7 @@ export const MapView: React.FC<MapViewProps> = ({
 			/>
 			<IssueCreator
 				isOpen={isCreatorOpen}
-				coords={
-					coords ||
-					(getMapCenterRef.current
-						? getMapCenterRef.current()
-						: { lat: 48.1486, lng: 17.1077 })
-				}
+				coords={coords ?? defaultCoords}
 				onClose={handleCloseCreator}
 				onSubmit={async () => {
 					// This will be handled by IssueCreator internally
