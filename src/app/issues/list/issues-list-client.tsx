@@ -1,23 +1,28 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 
 import { FloatingAddButton } from '@/components/floating-add-button';
 import { IssueCreator } from '@/components/issue/issue-create';
 import { useLocation } from '@/lib/use-location';
+import { useIssueFilters } from '@/hooks/useIssueFilters';
+import type { Issue } from '@/modules/issue/schema';
+import { IssueFilters } from '@/modules/issue/components/issue-filters';
+import { IssueList } from '@/modules/issue/components/issue-list';
 
-export const IssuesListClient = () => {
-	const router = useRouter();
+type IssueListClientProps = {
+	initialIssues: Issue[];
+};
+
+export const IssuesListClient = ({ initialIssues }: IssueListClientProps) => {
+	const filters = useIssueFilters(initialIssues);
 	const [isCreatorOpen, setIsCreatorOpen] = useState(false);
 
 	// Default coordinates: Brno (fallback)
 	const defaultCoords = { lat: 49.1951, lng: 16.6068 };
 
-	// Get user's current location
 	const { coords: userCoords, requestLocation } = useLocation();
 
-	// Use current location if available, otherwise fallback to default
 	const coords = userCoords ?? defaultCoords;
 
 	// Request location when component mounts
@@ -41,20 +46,25 @@ export const IssuesListClient = () => {
 	};
 
 	const handleIssueCreated = () => {
-		// Refresh the page to show new issue
-		router.refresh();
+		filters.refetch();
 		setIsCreatorOpen(false);
 	};
 
 	return (
 		<>
+			<IssueFilters {...filters} />
+			{filters.isLoading ? (
+				<p>Loading...</p>
+			) : (
+				<IssueList issues={filters.filteredIssues} />
+			)}
 			<FloatingAddButton onClick={handleOpenCreator} />
 			{coords && (
 				<IssueCreator
 					isOpen={isCreatorOpen}
 					coords={coords}
-					onClose={handleCloseCreator}
-					onSubmit={handleIssueCreated}
+					onCloseAction={handleCloseCreator}
+					onSubmitAction={handleIssueCreated}
 				/>
 			)}
 		</>

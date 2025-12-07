@@ -1,24 +1,25 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
 
 import { MapView } from '@/modules/issue/components/map-view';
 import { FloatingAddButton } from '@/components/floating-add-button';
 import { type Issue } from '@/modules/issue/schema';
+import { useIssueFilters } from '@/hooks/useIssueFilters';
+import { IssueFilters } from '@/modules/issue/components/issue-filters';
+import { SlidingSidebar } from '@/components/page-modifiers/sliding-sidebar';
 
 type MapPageClientProps = {
-	issues: Issue[];
+	initialIssues: Issue[];
 };
 
-export const MapPageClient = ({ issues }: MapPageClientProps) => {
-	const router = useRouter();
+export const MapPageClient = ({ initialIssues }: MapPageClientProps) => {
+	const filters = useIssueFilters(initialIssues);
 	const openCreatorRef = useRef<(() => void) | null>(null);
 	const [isCreatorOpen, setIsCreatorOpen] = useState(false);
 
 	const handleIssueCreated = () => {
-		// Refresh the page to show new issue
-		router.refresh();
+		filters.refetch();
 	};
 
 	const handleOpenCreator = () => {
@@ -28,14 +29,22 @@ export const MapPageClient = ({ issues }: MapPageClientProps) => {
 	};
 
 	return (
-		<>
-			<MapView
-				issues={issues}
-				onIssueCreated={handleIssueCreated}
-				onOpenCreatorRef={openCreatorRef}
-				onCreatorOpenChange={setIsCreatorOpen}
-			/>
-			{!isCreatorOpen && <FloatingAddButton onClick={handleOpenCreator} />}
-		</>
+		<div className="w-full h-full flex relative">
+			<div className="z-20">
+				<SlidingSidebar>
+					<IssueFilters {...filters} />
+				</SlidingSidebar>
+			</div>
+
+			<div className="flex-1 h-full relative">
+				<MapView
+					issues={filters.filteredIssues}
+					onIssueCreated={handleIssueCreated}
+					onOpenCreatorRef={openCreatorRef}
+					onCreatorOpenChange={setIsCreatorOpen}
+				/>
+				{!isCreatorOpen && <FloatingAddButton onClick={handleOpenCreator} />}
+			</div>
+		</div>
 	);
 };

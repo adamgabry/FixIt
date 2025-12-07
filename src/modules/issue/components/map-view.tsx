@@ -126,8 +126,8 @@ export const MapView: React.FC<MapViewProps> = ({
 			<IssueCreator
 				isOpen={isCreatorOpen}
 				coords={coords ?? defaultCoords}
-				onClose={handleCloseCreator}
-				onSubmit={async () => {
+				onCloseAction={handleCloseCreator}
+				onSubmitAction={async () => {
 					// This will be handled by IssueCreator internally
 					if (onIssueCreated) {
 						onIssueCreated();
