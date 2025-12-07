@@ -1,7 +1,9 @@
 'use client';
 
-import { MapContainer, TileLayer } from 'react-leaflet';
+import React from 'react';
+import { MapContainer, TileLayer, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
+import type { LatLng } from 'leaflet';
 
 import 'leaflet/dist/leaflet.css';
 import { type Issue } from '@/modules/issue/schema';
@@ -24,12 +26,61 @@ type IssuesMapContainerProps = {
 	issues: Issue[];
 	center?: [number, number];
 	zoom?: number;
+	onMapClick?: (coords: { lat: number; lng: number }) => void;
+	onMapReady?: (getCenter: () => { lat: number; lng: number }) => void;
+};
+
+// Component to handle map clicks
+const MapClickHandler = ({
+	onMapClick
+}: {
+	onMapClick?: (coords: { lat: number; lng: number }) => void;
+}) => {
+	useMapEvents({
+		click: (e: { latlng: LatLng }) => {
+			if (onMapClick) {
+				onMapClick({
+					lat: e.latlng.lat,
+					lng: e.latlng.lng
+				});
+			}
+		}
+	});
+	return null;
+};
+
+// Component to expose map center getter
+const MapCenterGetter = ({
+	onMapReady
+}: {
+	onMapReady?: (getCenter: () => { lat: number; lng: number }) => void;
+}) => {
+	const map = useMap();
+	const hasCalledRef = React.useRef(false);
+	
+	React.useEffect(() => {
+		// Only call onMapReady once when map is ready
+		if (onMapReady && !hasCalledRef.current) {
+			onMapReady(() => {
+				const center = map.getCenter();
+				return {
+					lat: center.lat,
+					lng: center.lng
+				};
+			});
+			hasCalledRef.current = true;
+		}
+	}, [map, onMapReady]);
+	
+	return null;
 };
 
 export const IssuesMapContainer = ({
 	issues,
 	center = [48.1486, 17.1077], // Default: Bratislava
-	zoom = 13
+	zoom = 13,
+	onMapClick,
+	onMapReady
 }: IssuesMapContainerProps) => (
 	<MapContainer
 		center={center}
@@ -42,6 +93,8 @@ export const IssuesMapContainer = ({
 			url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 		/>
 		<LocationButton />
+		<MapClickHandler onMapClick={onMapClick} />
+		<MapCenterGetter onMapReady={onMapReady} />
 		{issues.map(issue => (
 			<IssueMarker
 				key={issue.id}
