@@ -32,8 +32,8 @@ const mapIssueValuesSchemaToIssue = async (issue: IssueRow): Promise<Issue> => {
 		upvoters,
 		numberOfUpvotes: upvoters.length,
 		reporter,
-		createdAt: new Date(issue.createdAt * 1000),
-		updatedAt: new Date(issue.updatedAt * 1000)
+		createdAt: new Date(issue.createdAt * 1000).toISOString(),
+		updatedAt: new Date(issue.updatedAt * 1000).toISOString()
 	};
 };
 
@@ -61,4 +61,7 @@ export const updateIssueFacade = async (
 	return await mapIssueValuesSchemaToIssue(issue);
 };
 
-export const deleteIssueFacade = async (id: number) => deleteIssue(id);
+export const deleteIssueFacade = async (id: number) => {
+	await deleteIssue(id);
+	return { success: true };
+};
