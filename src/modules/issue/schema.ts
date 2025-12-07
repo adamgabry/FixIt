@@ -35,8 +35,8 @@ export const issueSchema = z.object({
 	type: z.enum(ISSUE_TYPE_VALUES),
 	status: z.enum(ISSUE_STATUS_VALUES),
 	pictureUrls: z.array(z.string()),
-	createdAt: z.date(),
-	updatedAt: z.date(),
+	createdAt: z.string(),
+	updatedAt: z.string(),
 	reporter: userSchema,
 	numberOfUpvotes: z.number(),
 	upvoters: z.array(userSchema)

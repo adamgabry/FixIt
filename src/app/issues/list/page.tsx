@@ -1,5 +1,6 @@
-import { FloatingAddButton } from '@/components/floating-add-button';
 import { IssueList } from '@/modules/issue/components/issue-list';
+
+import { IssuesListClient } from './issues-list-client';
 
 const IssuesListPage = () => (
 	/*
@@ -16,7 +17,7 @@ const IssuesListPage = () => (
 			// <RowFilter filters={filters} onFiltersChangeAction={setFilters} />
 		}
 		<IssueList />
-		<FloatingAddButton />
+		<IssuesListClient />
 	</div>
 );
 export default IssuesListPage;

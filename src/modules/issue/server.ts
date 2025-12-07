@@ -2,6 +2,8 @@ import { eq } from 'drizzle-orm';
 
 import { db } from '@/db';
 import { issues } from '@/db/schema/issues';
+import { issueLikes } from '@/db/schema/likes';
+import { issuePictures } from '@/db/schema/issue-pictures';
 import { type IssueValuesSchema } from '@/modules/issue/schema';
 
 export const getIssues = async () => db.query.issues.findMany();
@@ -52,5 +54,10 @@ export const updateIssue = async (
 	return result[0];
 };
 
-export const deleteIssue = async (id: number) =>
-	db.delete(issues).where(eq(issues.id, id));
+export const deleteIssue = async (id: number) => {
+	// Delete related records first to avoid foreign key constraints
+	await db.delete(issueLikes).where(eq(issueLikes.issueId, id));
+	await db.delete(issuePictures).where(eq(issuePictures.issueId, id));
+	// Then delete the issue
+	await db.delete(issues).where(eq(issues.id, id));
+};

@@ -27,6 +27,7 @@ type IssuesMapContainerProps = {
 	zoom?: number;
 	onMapClick?: (coords: { lat: number; lng: number }) => void;
 	onMapReady?: (getCenter: () => { lat: number; lng: number }) => void;
+	initialUserLocation?: { lat: number; lng: number } | null;
 };
 
 // Component to handle map clicks
@@ -87,18 +88,44 @@ const MapCenterGetter = ({
 	return null;
 };
 
+// Component to center map on user's location when available
+const AutoCenterOnLocation = ({
+	userLocation
+}: {
+	userLocation?: { lat: number; lng: number } | null;
+}) => {
+	const map = useMap();
+	const hasCenteredRef = React.useRef(false);
+
+	React.useEffect(() => {
+		// Center map on user location once when it becomes available
+		if (userLocation && !hasCenteredRef.current) {
+			map.flyTo([userLocation.lat, userLocation.lng], 15, {
+				animate: true,
+				duration: 1.5
+			});
+			hasCenteredRef.current = true;
+		}
+	}, [userLocation, map]);
+
+	return null;
+};
+
 export const IssuesMapContainer = ({
 	issues,
-	center = [48.1486, 17.1077], // Default: Bratislava
+	center = [49.1951, 16.6068], // Default: Brno
 	zoom = 13,
 	onMapClick,
-	onMapReady
+	onMapReady,
+	initialUserLocation
 }: IssuesMapContainerProps) => (
 	<MapContainer
 		center={center}
 		zoom={zoom}
 		style={{ height: '100%', width: '100%' }}
 		className="z-0"
+		zoomControl={true}
+		scrollWheelZoom={true}
 	>
 		<TileLayer
 			attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -107,6 +134,7 @@ export const IssuesMapContainer = ({
 		<LocationButton />
 		<MapClickHandler onMapClick={onMapClick} />
 		<MapCenterGetter onMapReady={onMapReady} />
+		<AutoCenterOnLocation userLocation={initialUserLocation} />
 		{issues.map(issue => (
 			<IssueMarker
 				key={issue.id}
