@@ -44,7 +44,7 @@ export const MapView: React.FC<MapViewProps> = ({
 	const [defaultCoords, setDefaultCoords] = useState<{
 		lat: number;
 		lng: number;
-	}>({ lat: 48.1486, lng: 17.1077 }); // Default: Bratislava
+	}>({ lat: 49.1951, lng: 16.6068 }); // Default: Brno
 	const getMapCenterRef = useRef<(() => { lat: number; lng: number }) | null>(
 		null
 	);
@@ -80,7 +80,7 @@ export const MapView: React.FC<MapViewProps> = ({
 		} else if (getMapCenterRef.current) {
 			setCoords(getMapCenterRef.current());
 		} else {
-			setCoords({ lat: 48.1486, lng: 17.1077 }); // Default: Bratislava
+			setCoords({ lat: 49.1951, lng: 16.6068 }); // Default: Brno
 		}
 		setIsCreatorOpen(true);
 	}, [userCoords, requestLocation]);
@@ -121,6 +121,7 @@ export const MapView: React.FC<MapViewProps> = ({
 				issues={issues}
 				onMapClick={handleMapClick}
 				onMapReady={handleMapReady}
+				initialUserLocation={userCoords}
 			/>
 			<IssueCreator
 				isOpen={isCreatorOpen}

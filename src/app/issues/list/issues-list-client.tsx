@@ -11,8 +11,8 @@ export const IssuesListClient = () => {
 	const router = useRouter();
 	const [isCreatorOpen, setIsCreatorOpen] = useState(false);
 
-	// Default coordinates: Bratislava (fallback)
-	const defaultCoords = { lat: 48.1486, lng: 17.1077 };
+	// Default coordinates: Brno (fallback)
+	const defaultCoords = { lat: 49.1951, lng: 16.6068 };
 
 	// Get user's current location
 	const { coords: userCoords, requestLocation } = useLocation();
