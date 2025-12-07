@@ -14,7 +14,6 @@ export const createIssue = async (newIssueData: IssueValuesSchema) => {
 
 	// remove pictures before inserting into DB
 	const { pictures: _pictures, ...issueValues } = newIssueData;
-
 	const result = await db
 		.insert(issues)
 		.values({
@@ -39,7 +38,6 @@ export const updateIssue = async (
 
 	// remove pictures before inserting into DB
 	const { pictures: _pictures, ...issueValues } = updatedFormData;
-
 	const result = await db
 		.update(issues)
 		.set({
