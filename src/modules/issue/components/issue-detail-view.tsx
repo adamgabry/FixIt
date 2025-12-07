@@ -17,7 +17,7 @@ import {
 	ISSUE_STATUS_VALUES,
 	ISSUE_TYPE_VALUES
 } from '@/modules/issue/schema';
-import { deleteIssueAction } from '@/modules/issue/actions';
+import { deleteIssueAction, updateIssueAction } from '@/modules/issue/actions';
 
 const MapComponent = dynamic(() => import('@/components/map'), {
 	ssr: false
@@ -33,14 +33,36 @@ const IssueDetailView = ({ issue: initialIssue }: IssueDetailViewProps) => {
 	const [isEditing, setIsEditing] = useState(false);
 	const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
+	const [isSaving, setIsSaving] = useState(false);
+	const [saveError, setSaveError] = useState<string | null>(null);
 
 	const [initialMarkers, setInitialMarkers] = useState<LatLng[]>([]);
 	const [isMapReady, setIsMapReady] = useState(false);
 	const [address, setAddress] = useState<Address | null>(null);
 	const [isLoadingAddress, setIsLoadingAddress] = useState(false);
+	
+	// Image management
+	const [existingImages, setExistingImages] = useState<string[]>(issue.pictureUrls || []);
+	const [newImages, setNewImages] = useState<File[]>([]);
+	const [deletedImageUrls, setDeletedImageUrls] = useState<string[]>([]);
 
 	const lat = issue.latitude;
 	const lng = issue.longitude;
+
+	// Sync local state when initialIssue prop changes (after save/refresh)
+	useEffect(() => {
+		setIssue(initialIssue);
+		setExistingImages(initialIssue.pictureUrls || []);
+		setNewImages([]);
+		setDeletedImageUrls([]);
+		if (typeof window !== 'undefined') {
+			import('leaflet').then(L => {
+				setInitialMarkers([
+					new L.LatLng(initialIssue.latitude, initialIssue.longitude)
+				]);
+			});
+		}
+	}, [initialIssue]);
 
 	// Initialize map markers
 	useEffect(() => {
@@ -117,6 +139,101 @@ const IssueDetailView = ({ issue: initialIssue }: IssueDetailViewProps) => {
 			setShowDeleteConfirm(false);
 		}
 	};
+
+	const handleSave = async () => {
+		setIsSaving(true);
+		setSaveError(null);
+
+		try {
+			// Validate required fields
+			if (!issue.title.trim()) {
+				setSaveError('Title is required');
+				setIsSaving(false);
+				return;
+			}
+
+			if (!issue.description?.trim()) {
+				setSaveError('Description is required');
+				setIsSaving(false);
+				return;
+			}
+
+			// Prepare update data (matching IssueValuesSchema format)
+			const updateData = {
+				title: issue.title.trim(),
+				description: issue.description.trim(),
+				latitude: issue.latitude,
+				longitude: issue.longitude,
+				type: issue.type,
+				status: issue.status,
+				reporterId: issue.reporter.id,
+				pictures: newImages // Include new images to upload
+			};
+
+			// Update the issue
+			await updateIssueAction(issue.id, updateData);
+
+			// Refresh the page data and exit edit mode
+			setIsEditing(false);
+			router.refresh();
+		} catch (error) {
+			console.error('Error saving issue:', error);
+			setSaveError(
+				error instanceof Error ? error.message : 'Failed to save changes'
+			);
+		} finally {
+			setIsSaving(false);
+		}
+	};
+
+	const handleCancel = () => {
+		// Reset to original issue data
+		setIssue(initialIssue);
+		setExistingImages(initialIssue.pictureUrls || []);
+		setNewImages([]);
+		setDeletedImageUrls([]);
+		setIsEditing(false);
+		setSaveError(null);
+		// Reset markers to original position
+		if (typeof window !== 'undefined') {
+			import('leaflet').then(L => {
+				setInitialMarkers([
+					new L.LatLng(initialIssue.latitude, initialIssue.longitude)
+				]);
+			});
+		}
+	};
+
+	// Image management functions
+	const handleAddImages = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const files = Array.from(e.target.files || []);
+		setNewImages(prev => [...prev, ...files]);
+	};
+
+	const handleDeleteExistingImage = (url: string) => {
+		setExistingImages(prev => prev.filter(img => img !== url));
+		setDeletedImageUrls(prev => [...prev, url]);
+	};
+
+	const handleDeleteNewImage = (index: number) => {
+		setNewImages(prev => prev.filter((_, i) => i !== index));
+	};
+
+	// Combine existing and new images for display
+	const allImages = [
+		...existingImages.map((url, idx) => ({ 
+			type: 'existing' as const, 
+			url, 
+			id: `existing-${idx}`,
+			index: idx
+		})),
+		...newImages.map((file, idx) => ({ 
+			type: 'new' as const, 
+			file, 
+			id: `new-${idx}`,
+			index: idx
+		}))
+	];
 
 	return (
 		<>
@@ -274,24 +391,6 @@ const IssueDetailView = ({ issue: initialIssue }: IssueDetailViewProps) => {
 									</select>
 								</div>
 
-								{/* Reporter */}
-								<div className="flex flex-col gap-2">
-									<label className="text-sm font-semibold text-gray-700">
-										Reported by
-									</label>
-									{isEditing ? (
-										<Input
-											value={issue.reporter.name}
-											onChange={e => console.log(e.target.value)}
-											className="bg-white/80 backdrop-blur-sm border-orange-200"
-										/>
-									) : (
-										<div className="px-3 py-2 rounded-lg border border-orange-200 bg-white/80 backdrop-blur-sm text-sm text-gray-800">
-											{issue.reporter.name}
-										</div>
-									)}
-								</div>
-
 								{/* Description */}
 								<div className="flex flex-col gap-2">
 									<label className="text-sm font-semibold text-gray-700">
@@ -318,27 +417,125 @@ const IssueDetailView = ({ issue: initialIssue }: IssueDetailViewProps) => {
 									<label className="text-sm font-semibold text-gray-700">
 										Images
 									</label>
-									<div className="grid grid-cols-2 gap-3">
-										<div className="aspect-square border-2 border-dashed border-orange-300/60 rounded-lg flex items-center justify-center bg-gradient-to-br from-orange-50/50 to-amber-50/50 backdrop-blur-sm transition-all duration-200 hover:border-orange-400/80 hover:bg-gradient-to-br hover:from-orange-100/50 hover:to-amber-100/50">
-											<span className="text-xs text-gray-500">Image 1</span>
+									{allImages.length > 0 ? (
+										<div className="grid grid-cols-2 gap-3">
+											{allImages.map((img, idx) => (
+												<div
+													key={img.id}
+													className="aspect-square relative group border-2 border-orange-200 rounded-lg overflow-hidden bg-gray-100"
+												>
+													{img.type === 'existing' ? (
+														<img
+															src={img.url}
+															alt={`Issue image ${idx + 1}`}
+															className="w-full h-full object-cover"
+														/>
+													) : (
+														<img
+															src={URL.createObjectURL(img.file)}
+															alt={`New image ${idx + 1}`}
+															className="w-full h-full object-cover"
+														/>
+													)}
+													{isEditing && (
+														<button
+															type="button"
+															onClick={() =>
+																img.type === 'existing'
+																	? handleDeleteExistingImage(img.url)
+																	: handleDeleteNewImage(img.index)
+															}
+															className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white rounded-full p-1.5 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+															title="Delete image"
+														>
+															<svg
+																xmlns="http://www.w3.org/2000/svg"
+																className="h-4 w-4"
+																viewBox="0 0 24 24"
+																fill="none"
+																stroke="currentColor"
+																strokeWidth="2"
+																strokeLinecap="round"
+																strokeLinejoin="round"
+															>
+																<path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+															</svg>
+														</button>
+													)}
+												</div>
+											))}
 										</div>
-										<div className="aspect-square border-2 border-dashed border-orange-300/60 rounded-lg flex items-center justify-center bg-gradient-to-br from-orange-50/50 to-amber-50/50 backdrop-blur-sm transition-all duration-200 hover:border-orange-400/80 hover:bg-gradient-to-br hover:from-orange-100/50 hover:to-amber-100/50">
-											<span className="text-xs text-gray-500">Image 2</span>
+									) : (
+										<div className="w-full border-2 border-dashed border-orange-300/60 rounded-lg h-32 flex items-center justify-center bg-gradient-to-br from-orange-50/50 to-amber-50/50 backdrop-blur-sm">
+											<span className="text-xs text-gray-500">No images</span>
 										</div>
-									</div>
-									<div className="w-full border-2 border-dashed border-orange-300/60 rounded-lg h-32 flex items-center justify-center bg-gradient-to-br from-orange-50/50 to-amber-50/50 backdrop-blur-sm transition-all duration-200 hover:border-orange-400/80 hover:bg-gradient-to-br hover:from-orange-100/50 hover:to-amber-100/50">
-										<span className="text-xs text-gray-500">Image 3</span>
-									</div>
+									)}
+									{isEditing && (
+										<label className="w-full border-2 border-dashed border-orange-300/60 rounded-lg h-20 flex items-center justify-center bg-gradient-to-br from-orange-50/50 to-amber-50/50 backdrop-blur-sm transition-all duration-200 hover:border-orange-400/80 hover:bg-gradient-to-br hover:from-orange-100/50 hover:to-amber-100/50 cursor-pointer">
+											<input
+												type="file"
+												accept="image/*"
+												multiple
+												onChange={handleAddImages}
+												className="hidden"
+											/>
+											<span className="text-sm text-gray-600 font-medium">
+												+ Add Images
+											</span>
+										</label>
+									)}
 								</div>
 
 								{isEditing && (
-									<div className="pt-4 border-t border-orange-200/50">
-										<Button
-											className="w-full h-12 rounded-lg bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold shadow-md hover:shadow-lg transition-all duration-200"
-											onClick={() => console.log('Submit', issue)}
-										>
-											Save Changes
-										</Button>
+									<div className="pt-4 border-t border-orange-200/50 space-y-3">
+										{saveError && (
+											<div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+												{saveError}
+											</div>
+										)}
+										<div className="flex gap-3">
+											<Button
+												variant="outline"
+												className="flex-1 h-12 rounded-lg border-orange-200 hover:bg-orange-50 transition-all duration-200"
+												onClick={handleCancel}
+												disabled={isSaving}
+											>
+												Cancel
+											</Button>
+											<Button
+												className="flex-1 h-12 rounded-lg bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+												onClick={handleSave}
+												disabled={isSaving}
+											>
+												{isSaving ? (
+													<span className="flex items-center justify-center gap-2">
+														<svg
+															className="animate-spin h-5 w-5"
+															xmlns="http://www.w3.org/2000/svg"
+															fill="none"
+															viewBox="0 0 24 24"
+														>
+															<circle
+																className="opacity-25"
+																cx="12"
+																cy="12"
+																r="10"
+																stroke="currentColor"
+																strokeWidth="4"
+															/>
+															<path
+																className="opacity-75"
+																fill="currentColor"
+																d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+															/>
+														</svg>
+														Saving...
+													</span>
+												) : (
+													'Save Changes'
+												)}
+											</Button>
+										</div>
 									</div>
 								)}
 							</div>
