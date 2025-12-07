@@ -1,17 +1,10 @@
-import { IssueListFilters } from '@/modules/issue/components/issue-list-filters';
 import { getIssuesFacade } from '@/modules/issue/facade';
-
-import { IssuesListClient } from './issues-list-client';
+import { IssuesListClient } from '@/app/issues/list/issues-list-client';
 
 const IssuesListPage = async () => {
 	const issues = await getIssuesFacade();
 
-	return (
-		<div>
-			<IssueListFilters initialIssues={issues} />
-			<IssuesListClient />
-		</div>
-	);
+	return <IssuesListClient initialIssues={issues} />;
 };
 
 export default IssuesListPage;
