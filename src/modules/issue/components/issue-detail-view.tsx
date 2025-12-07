@@ -25,12 +25,13 @@ const MapComponent = dynamic(() => import('@/components/map'), {
 
 type IssueDetailViewProps = {
 	issue: Issue;
+	initialEditMode?: boolean;
 };
 
-const IssueDetailView = ({ issue: initialIssue }: IssueDetailViewProps) => {
+const IssueDetailView = ({ issue: initialIssue, initialEditMode = false }: IssueDetailViewProps) => {
 	const router = useRouter();
 	const [issue, setIssue] = useState(initialIssue);
-	const [isEditing, setIsEditing] = useState(false);
+	const [isEditing, setIsEditing] = useState(initialEditMode);
 	const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);

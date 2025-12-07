@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 
 import {
@@ -14,8 +15,12 @@ import { IssueTypeBadge } from '@/modules/issue/components/issue-type-badge';
 import { Button } from '@/components/button';
 
 export const IssueListItem = ({ issue }: { issue: Issue }) => {
-	const handleEdit = (_e: React.MouseEvent) => {
-		console.log('Edit clicked', issue.id);
+	const router = useRouter();
+
+	const handleEdit = (e: React.MouseEvent) => {
+		e.preventDefault();
+		e.stopPropagation();
+		router.push(`/issues/${issue.id}?edit=true`);
 	};
 
 	const handleLike = (_e: React.MouseEvent) => {
