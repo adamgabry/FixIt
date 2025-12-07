@@ -8,7 +8,7 @@ const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => (
 		<body>
 			<Providers>
 				<Navbar />
-				<main className="container mx-auto my-8">{children}</main>
+				<main className="container mx-auto mt-2 mb-8">{children}</main>
 			</Providers>
 		</body>
 	</html>

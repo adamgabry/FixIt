@@ -252,7 +252,7 @@ const IssueDetailView = ({ issue: initialIssue, initialEditMode = false }: Issue
 			<div className="fixed inset-0 bg-gradient-to-br from-orange-50 via-amber-50 to-orange-50 -z-10" />
 			{/* Content */}
 			<div className="relative min-h-screen z-10">
-				<div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+				<div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-6">
 					{/* Header Section */}
 					<div className="mb-6">
 						<div className="bg-white/50 backdrop-blur-sm rounded-xl shadow-md border border-orange-200/50 p-4 sm:p-6">
