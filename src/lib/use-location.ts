@@ -1,42 +1,44 @@
 'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 export const useLocation = (autoRequest = false) => {
-  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+	const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(
+		null
+	);
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState<string | null>(null);
 
-  const requestLocation = () => {
-    if (!navigator.geolocation) {
-      setError("Location is not supported");
-      return;
-    }
+	const requestLocation = () => {
+		if (!navigator.geolocation) {
+			setError('Location is not supported');
+			return;
+		}
 
-    setLoading(true);
+		setLoading(true);
 
-    navigator.geolocation.getCurrentPosition(
-      pos => {
-        setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-        setError(null);
-        setLoading(false);
-      },
-      err => {
-        setError(err.message);
-        setLoading(false);
-      },
-      { enableHighAccuracy: true }
-    );
-  };
+		navigator.geolocation.getCurrentPosition(
+			pos => {
+				setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+				setError(null);
+				setLoading(false);
+			},
+			err => {
+				setError(err.message);
+				setLoading(false);
+			},
+			{ enableHighAccuracy: true }
+		);
+	};
 
-  useEffect(() => {
-    if (autoRequest) requestLocation();
-  }, [autoRequest]);
+	useEffect(() => {
+		if (autoRequest) requestLocation();
+	}, [autoRequest]);
 
-  return {
-    coords,
-    error,
-    loading,
-    requestLocation,
-  };
+	return {
+		coords,
+		error,
+		loading,
+		requestLocation
+	};
 };

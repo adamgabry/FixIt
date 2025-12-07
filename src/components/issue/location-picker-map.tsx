@@ -1,7 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
+import {
+	MapContainer,
+	TileLayer,
+	Marker,
+	useMapEvents,
+	useMap
+} from 'react-leaflet';
 import L from 'leaflet';
 import type { LatLng } from 'leaflet';
 import { Maximize2, Minimize2 } from 'lucide-react';
@@ -67,24 +73,22 @@ const LocationPickerMapContent = ({
 }: {
 	coords: { lat: number; lng: number };
 	onCoordsChange: (coords: { lat: number; lng: number }) => void;
-}) => {
-	return (
-		<MapContainer
-			center={[coords.lat, coords.lng]}
-			zoom={15}
-			style={{ height: '100%', width: '100%' }}
-			className="rounded-lg"
-		>
-			<TileLayer
-				attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-				url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-			/>
-			<MapClickHandler onCoordsChange={onCoordsChange} />
-			<MapCenterUpdater coords={coords} />
-			<Marker position={[coords.lat, coords.lng]} />
-		</MapContainer>
-	);
-};
+}) => (
+	<MapContainer
+		center={[coords.lat, coords.lng]}
+		zoom={15}
+		style={{ height: '100%', width: '100%' }}
+		className="rounded-lg"
+	>
+		<TileLayer
+			attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+			url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+		/>
+		<MapClickHandler onCoordsChange={onCoordsChange} />
+		<MapCenterUpdater coords={coords} />
+		<Marker position={[coords.lat, coords.lng]} />
+	</MapContainer>
+);
 
 export const LocationPickerMap = ({
 	coords,
@@ -137,26 +141,25 @@ export const LocationPickerMap = ({
 
 	return (
 		<div className="relative">
-		  {/* Small Map */}
-		  <div
-			className="relative border border-gray-300 rounded-lg overflow-hidden bg-gray-100 group"
-			style={{ height }}
-		  >
-			<LocationPickerMapContent
-			  coords={coords}
-			  onCoordsChange={onCoordsChange}
-			/>
-	  
-			{/* Expand Button */}
-			<button
-			  onClick={() => setIsExpanded(true)}
-			  className="absolute top-2 right-2 z-[9999] bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-all duration-200 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-1"
-			  title="Expand map for better selection"
+			{/* Small Map */}
+			<div
+				className="relative border border-gray-300 rounded-lg overflow-hidden bg-gray-100 group"
+				style={{ height }}
 			>
-			  <Maximize2 className="h-4 w-4 text-gray-700" />
-			</button>
-		  </div>
-		</div>
-	  );
-};
+				<LocationPickerMapContent
+					coords={coords}
+					onCoordsChange={onCoordsChange}
+				/>
 
+				{/* Expand Button */}
+				<button
+					onClick={() => setIsExpanded(true)}
+					className="absolute top-2 right-2 z-[9999] bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-all duration-200 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-1"
+					title="Expand map for better selection"
+				>
+					<Maximize2 className="h-4 w-4 text-gray-700" />
+				</button>
+			</div>
+		</div>
+	);
+};

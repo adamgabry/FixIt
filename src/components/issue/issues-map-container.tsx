@@ -57,7 +57,7 @@ const MapCenterGetter = ({
 }) => {
 	const map = useMap();
 	const hasCalledRef = React.useRef(false);
-	
+
 	React.useEffect(() => {
 		// Only call onMapReady once when map is ready
 		if (onMapReady && !hasCalledRef.current) {
@@ -71,7 +71,7 @@ const MapCenterGetter = ({
 			hasCalledRef.current = true;
 		}
 	}, [map, onMapReady]);
-	
+
 	return null;
 };
 

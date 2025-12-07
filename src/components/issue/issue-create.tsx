@@ -5,7 +5,11 @@ import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { X } from 'lucide-react';
 
-import { IssueStatus, IssueType, type IssueValuesSchema } from '@/modules/issue/schema';
+import {
+	IssueStatus,
+	IssueType,
+	type IssueValuesSchema
+} from '@/modules/issue/schema';
 import { createIssueAction } from '@/modules/issue/actions';
 import { Button } from '@/components/button';
 
@@ -37,7 +41,12 @@ type Props = {
 	onSubmit?: () => void;
 };
 
-export const IssueCreator = ({ isOpen, coords: initialCoords, onClose, onSubmit }: Props) => {
+export const IssueCreator = ({
+	isOpen,
+	coords: initialCoords,
+	onClose,
+	onSubmit
+}: Props) => {
 	const router = useRouter();
 	const [title, setTitle] = useState('');
 	const [type, setType] = useState<IssueType>(
@@ -85,14 +94,14 @@ export const IssueCreator = ({ isOpen, coords: initialCoords, onClose, onSubmit 
 			setStatus(IssueStatus.REPORTED);
 			setDescription('');
 			setImages([]);
-			
+
 			// Refresh the page to show new issue
 			router.refresh();
-			
+
 			if (onSubmit) {
 				onSubmit();
 			}
-			
+
 			onClose();
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'Failed to create issue');
@@ -111,7 +120,7 @@ export const IssueCreator = ({ isOpen, coords: initialCoords, onClose, onSubmit 
 				}`}
 				onClick={onClose}
 			/>
-			
+
 			{/* Sliding Panel */}
 			<div
 				className={`fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-xl z-50 transition-transform duration-300 ease-out overflow-y-auto ${
@@ -184,7 +193,9 @@ export const IssueCreator = ({ isOpen, coords: initialCoords, onClose, onSubmit 
 							>
 								{Object.values(IssueType).map(typeValue => (
 									<option key={typeValue} value={typeValue}>
-										{typeValue.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+										{typeValue
+											.replace(/_/g, ' ')
+											.replace(/\b\w/g, l => l.toUpperCase())}
 									</option>
 								))}
 							</select>
@@ -201,7 +212,9 @@ export const IssueCreator = ({ isOpen, coords: initialCoords, onClose, onSubmit 
 							>
 								{Object.values(IssueStatus).map(statusValue => (
 									<option key={statusValue} value={statusValue}>
-										{statusValue.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+										{statusValue
+											.replace(/_/g, ' ')
+											.replace(/\b\w/g, l => l.toUpperCase())}
 									</option>
 								))}
 							</select>

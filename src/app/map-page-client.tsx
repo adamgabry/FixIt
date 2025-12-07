@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+
 import { MapView } from '@/modules/issue/components/map-view';
 import { FloatingAddButton } from '@/components/floating-add-button';
 import { type Issue } from '@/modules/issue/schema';
@@ -38,4 +39,3 @@ export const MapPageClient = ({ issues }: MapPageClientProps) => {
 		</>
 	);
 };
-
