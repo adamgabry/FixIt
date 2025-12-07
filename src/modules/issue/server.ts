@@ -53,4 +53,4 @@ export const updateIssue = async (
 };
 
 export const deleteIssue = async (id: number) =>
-	db.delete(issues).where(eq(issues.id, id));
+	await db.delete(issues).where(eq(issues.id, id));
