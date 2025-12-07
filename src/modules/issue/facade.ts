@@ -3,9 +3,16 @@ import {
 	deleteIssue,
 	getIssueById,
 	getIssues,
+	getIssuesFiltered,
+	getIssuesFromUser,
 	updateIssue
 } from '@/modules/issue/server';
-import { type Issue, type IssueValuesSchema } from '@/modules/issue/schema';
+import {
+	type Issue,
+	type IssueStatus,
+	type IssueType,
+	type IssueValuesSchema
+} from '@/modules/issue/schema';
 import { getUsersWhoLikedIssueFacade } from '@/modules/issueLike/facade';
 import { getUserByIdFacade } from '@/modules/user/facade';
 import { type IssueRow } from '@/db/schema/issues';
@@ -46,6 +53,28 @@ export const getIssueByIdFacade = async (id: number): Promise<Issue | null> => {
 	const issue = await getIssueById(id);
 	if (!issue) return null;
 	return await mapIssueValuesSchemaToIssue(issue);
+};
+
+export const getIssuesFilteredFacade = async ({
+	statuses,
+	types
+}: {
+	statuses?: IssueStatus[] | null;
+	types?: IssueType[] | null;
+}) => {
+	const rows = await getIssuesFiltered({
+		statuses: statuses ?? null,
+		types: types ?? null
+	});
+
+	return Promise.all(rows.map(mapIssueValuesSchemaToIssue));
+};
+
+export const getIssuesFromUserFacade = async (
+	userId: number
+): Promise<Issue[]> => {
+	const issues = await getIssuesFromUser(userId);
+	return await Promise.all(issues.map(mapIssueValuesSchemaToIssue));
 };
 
 export const createIssueFacade = async (data: IssueValuesSchema) => {
