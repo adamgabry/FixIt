@@ -1,12 +1,34 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { X } from 'lucide-react';
 
 import { IssueStatus, IssueType, type IssueValuesSchema } from '@/modules/issue/schema';
 import { createIssueAction } from '@/modules/issue/actions';
 import { Button } from '@/components/button';
+
+// Dynamic import for Leaflet map to avoid SSR issues
+const LocationPickerMap = dynamic(
+	() =>
+		import('@/components/issue/location-picker-map').then(
+			mod => mod.LocationPickerMap
+		),
+	{
+		ssr: false,
+		loading: () => (
+			<div className="mb-6">
+				<label className="block text-sm font-medium mb-2 text-gray-700">
+					Location <span className="text-red-500">*</span>
+				</label>
+				<div className="h-[200px] flex items-center justify-center bg-gray-100 rounded-lg border border-gray-300">
+					<span className="text-sm text-gray-500">Loading map...</span>
+				</div>
+			</div>
+		)
+	}
+);
 
 type Props = {
 	isOpen: boolean;
@@ -15,7 +37,7 @@ type Props = {
 	onSubmit?: () => void;
 };
 
-export const IssueCreator = ({ isOpen, coords, onClose, onSubmit }: Props) => {
+export const IssueCreator = ({ isOpen, coords: initialCoords, onClose, onSubmit }: Props) => {
 	const router = useRouter();
 	const [title, setTitle] = useState('');
 	const [type, setType] = useState<IssueType>(
@@ -26,6 +48,12 @@ export const IssueCreator = ({ isOpen, coords, onClose, onSubmit }: Props) => {
 	const [images, setImages] = useState<File[]>([]);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const [coords, setCoords] = useState(initialCoords);
+
+	// Update coords when initialCoords changes (e.g., when clicking on main map)
+	useEffect(() => {
+		setCoords(initialCoords);
+	}, [initialCoords]);
 
 	if (!isOpen) return null;
 
@@ -107,11 +135,18 @@ export const IssueCreator = ({ isOpen, coords, onClose, onSubmit }: Props) => {
 						</Button>
 					</div>
 
-					{/* Location Info */}
-					<div className="mb-6 p-3 bg-gray-50 rounded-lg">
-						<p className="text-xs font-medium text-gray-500 mb-1">Location</p>
-						<p className="text-sm text-gray-700">
-							{coords.lat.toFixed(5)}, {coords.lng.toFixed(5)}
+					{/* Location Picker Map */}
+					<div className="mb-6">
+						<label className="block text-sm font-medium mb-2 text-gray-700">
+							Location <span className="text-red-500">*</span>
+						</label>
+						<LocationPickerMap
+							coords={coords}
+							onCoordsChange={setCoords}
+							height="200px"
+						/>
+						<p className="mt-2 text-xs text-gray-500 text-center">
+							Click on the map to select or adjust the issue location
 						</p>
 					</div>
 
