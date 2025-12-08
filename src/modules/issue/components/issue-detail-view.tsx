@@ -1,10 +1,12 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { LatLng } from 'leaflet';
+import { uploadBytes } from 'firebase/storage';
+import { getDownloadURL, ref } from '@firebase/storage';
+import { v4 } from 'uuid';
 
 import { cn } from '@/lib/cn';
 import { reverseGeocode, type Address } from '@/lib/geocoding';
@@ -19,6 +21,10 @@ import {
 	ISSUE_TYPE_VALUES
 } from '@/modules/issue/schema';
 import { deleteIssueAction, updateIssueAction } from '@/modules/issue/actions';
+import { storage } from '@/firebase';
+import { ImageUpload } from '@/components/image-upload';
+import { IssueImagesList } from '@/modules/issue/components/issue-images-list';
+import { type IssuePicture } from '@/modules/issuePicture/schema';
 
 const MapComponent = dynamic(() => import('@/components/map'), {
 	ssr: false
@@ -47,8 +53,8 @@ const IssueDetailView = ({
 	const [isLoadingAddress, setIsLoadingAddress] = useState(false);
 
 	// Image management
-	const [existingImages, setExistingImages] = useState<string[]>(
-		issue.pictureUrls ?? []
+	const [existingImages, setExistingImages] = useState<IssuePicture[]>(
+		issue.pictureUrls?.map(url => ({ url, issue })) || []
 	);
 	const [newImages, setNewImages] = useState<File[]>([]);
 	const [_deletedImageUrls, setDeletedImageUrls] = useState<string[]>([]);
@@ -59,16 +65,11 @@ const IssueDetailView = ({
 	// Sync local state when initialIssue prop changes (after save/refresh)
 	useEffect(() => {
 		setIssue(initialIssue);
-		setExistingImages(initialIssue.pictureUrls || []);
+		setExistingImages(
+			initialIssue.pictureUrls?.map(url => ({ url, issue: initialIssue })) || []
+		);
 		setNewImages([]);
 		setDeletedImageUrls([]);
-		if (typeof window !== 'undefined') {
-			import('leaflet').then(L => {
-				setInitialMarkers([
-					new L.LatLng(initialIssue.latitude, initialIssue.longitude)
-				]);
-			});
-		}
 	}, [initialIssue]);
 
 	// Initialize map markers
@@ -157,7 +158,6 @@ const IssueDetailView = ({
 		setSaveError(null);
 
 		try {
-			// Validate required fields
 			if (!issue.title.trim()) {
 				setSaveError('Title is required');
 				setIsSaving(false);
@@ -170,7 +170,19 @@ const IssueDetailView = ({
 				return;
 			}
 
-			// Prepare update data (matching IssueValuesSchema format)
+			const uploadedImageUrls: string[] = await Promise.all(
+				newImages.map(async file => {
+					const path = `images/${file.name}-${v4()}`;
+					await uploadBytes(ref(storage, path), file);
+					return await getDownloadURL(ref(storage, path));
+				})
+			);
+
+			const picturesToUpdate: string[] = [
+				...existingImages.map(img => img.url),
+				...uploadedImageUrls
+			];
+
 			const updateData = {
 				title: issue.title.trim(),
 				description: issue.description.trim(),
@@ -179,13 +191,11 @@ const IssueDetailView = ({
 				type: issue.type,
 				status: issue.status,
 				reporterId: issue.reporter.id,
-				pictures: newImages // Include new images to upload
+				pictures: picturesToUpdate
 			};
 
-			// Update the issue
 			await updateIssueAction(issue.id, updateData);
 
-			// Refresh the page data and exit edit mode
 			setIsEditing(false);
 			router.refresh();
 		} catch (error) {
@@ -199,53 +209,15 @@ const IssueDetailView = ({
 	};
 
 	const handleCancel = () => {
-		// Reset to original issue data
 		setIssue(initialIssue);
-		setExistingImages(initialIssue.pictureUrls ?? []);
+		setExistingImages(
+			initialIssue.pictureUrls?.map(url => ({ url, issue: initialIssue })) || []
+		);
 		setNewImages([]);
 		setDeletedImageUrls([]);
 		setIsEditing(false);
 		setSaveError(null);
-		// Reset markers to original position
-		if (typeof window !== 'undefined') {
-			import('leaflet').then(L => {
-				setInitialMarkers([
-					new L.LatLng(initialIssue.latitude, initialIssue.longitude)
-				]);
-			});
-		}
 	};
-
-	// Image management functions
-	const handleAddImages = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const files = Array.from(e.target.files ?? []);
-		setNewImages(prev => [...prev, ...files]);
-	};
-
-	const handleDeleteExistingImage = (url: string) => {
-		setExistingImages(prev => prev.filter(img => img !== url));
-		setDeletedImageUrls(prev => [...prev, url]);
-	};
-
-	const handleDeleteNewImage = (index: number) => {
-		setNewImages(prev => prev.filter((_, i) => i !== index));
-	};
-
-	// Combine existing and new images for display
-	const allImages = [
-		...existingImages.map((url, idx) => ({
-			type: 'existing' as const,
-			url,
-			id: `existing-${idx}`,
-			index: idx
-		})),
-		...newImages.map((file, idx) => ({
-			type: 'new' as const,
-			file,
-			id: `new-${idx}`,
-			index: idx
-		}))
-	];
 
 	return (
 		<>
@@ -464,75 +436,21 @@ const IssueDetailView = ({
 									<label className="text-sm font-semibold text-gray-700">
 										Images
 									</label>
-									{allImages.length > 0 ? (
-										<div className="grid grid-cols-2 gap-3">
-											{allImages.map((img, idx) => (
-												<div
-													key={img.id}
-													className="aspect-square relative group border-2 border-orange-200 rounded-lg overflow-hidden bg-gray-100"
-												>
-													{img.type === 'existing' ? (
-														<Image
-															src={img.url}
-															alt={`Issue image ${idx + 1}`}
-															fill
-															className="object-cover"
-															unoptimized
-														/>
-													) : (
-														// eslint-disable-next-line @next/next/no-img-element
-														<img
-															src={URL.createObjectURL(img.file)}
-															alt={`New image ${idx + 1}`}
-															className="w-full h-full object-cover"
-														/>
-													)}
-													{isEditing && (
-														<button
-															type="button"
-															onClick={() =>
-																img.type === 'existing'
-																	? handleDeleteExistingImage(img.url)
-																	: handleDeleteNewImage(img.index)
-															}
-															className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white rounded-full p-1.5 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
-															title="Delete image"
-														>
-															<svg
-																xmlns="http://www.w3.org/2000/svg"
-																className="h-4 w-4"
-																viewBox="0 0 24 24"
-																fill="none"
-																stroke="currentColor"
-																strokeWidth="2"
-																strokeLinecap="round"
-																strokeLinejoin="round"
-															>
-																<path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-															</svg>
-														</button>
-													)}
-												</div>
-											))}
-										</div>
-									) : (
-										<div className="w-full border-2 border-dashed border-orange-300/60 rounded-lg h-32 flex items-center justify-center bg-gradient-to-br from-orange-50/50 to-amber-50/50 backdrop-blur-sm">
-											<span className="text-xs text-gray-500">No images</span>
-										</div>
-									)}
+
+									<IssueImagesList
+										images={existingImages}
+										setImagesAction={setExistingImages}
+										isEditing={isEditing}
+									/>
+
 									{isEditing && (
-										<label className="w-full border-2 border-dashed border-orange-300/60 rounded-lg h-20 flex items-center justify-center bg-gradient-to-br from-orange-50/50 to-amber-50/50 backdrop-blur-sm transition-all duration-200 hover:border-orange-400/80 hover:bg-gradient-to-br hover:from-orange-100/50 hover:to-amber-100/50 cursor-pointer">
-											<input
-												type="file"
-												accept="image/*"
-												multiple
-												onChange={handleAddImages}
-												className="hidden"
+										<div className="mt-5">
+											<ImageUpload
+												value={newImages}
+												onChangeAction={setNewImages}
+												label="Upload new images"
 											/>
-											<span className="text-sm text-gray-600 font-medium">
-												+ Add Images
-											</span>
-										</label>
+										</div>
 									)}
 								</div>
 

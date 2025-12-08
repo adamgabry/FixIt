@@ -59,12 +59,19 @@ export const IssueListItem = ({ issue }: { issue: Issue }) => {
 			</div>
 
 			<Link href={`/issues/${issue.id}`} className="w-full h-48 relative">
-				<Image
-					className="object-cover rounded-b-base"
-					src="/issue-placeholder.jpg"
-					alt="Here should be picture"
-					fill
-				/>
+				{issue.pictureUrls[0] ? (
+					<Image
+						className="object-cover rounded-b-base"
+						src={issue.pictureUrls[0]}
+						alt="Here should be picture"
+						fill
+						unoptimized
+					/>
+				) : (
+					<div className="bg-gray-300 w-full h-full rounded-b-base flex items-center justify-center">
+						No image
+					</div>
+				)}
 			</Link>
 		</li>
 	);

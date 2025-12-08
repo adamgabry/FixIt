@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
+import { getDownloadURL, ref, uploadBytes } from '@firebase/storage';
+import { v4 } from 'uuid';
 
 import {
 	IssueStatus,
@@ -11,6 +13,8 @@ import {
 } from '@/modules/issue/schema';
 import { createIssueAction } from '@/modules/issue/actions';
 import { Button } from '@/components/button';
+import { ImageUpload } from '@/components/image-upload';
+import { storage } from '@/firebase';
 
 import { SlidingPanel } from '../page-modifiers/sliding-panel';
 
@@ -75,6 +79,15 @@ export const IssueCreator = ({
 			// TODO: Get actual logged-in user ID - currently using hardcoded value
 			const reporterId = 1;
 
+			const uploadedUrls = await Promise.all(
+				images.map(async file => {
+					const path = `images/${file.name}-${v4()}`;
+					await uploadBytes(ref(storage, path), file);
+					return await getDownloadURL(ref(storage, path));
+				})
+			);
+
+			// TODO here should be used the zod
 			const issueData: IssueValuesSchema = {
 				title,
 				type,
@@ -82,7 +95,7 @@ export const IssueCreator = ({
 				description,
 				latitude: coords.lat,
 				longitude: coords.lng,
-				pictures: images,
+				pictures: uploadedUrls,
 				reporterId
 			};
 
@@ -188,23 +201,7 @@ export const IssueCreator = ({
 						/>
 					</div>
 
-					<div>
-						<label className="block text-sm font-semibold mb-2 text-gray-700">
-							Images
-						</label>
-						<input
-							type="file"
-							accept="image/*"
-							multiple
-							onChange={e => setImages(Array.from(e.target.files ?? []))}
-							className="w-full border-2 border-orange-200 bg-white/80 backdrop-blur-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-400 transition-all duration-200"
-						/>
-						{images.length > 0 && (
-							<p className="mt-2 text-xs text-gray-600 font-medium">
-								{images.length} file(s) selected
-							</p>
-						)}
-					</div>
+					<ImageUpload value={images} onChangeAction={setImages} />
 
 					<div className="flex gap-3 mt-6 pt-4 border-t border-orange-200/50">
 						<Button
