@@ -1,3 +1,5 @@
+'use client';
+
 import { signOut, useSession } from '@/modules/auth/client';
 import { Button } from '@/components/button';
 
@@ -11,7 +13,7 @@ export const LogOutButton = () => {
 	return (
 		<div className="flex items-center gap-4">
 			<Button onClick={() => signOut()} className="px-4 py-2">
-				Sign Out
+				Log Out
 			</Button>
 		</div>
 	);
