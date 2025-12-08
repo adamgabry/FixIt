@@ -36,7 +36,7 @@ export const getIssuesFiltered = async (filters: {
 	});
 };
 
-export const getIssuesFromUser = async (userId: number) =>
+export const getIssuesFromUser = async (userId: string) =>
 	db.query.issues.findMany({
 		where: eq(issues.reporterId, userId)
 	});

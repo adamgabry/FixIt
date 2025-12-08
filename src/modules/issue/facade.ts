@@ -72,7 +72,7 @@ export const getIssuesFilteredFacade = async ({
 };
 
 export const getIssuesFromUserFacade = async (
-	userId: number
+	userId: string
 ): Promise<Issue[]> => {
 	const issues = await getIssuesFromUser(userId);
 	return await Promise.all(issues.map(mapIssueValuesSchemaToIssue));
@@ -94,7 +94,6 @@ export const updateIssueFacade = async (
 	const issue = await updateIssue(id, data as IssueValuesSchema);
 	return await mapIssueValuesSchemaToIssue(issue);
 };
-
 
 //TODO: check if user has "staff" or "admin" role, or owns the issue
 export const deleteIssueFacade = async (id: number) => {

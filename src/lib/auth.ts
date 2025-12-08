@@ -2,6 +2,7 @@ import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 
 import { db } from '@/db';
+import { ROLE_VALUES } from '@/modules/user/schema';
 
 export const auth = betterAuth({
 	database: drizzleAdapter(db, {
@@ -19,6 +20,7 @@ export const auth = betterAuth({
 		additionalFields: {
 			role: {
 				type: 'string',
+				enum: ROLE_VALUES,
 				defaultValue: 'user',
 				input: false
 			}

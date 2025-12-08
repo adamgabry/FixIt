@@ -6,7 +6,7 @@ import { type IssueLikeValuesSchema } from '@/modules/issueLike/schema';
 
 export const getLikes = async () => db.query.issueLikes.findMany();
 
-export const getIssuesLikedByUser = async (userId: number) =>
+export const getIssuesLikedByUser = async (userId: string) =>
 	db.query.issueLikes.findMany({
 		where: eq(issueLikes.userId, userId)
 	});
@@ -16,7 +16,7 @@ export const getUsersWhoLikedIssue = async (issueId: number) =>
 		where: eq(issueLikes.issueId, issueId)
 	});
 
-export const getLikeByUserAndIssue = async (userId: number, issueId: number) =>
+export const getLikeByUserAndIssue = async (userId: string, issueId: number) =>
 	db.query.issueLikes.findFirst({
 		where: and(eq(issueLikes.userId, userId), eq(issueLikes.issueId, issueId))
 	});
@@ -39,7 +39,7 @@ export const createLike = async (newLike: IssueLikeValuesSchema) => {
 };
 
 export const updateLike = async (
-	userId: number,
+	userId: string,
 	issueId: number,
 	data: Partial<IssueLikeValuesSchema>
 ) => {
@@ -56,7 +56,7 @@ export const updateLike = async (
 	return result[0];
 };
 
-export const deleteLike = async (userId: number, issueId: number) => {
+export const deleteLike = async (userId: string, issueId: number) => {
 	await db
 		.delete(issueLikes)
 		.where(and(eq(issueLikes.userId, userId), eq(issueLikes.issueId, issueId)));

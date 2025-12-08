@@ -1,13 +1,14 @@
 import { headers } from 'next/headers';
 
 import { auth } from '@/lib/auth';
+import { type Role } from '@/modules/user/schema';
 
 export const getSession = async () =>
 	await auth.api.getSession({
 		headers: await headers()
 	});
 
-export const requireAuth = async() => {
+export const requireAuth = async () => {
 	const session = await getSession();
 
 	if (!session) {
@@ -17,8 +18,7 @@ export const requireAuth = async() => {
 	return session;
 };
 
-//TODO: use enums
-export const requireRole = async (requiredRole: 'user' | 'staff' | 'admin') => {
+export const requireRole = async (requiredRole: Role) => {
 	const session = await requireAuth();
 
 	if (session.user.role !== requiredRole) {

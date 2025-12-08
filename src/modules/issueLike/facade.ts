@@ -16,7 +16,7 @@ import {
 } from '@/modules/issueLike/schema';
 
 export const getIssuesLikedByUserFacade = async (
-	userId: number
+	userId: string
 ): Promise<Issue[]> => {
 	const likes = await getIssuesLikedByUser(userId);
 
@@ -42,7 +42,7 @@ export const getUsersWhoLikedIssueFacade = async (
 };
 
 export const getLikeByUserAndIssueFacade = async (
-	userId: number,
+	userId: string,
 	issueId: number
 ): Promise<IssueLike | null> => {
 	const like = await getLikeByUserAndIssue(userId, issueId);
@@ -73,7 +73,7 @@ export const createLikeFacade = async (
 };
 
 export const updateLikeFacade = async (
-	userId: number,
+	userId: string,
 	issueId: number,
 	data: Partial<IssueLikeValuesSchema>
 ): Promise<IssueLike> => {
@@ -89,6 +89,6 @@ export const updateLikeFacade = async (
 	return { user, issue };
 };
 
-export const deleteLikeFacade = async (userId: number, issueId: number) => {
+export const deleteLikeFacade = async (userId: string, issueId: number) => {
 	await deleteLike(userId, issueId);
 };
