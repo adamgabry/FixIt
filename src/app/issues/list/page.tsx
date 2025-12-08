@@ -1,22 +1,10 @@
-import { FloatingAddButton } from '@/components/floating-add-button';
-import { IssueList } from '@/modules/issue/components/issue-list';
+import { getIssuesFacade } from '@/modules/issue/facade';
+import { IssuesListClient } from '@/app/issues/list/issues-list-client';
 
-const IssuesListPage = () => (
-	/*
-	const [filters, setFilters] = useState<IssueFilters>(DEFAULT_FILTERS);
+const IssuesListPage = async () => {
+	const issues = await getIssuesFacade();
 
-	const issues = MOCK_ISSUES as Issue[];
-	const filteredIssues = useMemo(
-		() => filterIssues(issues, filters),
-		[issues, filters]
-	);
-	*/
-	<div>
-		{
-			// <RowFilter filters={filters} onFiltersChangeAction={setFilters} />
-		}
-		<IssueList />
-		<FloatingAddButton />
-	</div>
-);
+	return <IssuesListClient initialIssues={issues} />;
+};
+
 export default IssuesListPage;

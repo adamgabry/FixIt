@@ -1,5 +1,5 @@
 'use client';
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import type { LatLng } from 'leaflet';
 import L from 'leaflet';
@@ -23,6 +23,8 @@ type MapComponentProps = {
 	style?: React.CSSProperties;
 	canCreateMarker?: boolean;
 	initialMarkers?: LatLng[];
+	draggableMarker?: boolean;
+	onMarkerDragEnd?: (lat: number, lng: number) => void;
 };
 
 const ClickMarker = ({ onAdd }: { onAdd: (latlng: LatLng) => void }) => {
@@ -34,12 +36,37 @@ const ClickMarker = ({ onAdd }: { onAdd: (latlng: LatLng) => void }) => {
 	return null;
 };
 
+// Draggable marker component
+const DraggableMarker = ({
+	position,
+	onDragEnd
+}: {
+	position: LatLng;
+	onDragEnd?: (lat: number, lng: number) => void;
+}) => {
+	const eventHandlers = useMemo(
+		() => ({
+			dragend: (e: { target: L.Marker }) => {
+				if (onDragEnd) {
+					const { lat, lng } = e.target.getLatLng();
+					onDragEnd(lat, lng);
+				}
+			}
+		}),
+		[onDragEnd]
+	);
+
+	return <Marker position={position} draggable eventHandlers={eventHandlers} />;
+};
+
 const MapComponent = ({
 	center,
 	zoom,
 	style,
 	canCreateMarker = true,
-	initialMarkers = []
+	initialMarkers = [],
+	draggableMarker = false,
+	onMarkerDragEnd
 }: MapComponentProps) => {
 	// Use useMemo to derive initial state from props without useEffect
 	const [addedMarkers, setAddedMarkers] = useState<LatLng[]>([]);
@@ -67,9 +94,19 @@ const MapComponent = ({
 
 			{canCreateMarker && <ClickMarker onAdd={addMarker} />}
 
-			{markers.map((pos, idx) => (
-				<Marker key={idx} position={pos} />
-			))}
+			{markers.map((pos, idx) => {
+				// If draggable and this is the first marker, make it draggable
+				if (draggableMarker && idx === 0 && initialMarkers.length > 0) {
+					return (
+						<DraggableMarker
+							key={idx}
+							position={pos}
+							onDragEnd={onMarkerDragEnd}
+						/>
+					);
+				}
+				return <Marker key={idx} position={pos} />;
+			})}
 		</MapContainer>
 	);
 };
