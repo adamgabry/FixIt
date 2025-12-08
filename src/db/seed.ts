@@ -12,31 +12,6 @@ export const seedDatabase = async () => {
 	await db.delete(issueLikes);
 	await db.delete(users);
 
-	// Insert users
-	await db.insert(users).values([
-		{
-			id: 1,
-			name: 'User',
-			email: 'user@user.sk',
-			password: 'user123',
-			role: 'user'
-		},
-		{
-			id: 2,
-			name: 'Stuff',
-			email: 'staff@staff.sk',
-			password: 'staff123',
-			role: 'staff'
-		},
-		{
-			id: 3,
-			name: 'Admin',
-			email: 'admin@admin.sk',
-			password: 'admin123',
-			role: 'admin'
-		}
-	]);
-
 	// Insert issues
 	await db.insert(issues).values([
 		{
@@ -47,7 +22,7 @@ export const seedDatabase = async () => {
 			longitude: 17.1077,
 			status: IssueStatus.REPORTED,
 			type: IssueType.HOOLIGANISM,
-			reporterId: 1,
+			reporterId: '1',
 			createdAt: 1,
 			updatedAt: 1
 		},
@@ -60,7 +35,7 @@ export const seedDatabase = async () => {
 			longitude: 17.112,
 			status: IssueStatus.REPORTED,
 			type: IssueType.NATURE_PROBLEM,
-			reporterId: 2,
+			reporterId: '2',
 			createdAt: 1,
 			updatedAt: 1
 		},
@@ -72,38 +47,9 @@ export const seedDatabase = async () => {
 			longitude: 17.1,
 			status: IssueStatus.REPORTED,
 			type: IssueType.NATURE_PROBLEM,
-			reporterId: 1,
+			reporterId: '1',
 			createdAt: 1,
 			updatedAt: 1
-		}
-	]);
-
-	// Insert likes
-	await db.insert(issueLikes).values([
-		// User 1 likes issues 1 and 2
-		{
-			userId: '1',
-			issueId: '1'
-		},
-		{
-			userId: '1',
-			issueId: '2'
-		},
-
-		// User 2 likes issues 1 and 3
-		{
-			userId: '2',
-			issueId: '1'
-		},
-		{
-			userId: '2',
-			issueId: '3'
-		},
-
-		// User 3 likes issue 2
-		{
-			userId: '3',
-			issueId: '2'
 		}
 	]);
 };

@@ -11,7 +11,7 @@ export const issueLikeSchema = z.object({
 export type IssueLike = z.infer<typeof issueLikeSchema>;
 
 export const issueLikeValuesSchema = z.object({
-	userId: z.number(),
+	userId: z.string(),
 	issueId: z.number()
 });
 

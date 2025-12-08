@@ -3,7 +3,13 @@
 import { createClient } from '@libsql/client';
 import { drizzle } from 'drizzle-orm/libsql';
 
-import { users, usersRelations } from '@/db/schema/users';
+import {
+	accounts,
+	sessions,
+	users,
+	usersRelations,
+	verifications
+} from '@/db/schema/users';
 import { issueLikes, issueLikesRelations } from '@/db/schema/likes';
 import { issues, issuesRelations } from '@/db/schema/issues';
 import {
@@ -22,7 +28,10 @@ const client = createClient({
 
 export const db = drizzle(client, {
 	schema: {
-		users,
+		user: users,
+		session: sessions,
+		account: accounts,
+		verification: verifications,
 		issues,
 		issueLikes,
 		issuePictures,

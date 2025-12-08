@@ -16,7 +16,7 @@ export const issues = sqliteTable('issues', {
 	type: text('type', { enum: ISSUE_TYPE_VALUES }).notNull(),
 	createdAt: integer('createdAt').notNull(),
 	updatedAt: integer('updatedAt').notNull(),
-	reporterId: integer('reporterId')
+	reporterId: text('reporterId')
 		.notNull()
 		.references(() => users.id)
 });

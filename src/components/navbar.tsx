@@ -3,10 +3,10 @@
 import { useState } from 'react';
 
 import { cn } from '@/lib/cn';
-import { UserAccountBadge } from '@/components/user-account-badge';
 import { NavbarLogo } from '@/components/navbar/navbar-logo';
 import { NavbarLink } from '@/components/navbar/navbar-link';
 import { MobileMenuButton } from '@/components/navbar/mobile-menu-button';
+import { AuthComponent } from '@/modules/auth/components/auth-component';
 
 export const Navbar = () => {
 	const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -33,7 +33,7 @@ export const Navbar = () => {
 
 					{/* User Badge - Desktop */}
 					<div className="hidden md:block">
-						<UserAccountBadge />
+						<AuthComponent />
 					</div>
 
 					{/* Mobile Menu Button */}
@@ -64,7 +64,7 @@ export const Navbar = () => {
 						</ul>
 					</nav>
 					<div className="pt-3 border-t border-orange-200/50">
-						<UserAccountBadge />
+						<AuthComponent />
 					</div>
 				</div>
 			</div>
