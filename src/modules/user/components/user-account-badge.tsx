@@ -1,21 +1,18 @@
-import { Circle } from 'lucide-react';
+import { type User } from 'better-auth';
 
-import { useSession } from '@/modules/auth/client';
-
-export const UserAccountBadge = () => {
-	const { data: session } = useSession();
-
-	if (!session) {
-		return;
-	}
-
-	return (
-		<div className="flex items-center gap-6">
-			<Circle fill="white" />
-			<div>
-				<div>{session.user.name}</div>
-				<div>{session.user.role}</div>
-			</div>
-		</div>
-	);
+type UserAccountBadgeProps = {
+	user: User;
 };
+
+export const UserAccountBadge = ({ user }: UserAccountBadgeProps) => (
+	<div className="flex items-center gap-4">
+		<div className="flex flex-col items-end">
+			<span className="text-sm font-medium text-gray-900">{user.name}</span>
+			<span className="text-xs text-gray-500">{user.role}</span>
+		</div>
+
+		{user.image && (
+			<img src={user.image} alt={user.name} className="h-8 w-8 rounded-full" />
+		)}
+	</div>
+);

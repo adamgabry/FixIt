@@ -1,6 +1,6 @@
 'use client';
 
-import { signIn, signOut, useSession } from '@/modules/auth/client';
+import { signIn, useSession } from '@/modules/auth/client';
 import { Button } from '@/components/button';
 
 export const LogInButton = () => {

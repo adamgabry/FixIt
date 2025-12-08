@@ -1,20 +1,20 @@
-import NotFound from 'next/dist/client/components/builtin/not-found';
+import { redirect } from 'next/navigation';
 
 import { ProfileOverview } from '@/modules/user/components/profile-overview';
-import { getUserByIdFacade } from '@/modules/user/facade';
 import { IssueList } from '@/modules/issue/components/issue-list';
 import { getIssuesFromUserFacade } from '@/modules/issue/facade';
 import { TwoTabComponent } from '@/components/two-tab-component';
 import { getIssuesLikedByUserFacade } from '@/modules/issueLike/facade';
+import { requireAuth } from '@/modules/auth/server';
 
 const ProfilePage = async () => {
-	//TODO: get currently logged in user
-	const loggedInUser = await getUserByIdFacade(1);
+	const session = await requireAuth();
 
-	if (!loggedInUser) {
-		//TODO: throw error
-		return NotFound();
+	if (!session) {
+		redirect('/login');
 	}
+
+	const loggedInUser = session.user;
 
 	const issuesReportedByUser = await getIssuesFromUserFacade(loggedInUser.id);
 	const issuesLikedByUser = await getIssuesLikedByUserFacade(loggedInUser.id);
