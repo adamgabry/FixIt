@@ -1,4 +1,4 @@
-import { LogInButton } from '@/modules/auth/components/log-in-button';
+import { LogInGithubButton } from '@/modules/auth/components/log-in-github-button';
 import { LogOutButton } from '@/modules/auth/components/log-out-button';
 import { useSession } from '@/modules/auth/client';
 import { UserAccountBadge } from '@/modules/user/components/user-account-badge';
@@ -15,7 +15,7 @@ export const AuthComponent = () => {
 	}
 
 	if (!session) {
-		return <LogInButton />;
+		return <LogInGithubButton />;
 	}
 
 	return (
