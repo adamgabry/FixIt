@@ -4,7 +4,6 @@ import { relations } from 'drizzle-orm';
 import { issues } from '@/db/schema/issues';
 
 export const issuePictures = sqliteTable('issuePictures', {
-	id: integer('id').primaryKey({ autoIncrement: true }),
 	url: text('url'),
 	issueId: integer('issueId')
 		.notNull()

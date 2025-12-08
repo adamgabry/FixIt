@@ -9,6 +9,10 @@ import {
 	type IssueTypeRow
 } from '@/db/schema/issues';
 import { type IssueValuesSchema } from '@/modules/issue/schema';
+import {
+	createPicturesFacade,
+	deletePicturesByIssueFacade
+} from '@/modules/issuePicture/facade';
 
 export const getIssues = async () => db.query.issues.findMany();
 
@@ -44,8 +48,8 @@ export const getIssuesFromUser = async (userId: string) =>
 export const createIssue = async (newIssueData: IssueValuesSchema) => {
 	const timestamp = Math.floor(Date.now() / 1000);
 
-	// remove pictures before inserting into DB
-	const { pictures: _pictures, ...issueValues } = newIssueData;
+	const { pictures, ...issueValues } = newIssueData;
+
 	const result = await db
 		.insert(issues)
 		.values({
@@ -57,7 +61,14 @@ export const createIssue = async (newIssueData: IssueValuesSchema) => {
 
 	const issue = result[0];
 
-	// TODO: upload pictures and insert into issuePictures
+	if (pictures.length) {
+		const pictureData = pictures.map(url => ({
+			url,
+			issueId: issue.id
+		}));
+
+		await createPicturesFacade(pictureData);
+	}
 
 	return issue;
 };
@@ -68,8 +79,8 @@ export const updateIssue = async (
 ) => {
 	const timestamp = Math.floor(Date.now() / 1000);
 
-	// remove pictures before inserting into DB
-	const { pictures: _pictures, ...issueValues } = updatedFormData;
+	const { pictures, ...issueValues } = updatedFormData;
+
 	const result = await db
 		.update(issues)
 		.set({
@@ -79,9 +90,18 @@ export const updateIssue = async (
 		.where(eq(issues.id, id))
 		.returning();
 
-	if (result.length === 0) throw new Error(`Issue with id ${id} not found`);
+	if (!result.length) throw new Error(`Issue with id ${id} not found`);
 
-	return result[0];
+	const issue = result[0];
+
+	if (pictures.length) {
+		await deletePicturesByIssueFacade(id);
+
+		const pictureData = pictures.map(url => ({ url, issueId: id }));
+		await createPicturesFacade(pictureData);
+	}
+
+	return issue;
 };
 
 export const deleteIssue = async (id: number) => {

@@ -16,6 +16,7 @@ import {
 import { getUsersWhoLikedIssueFacade } from '@/modules/issueLike/facade';
 import { getUserByIdFacade } from '@/modules/user/facade';
 import { type IssueRow } from '@/db/schema/issues';
+import { getPicturesByIssueFacade } from '@/modules/issuePicture/facade';
 import { requireAuth } from '@/modules/auth/server';
 
 const mapIssueValuesSchemaToIssue = async (issue: IssueRow): Promise<Issue> => {
@@ -28,6 +29,9 @@ const mapIssueValuesSchemaToIssue = async (issue: IssueRow): Promise<Issue> => {
 
 	const upvoters = await getUsersWhoLikedIssueFacade(issue.id);
 
+	const pictures = await getPicturesByIssueFacade(issue.id);
+	const pictureUrls = pictures.map(pic => pic.url);
+
 	return {
 		id: issue.id,
 		title: issue.title,
@@ -36,7 +40,7 @@ const mapIssueValuesSchemaToIssue = async (issue: IssueRow): Promise<Issue> => {
 		longitude: issue.longitude,
 		type: issue.type,
 		status: issue.status,
-		pictureUrls: [], // TODO map real pictures
+		pictureUrls,
 		upvoters,
 		numberOfUpvotes: upvoters.length,
 		reporter,

@@ -53,7 +53,7 @@ export const issueValuesSchema = z.object({
 	longitude: z.number().min(-180).max(180),
 	type: z.enum(ISSUE_TYPE_VALUES),
 	status: z.enum(ISSUE_STATUS_VALUES),
-	pictures: z.array(z.instanceof(File)),
+	pictures: z.array(z.string()),
 	reporterId: z.string()
 });
 
