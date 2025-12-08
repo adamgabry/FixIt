@@ -7,11 +7,7 @@ export const AuthComponent = () => {
 	const { data: session, isPending } = useSession();
 
 	if (isPending) {
-		return (
-			<div className="flex items-center gap-2">
-				<div className="h-8 w-20 animate-pulse rounded bg-gray-200" />
-			</div>
-		);
+		return;
 	}
 
 	if (!session) {

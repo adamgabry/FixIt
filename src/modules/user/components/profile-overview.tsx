@@ -1,28 +1,22 @@
-import { UserIcon } from 'lucide-react';
-
 import { type User } from '@/modules/user/schema';
 import { LabeledItem } from '@/components/labeled-item';
+import { ProfilePicture } from '@/modules/user/components/profile-picture';
 
 type ProfileOverviewProps = {
 	user: User;
 };
 
 export const ProfileOverview = ({ user }: ProfileOverviewProps) => (
-	<div className="flex">
-		<UserIcon width={100} height={100} />
-		<ul>
-			<li>
-				<LabeledItem label="Name"> {user.name}</LabeledItem>
-			</li>
-			<li>
-				<LabeledItem label="Email"> {user.email}</LabeledItem>
-			</li>
-			<li>
-				<LabeledItem label="Role"> {user.role}</LabeledItem>
-			</li>
-			<li>
-				<LabeledItem label="Number of reported issues"> 1</LabeledItem>
-			</li>
-		</ul>
+	<div className="flex flex-col gap-6">
+		<div className="flex items-center gap-4">
+			{user.image && (
+				<ProfilePicture name={user.name} imageUrl={user.image} size={64} />
+			)}
+
+			<div className="flex flex-col">
+				<span className="text-xl font-semibold">{user.name}</span>
+				<span className="text-sm text-gray-500">{user.role}</span>
+			</div>
+		</div>
 	</div>
 );

@@ -1,7 +1,7 @@
 import { headers } from 'next/headers';
 
 import { auth } from '@/lib/auth';
-import { type Role } from '@/modules/user/schema';
+import { Role } from '@/modules/user/schema';
 
 export const getSession = async () =>
 	await auth.api.getSession({
@@ -27,3 +27,7 @@ export const requireRole = async (requiredRole: Role) => {
 
 	return session;
 };
+
+export const requireAdmin = async () => requireRole(Role.ADMIN);
+
+export const requireStaff = async () => requireRole(Role.STAFF);
