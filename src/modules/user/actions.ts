@@ -1,8 +1,7 @@
 'use server';
 
 import { updateUserFacade } from '@/modules/user/facade';
+import { type Role } from '@/modules/user/schema';
 
-import { type UpdateUserValues } from './schema';
-
-export const updateUserAction = async (id: string, data: UpdateUserValues) =>
-	updateUserFacade(id, data);
+export const updateUserAction = async (id: string, role: Role) =>
+	updateUserFacade(id, role);
