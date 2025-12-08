@@ -1,9 +1,9 @@
 import { DropdownSelect } from '@/components/drodown-select';
-import { userSchema } from '@/modules/user/schema';
+import { type Role, userSchema } from '@/modules/user/schema';
 
 type UserRoleDropdownProps = {
-	selectedRole?: string;
-	onChange?: (role: string) => void;
+	selectedRole?: Role;
+	onChange?: (roleValue: Role) => void;
 };
 
 export const UserRoleDropdown = ({
@@ -12,7 +12,7 @@ export const UserRoleDropdown = ({
 }: UserRoleDropdownProps) => {
 	const roles = userSchema.shape.role.options;
 	const dropdownOptions = roles.map(role => ({
-		label: role,
+		label: role as string,
 		value: role
 	}));
 

@@ -1,22 +1,23 @@
-type DropdownOption = {
+type DropdownOption<T extends string> = {
 	label: string;
-	value: string;
+	value: T;
 };
 
-type DropdownSelectProps = {
-	options: DropdownOption[];
-	selectedOption?: string;
-	onChange?: (value: string) => void;
+type DropdownSelectProps<T extends string> = {
+	options: DropdownOption<T>[];
+	selectedOption?: T;
+	onChange?: (value: T) => void;
 };
 
-export const DropdownSelect = ({
+export const DropdownSelect = <T extends string>({
 	options,
 	selectedOption,
 	onChange
-}: DropdownSelectProps) => (
+}: DropdownSelectProps<T>) => (
 	<select
 		value={selectedOption ?? ''}
-		onChange={e => onChange?.(e.target.value)}
+		onChange={e => onChange?.(e.target.value as T)}
+		className="border px-2 py-1 rounded"
 	>
 		<option value="" disabled>
 			--

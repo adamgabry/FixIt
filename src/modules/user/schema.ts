@@ -21,10 +21,3 @@ export const userSchema = z.object({
 });
 
 export type User = z.infer<typeof userSchema>;
-
-export const updateUserRoleSchema = z.object({
-	userId: z.string(),
-	role: z.enum(['admin', 'staff', 'user'])
-});
-
-export type UpdateUserValues = z.infer<typeof updateUserRoleSchema>;

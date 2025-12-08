@@ -13,7 +13,10 @@ export const users = sqliteTable('users', {
 		.notNull()
 		.default(false),
 	image: text('image'),
-	role: text('role', { enum: ROLE_VALUES }).notNull().default(Role.USER),
+	role: text('role', { enum: ROLE_VALUES })
+		.notNull()
+		.default(Role.USER)
+		.notNull(),
 	createdAt: integer('created_at').notNull(),
 	updatedAt: integer('updated_at').notNull()
 });
