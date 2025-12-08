@@ -9,6 +9,7 @@ import { type Issue, type IssueValuesSchema } from '@/modules/issue/schema';
 import { getUsersWhoLikedIssueFacade } from '@/modules/issueLike/facade';
 import { getUserByIdFacade } from '@/modules/user/facade';
 import { type IssueRow } from '@/db/schema/issues';
+import { requireAuth } from '@/modules/auth/server';
 
 const mapIssueValuesSchemaToIssue = async (issue: IssueRow): Promise<Issue> => {
 	const reporter = await getUserByIdFacade(issue.reporterId);
@@ -49,10 +50,14 @@ export const getIssueByIdFacade = async (id: number): Promise<Issue | null> => {
 };
 
 export const createIssueFacade = async (data: IssueValuesSchema) => {
-	const issue = await createIssue(data);
+	const session = await requireAuth();
+
+	const issue = await createIssue({ ...data, reporterId: session.user.id });
 	return await mapIssueValuesSchemaToIssue(issue);
 };
 
+//TODO: should always expect the whole IssueValueSchema (and NEVER accidentally change reporter id !)
+//TODO: check if user has "staff" or "admin" role, or owns the issue
 export const updateIssueFacade = async (
 	id: number,
 	data: Partial<IssueValuesSchema>
@@ -61,4 +66,5 @@ export const updateIssueFacade = async (
 	return await mapIssueValuesSchemaToIssue(issue);
 };
 
+//TODO: check if user has "staff" or "admin" role, or owns the issue
 export const deleteIssueFacade = async (id: number) => deleteIssue(id);

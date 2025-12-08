@@ -54,7 +54,8 @@ export const issueValuesSchema = z.object({
 	type: z.enum(ISSUE_TYPE_VALUES),
 	status: z.enum(ISSUE_STATUS_VALUES),
 	pictures: z.array(z.instanceof(File)),
-	reporterId: z.number()
+	reporterId: z.string()
 });
 
+//TODO: rename to IssueValues
 export type IssueValuesSchema = z.infer<typeof issueValuesSchema>;

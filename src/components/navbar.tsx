@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { type PropsWithChildren } from 'react';
 
 import { cn } from '@/lib/cn';
-import { UserAccountBadge } from '@/components/user-account-badge';
+import { UserAccountBadge } from '@/modules/user/components/user-account-badge';
 
 type NavbarItemProps = PropsWithChildren<
 	LinkProps & {
