@@ -1,9 +1,34 @@
 import { getUserById, getUsers, updateUser } from '@/modules/user/server';
-import { type Role } from '@/modules/user/schema';
+import { type Role, type User } from '@/modules/user/schema';
+import { type UserRow } from '@/db/schema/users';
+import { requireAdmin } from '@/modules/auth/server';
 
-export const getUsersFacade = async () => getUsers();
+const mapUserRowToUser = (userRow: UserRow): User => ({
+	id: userRow.id,
+	name: userRow.name,
+	email: userRow.email,
+	image: userRow.image,
+	role: userRow.role
+});
 
-export const getUserByIdFacade = async (id: string) => getUserById(id);
+export const getUsersFacade = async () => {
+	const users = await getUsers();
+	if (users.length === 0) {
+		return [];
+	}
 
-export const updateUserFacade = async (id: string, role: Role) =>
-	updateUser(id, role);
+	return users.map(mapUserRowToUser);
+};
+
+export const getUserByIdFacade = async (id: string) => {
+	const userRow = await getUserById(id);
+	if (!userRow) {
+		return null;
+	}
+	return mapUserRowToUser(userRow);
+};
+
+export const updateUserFacade = async (id: string, role: Role) => {
+	await requireAdmin();
+	return updateUser(id, role);
+};

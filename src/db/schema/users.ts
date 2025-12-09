@@ -1,5 +1,5 @@
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
-import { relations } from 'drizzle-orm';
+import {type InferSelectModel, relations} from 'drizzle-orm';
 
 import { issues } from '@/db/schema/issues';
 import { issueLikes } from '@/db/schema/likes';
@@ -66,3 +66,5 @@ export const verifications = sqliteTable('verifications', {
 	createdAt: integer('created_at'),
 	updatedAt: integer('updated_at')
 });
+
+export type UserRow = InferSelectModel<typeof users>;
