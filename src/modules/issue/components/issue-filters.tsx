@@ -85,13 +85,11 @@ export const IssueFilters = ({
 			{/* Mobile: collapsible, Desktop: always visible */}
 			<div
 				className={`
-					overflow-hidden md:overflow-visible
-					transition-all duration-300 ease-in-out md:transition-none
-					md:max-h-none! md:opacity-100!
-					${isExpanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}
+					md:block
+					${isExpanded ? 'block' : 'hidden'}
 				`}
 			>
-				<div className="space-y-6">
+				<div className="space-y-6 mt-4">
 				<FilterRow
 					label="Issue Type"
 					options={Object.values(IssueType)}

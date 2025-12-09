@@ -16,7 +16,7 @@ export const SearchFilter = ({ value, onChangeAction }: SearchFilterProps) => (
 			<Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
 			<Input
 				type="text"
-				placeholder="Search issues by title or description..."
+				placeholder="Start searching..."
 				value={value}
 				onChange={e => onChangeAction(e.target.value)}
 				className="pl-10 border-2 border-gray-200 focus:border-orange-400 bg-white/80 backdrop-blur-sm"

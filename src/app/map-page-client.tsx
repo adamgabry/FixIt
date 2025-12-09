@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef, useState, useMemo } from 'react';
 
 import { MapView } from '@/modules/issue/components/map-view';
 import { FloatingAddButton } from '@/components/floating-add-button';
@@ -28,11 +28,14 @@ export const MapPageClient = ({ initialIssues }: MapPageClientProps) => {
 		}
 	};
 
+	// Memoize filters component to prevent duplicate renders
+	const filtersComponent = useMemo(() => <IssueFilters {...filters} />, [filters]);
+
 	return (
 		<>
 			{/* Mobile: Filters above map - same behavior as list page */}
 			<div className="md:hidden">
-				<IssueFilters {...filters} />
+				{filtersComponent}
 			</div>
 
 			{/* Map container */}
@@ -43,7 +46,7 @@ export const MapPageClient = ({ initialIssues }: MapPageClientProps) => {
 				{/* Desktop: Sidebar with filters */}
 				<div className="hidden md:block z-20">
 					<SlidingSidebar>
-						<IssueFilters {...filters} />
+						{filtersComponent}
 					</SlidingSidebar>
 				</div>
 
