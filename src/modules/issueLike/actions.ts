@@ -33,13 +33,13 @@ export async function toggleUpvoteAction(
 		if (existingLike) {
 			// Remove the upvote
 			await deleteLikeFacade(userId, issueId);
-			revalidatePath('/issues');
+			revalidatePath('/issues/list');
 			revalidatePath(`/issues/${issueId}`);
 			return { success: true, isUpvoted: false };
 		} else {
 			// Add the upvote
 			await createLikeFacade({ userId, issueId });
-			revalidatePath('/issues');
+			revalidatePath('/issues/list');
 			revalidatePath(`/issues/${issueId}`);
 			return { success: true, isUpvoted: true };
 		}
