@@ -1,7 +1,6 @@
 import { getUserById, getUsers, updateUser } from '@/modules/user/server';
 import { type Role, type User } from '@/modules/user/schema';
 import { type UserRow } from '@/db/schema/users';
-import { requireAdmin } from '@/modules/auth/server';
 
 const mapUserRowToUser = (userRow: UserRow): User => ({
 	id: userRow.id,
@@ -29,6 +28,5 @@ export const getUserByIdFacade = async (id: string) => {
 };
 
 export const updateUserFacade = async (id: string, role: Role) => {
-	await requireAdmin();
 	return updateUser(id, role);
 };
