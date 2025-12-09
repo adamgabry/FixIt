@@ -1,4 +1,5 @@
 import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 import { auth } from '@/lib/auth';
 import { Role } from '@/modules/user/schema';
@@ -12,22 +13,27 @@ export const requireAuth = async () => {
 	const session = await getSession();
 
 	if (!session) {
-		throw new Error('Unauthorized');
+		redirect('/login');
 	}
 
 	return session;
 };
 
-export const requireRole = async (requiredRole: Role) => {
+export const requireRoles = async (allowedRoles: Role[]) => {
 	const session = await requireAuth();
 
-	if (session.user.role !== requiredRole) {
-		throw new Error('Forbidden: Insufficient permissions');
+	if (!allowedRoles.includes(session.user.role as Role)) {
+		redirect('/forbidden');
 	}
 
 	return session;
 };
 
-export const requireAdmin = async () => requireRole(Role.ADMIN);
+export const requireAdmin = async () => requireRoles([Role.ADMIN]);
 
-export const requireStaff = async () => requireRole(Role.STAFF);
+export const requireStaff = async () => requireRoles([Role.STAFF, Role.ADMIN]);
+
+export const hasStaffPermissions = async () => {
+	const session = await requireAuth();
+	return session.user.role === Role.STAFF || session.user.role === Role.ADMIN;
+};

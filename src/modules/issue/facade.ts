@@ -17,8 +17,9 @@ import { getUsersWhoLikedIssueFacade } from '@/modules/issueLike/facade';
 import { getUserByIdFacade } from '@/modules/user/facade';
 import { type IssueRow } from '@/db/schema/issues';
 import { getPicturesByIssueFacade } from '@/modules/issuePicture/facade';
-import { requireAuth } from '@/modules/auth/server';
-
+import { hasStaffPermissions, requireAuth } from '@/modules/auth/server';
+import { Role } from '@/modules/user/schema';
+	
 const mapIssueValuesSchemaToIssue = async (issue: IssueRow): Promise<Issue> => {
 	const reporter = await getUserByIdFacade(issue.reporterId);
 	if (!reporter) {
@@ -47,6 +48,20 @@ const mapIssueValuesSchemaToIssue = async (issue: IssueRow): Promise<Issue> => {
 		createdAt: new Date(issue.createdAt * 1000).toISOString(),
 		updatedAt: new Date(issue.updatedAt * 1000).toISOString()
 	};
+};
+
+const requireIssueModifyPermission = async (issue: IssueRow) => {
+	const session = await requireAuth();
+
+	const isOwner = issue.reporterId === session.user.id;
+	const hasStaffPermissions =
+		session.user.role === Role.STAFF || session.user.role === Role.ADMIN;
+
+	if (!isOwner && !hasStaffPermissions) {
+		throw new Error(
+			'Forbidden: You do not have permission to modify this issue'
+		);
+	}
 };
 
 export const getIssuesFacade = async (): Promise<Issue[]> => {
@@ -90,17 +105,31 @@ export const createIssueFacade = async (data: IssueValuesSchema) => {
 };
 
 //TODO: should always expect the whole IssueValueSchema (and NEVER accidentally change reporter id !)
-//TODO: check if user has "staff" or "admin" role, or owns the issue
 export const updateIssueFacade = async (
-	id: number,
+	issueId: number,
 	data: Partial<IssueValuesSchema>
 ) => {
-	const issue = await updateIssue(id, data as IssueValuesSchema);
-	return await mapIssueValuesSchemaToIssue(issue);
+	const issue = await getIssueById(issueId);
+
+	if (!issue) {
+		throw new Error('Issue not found');
+	}
+
+	await requireIssueModifyPermission(issue);
+
+	const updatedIssue = await updateIssue(issueId, data as IssueValuesSchema);
+	return await mapIssueValuesSchemaToIssue(updatedIssue);
 };
 
-//TODO: check if user has "staff" or "admin" role, or owns the issue
 export const deleteIssueFacade = async (id: number) => {
+	const issue = await getIssueById(id);
+
+	if (!issue) {
+		throw new Error('Issue not found');
+	}
+
+	await requireIssueModifyPermission(issue);
+
 	await deleteIssue(id);
 	return { success: true };
 };

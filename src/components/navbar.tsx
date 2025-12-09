@@ -7,8 +7,14 @@ import { NavbarLogo } from '@/components/navbar/navbar-logo';
 import { NavbarLink } from '@/components/navbar/navbar-link';
 import { MobileMenuButton } from '@/components/navbar/mobile-menu-button';
 import { AuthComponent } from '@/modules/auth/components/auth-component';
+import { hasAdminPermissions, useSession } from '@/modules/auth/client';
 
 export const Navbar = () => {
+	const { data: session } = useSession();
+
+	const userRole = session?.user?.role;
+	const isAdmin = hasAdminPermissions(userRole);
+
 	const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
 	const closeMobileMenu = () => setMobileMenuOpen(false);
@@ -27,6 +33,11 @@ export const Navbar = () => {
 								<li>
 									<NavbarLink href="/issues/list">List</NavbarLink>
 								</li>
+								{isAdmin && (
+									<li>
+										<NavbarLink href="/users">Users</NavbarLink>
+									</li>
+								)}
 							</ul>
 						</nav>
 					</div>
