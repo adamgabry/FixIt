@@ -33,7 +33,10 @@ export function UserList() {
 		let filtered = users;
 		if (search.trim()) {
 			const q = search.trim().toLowerCase();
-			filtered = users.filter(u => u.name.toLowerCase().includes(q));
+			filtered = users.filter(u => 
+				u.name.toLowerCase().includes(q) || 
+				u.email.toLowerCase().includes(q)
+			);
 		}
 		// Sort: me first, then admins, then staff, then users
 		return filtered.slice().sort((a, b) => {
@@ -54,7 +57,7 @@ export function UserList() {
 			<div className="mb-6 flex items-center gap-3">
 				<input
 					type="text"
-					placeholder="Search users by nickname..."
+					placeholder="Search users by name or email..."
 					value={search}
 					onChange={e => setSearch(e.target.value)}
 					className="border-2 border-orange-200 rounded-lg px-3 py-2 w-full max-w-xs focus:border-orange-400 focus:outline-none bg-white/80"
