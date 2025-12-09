@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import type { LatLng } from 'leaflet';
 import { uploadBytes } from 'firebase/storage';
 import { getDownloadURL, ref } from '@firebase/storage';
@@ -255,9 +256,12 @@ const IssueDetailView = ({
 									<div className="flex flex-wrap items-center gap-3 text-sm text-gray-600">
 										<span className="flex items-center gap-1.5">
 											<span className="font-medium">Reported by:</span>
-											<span className="text-gray-800">
+											<Link 
+												href={`/user/${issue.reporter?.id}`}
+												className="text-orange-600 hover:text-orange-700 font-medium hover:underline transition-colors"
+											>
 												{issue.reporter?.name ?? 'Unknown'}
-											</span>
+											</Link>
 										</span>
 										<span className="text-gray-400">•</span>
 										<span className="flex items-center gap-1.5">
