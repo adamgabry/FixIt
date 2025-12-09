@@ -3,7 +3,6 @@ import { redirect } from 'next/navigation';
 
 import { auth } from '@/lib/auth';
 import { Role } from '@/modules/user/schema';
-import {Session} from "better-auth";
 
 export const getSession = async () =>
 	await auth.api.getSession({
