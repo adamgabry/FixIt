@@ -4,14 +4,16 @@ import { Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import { useRouter } from 'next/navigation';
 import { ArrowRight } from 'lucide-react';
+import Image from 'next/image';
 
-import { type Issue, type IssueType } from '@/modules/issue/schema';
+import { type Issue, type IssueType, type IssueStatus } from '@/modules/issue/schema';
 import {
 	ISSUE_TYPE_COLORS,
-	ISSUE_TYPE_LABELS,
-	ISSUE_STATUS_LABELS,
 	createColoredMarkerSvg
 } from '@/lib/issue-utils';
+import { IssueStatusBadge } from '@/modules/issue/components/issue-status-badge';
+import { IssueTypeBadge } from '@/modules/issue/components/issue-type-badge';
+import { Button } from '@/components/buttons/button';
 
 type IssueMarkerProps = {
 	issue: Issue;
@@ -41,41 +43,45 @@ export const IssueMarker = ({ issue, position }: IssueMarkerProps) => {
 
 	return (
 		<Marker position={position} icon={icon}>
-			<Popup>
-				<div className="min-w-[220px] max-w-[280px]">
-					<h3 className="font-semibold text-sm mb-1 text-gray-900">
-						{issue.title}
-					</h3>
-					<div className="flex items-center gap-2 mb-2">
-						<span
-							className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium text-white"
-							style={{
-								backgroundColor: ISSUE_TYPE_COLORS[issue.type as IssueType]
-							}}
-						>
-							{ISSUE_TYPE_LABELS[issue.type as IssueType]}
-						</span>
-						<span className="text-xs text-gray-500">
-							{
-								ISSUE_STATUS_LABELS[
-									issue.status as keyof typeof ISSUE_STATUS_LABELS
-								]
-							}
-						</span>
+			<Popup className="custom-popup">
+				<div className="min-w-[280px] max-w-[320px] bg-white rounded-xl overflow-hidden shadow-lg border border-orange-200/50">
+					{/* Image Section */}
+					<div className="relative w-full h-32">
+						{issue.pictureUrls[0] ? (
+							<Image
+								src={issue.pictureUrls[0]}
+								alt={issue.title}
+								fill
+								className="object-cover"
+								unoptimized
+							/>
+						) : (
+							<div className="bg-linear-to-br from-orange-100 via-amber-50 to-orange-100 w-full h-full flex items-center justify-center text-gray-400 text-xs">
+								No image
+							</div>
+						)}
 					</div>
-					<p className="text-xs text-gray-600 mb-3 line-clamp-2">
-						{issue.description}
-					</p>
-					<button
-						onClick={handleViewDetails}
-						className="group w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium text-white transition-all duration-200 hover:gap-3 hover:shadow-md active:scale-[0.98]"
-						style={{
-							backgroundColor: ISSUE_TYPE_COLORS[issue.type as IssueType]
-						}}
-					>
-						View Details
-						<ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" />
-					</button>
+
+					{/* Content Section */}
+					<div className="p-3">
+						<h3 className="font-semibold text-base mb-2 text-gray-900 line-clamp-2">
+							{issue.title}
+						</h3>
+						<div className="flex flex-wrap gap-2 mb-3">
+							<IssueStatusBadge status={issue.status as IssueStatus} />
+							<IssueTypeBadge type={issue.type as IssueType} />
+						</div>
+						<Button
+							variant="default"
+							size="sm"
+							animation="scale"
+							onClick={handleViewDetails}
+							className="w-full"
+						>
+							View Details
+							<ArrowRight className="w-4 h-4 ml-1" />
+						</Button>
+					</div>
 				</div>
 			</Popup>
 		</Marker>

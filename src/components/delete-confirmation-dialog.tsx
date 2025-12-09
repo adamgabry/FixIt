@@ -2,7 +2,7 @@
 
 import { AlertTriangle } from 'lucide-react';
 
-import { Button } from '@/components/button';
+import { Button } from '@/components/buttons/button';
 import { cn } from '@/lib/cn';
 
 type DeleteConfirmationDialogProps = {
@@ -33,7 +33,7 @@ export const DeleteConfirmationDialog = ({
 			<div className="bg-white/90 backdrop-blur-md rounded-xl shadow-2xl border-2 border-orange-200/50 max-w-md w-full p-6 z-[10000] transition-all duration-300 scale-100">
 				{/* Icon and Title */}
 				<div className="flex items-start gap-4 mb-4">
-					<div className="flex-shrink-0 w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+					<div className="shrink-0 w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
 						<AlertTriangle className="h-6 w-6 text-red-600" />
 					</div>
 					<div className="flex-1">

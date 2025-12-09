@@ -1,5 +1,6 @@
 'use client';
 import React, { type ReactNode, useState } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 import { cn } from '@/lib/cn';
 
@@ -10,7 +11,7 @@ type SidebarProps = {
 };
 
 const sidebarWidth = 288;
-const sidebarCollapsedWidth = sidebarWidth / 6;
+const sidebarCollapsedWidth = 48;
 
 export const SlidingSidebar: React.FC<SidebarProps> = ({
 	children,
@@ -21,18 +22,30 @@ export const SlidingSidebar: React.FC<SidebarProps> = ({
 
 	return (
 		<div
-			className={cn('h-full flex flex-col transition-all duration-300 z-20')}
+			className={cn('h-full flex flex-col z-20')}
 			style={{ width: isCollapsed ? collapsedWidth : defaultWidth }}
 		>
-			<div className="p-3 border-b flex items-center justify-between">
-				{!isCollapsed && <span>Filters</span>}
-				<button onClick={() => setIsCollapsed(!isCollapsed)}>
-					{isCollapsed ? '→' : '←'}
+			<div className="p-3 border-b border-orange-200/50 flex items-center justify-end">
+				<button 
+					onClick={() => setIsCollapsed(!isCollapsed)}
+					className={cn(
+						'p-2 rounded-lg transition-colors',
+						'bg-white hover:bg-orange-50 border-2 border-orange-200',
+						'text-orange-600 hover:text-orange-700',
+						'shadow-sm hover:shadow-md active:scale-95 transition-transform'
+					)}
+					aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+				>
+					{isCollapsed ? (
+						<ChevronRight className="w-4 h-4" />
+					) : (
+						<ChevronLeft className="w-4 h-4" />
+					)}
 				</button>
 			</div>
-			{!isCollapsed && (
-				<div className="flex-1 overflow-y-auto m-2">{children}</div>
-			)}
+			<div className={cn('flex-1 overflow-y-auto m-2', isCollapsed && 'hidden')}>
+				{children}
+			</div>
 		</div>
 	);
 };

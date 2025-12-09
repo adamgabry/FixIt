@@ -3,17 +3,17 @@
 import dynamic from 'next/dynamic';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import type { LatLng } from 'leaflet';
 import { uploadBytes } from 'firebase/storage';
 import { getDownloadURL, ref } from '@firebase/storage';
 import { v4 } from 'uuid';
+import { Pencil, Trash2, Save, X } from 'lucide-react';
 
 import { cn } from '@/lib/cn';
 import { reverseGeocode, type Address } from '@/lib/geocoding';
-import { EditButton } from '@/components/edit-button';
-import { DeleteButton } from '@/components/delete-button';
 import { Input } from '@/components/input';
-import { Button } from '@/components/button';
+import { Button } from '@/components/buttons/button';
 import { DeleteConfirmationDialog } from '@/components/delete-confirmation-dialog';
 import {
 	type Issue,
@@ -25,6 +25,7 @@ import { storage } from '@/firebase';
 import { ImageUpload } from '@/components/image-upload';
 import { IssueImagesList } from '@/modules/issue/components/issue-images-list';
 import { type IssuePicture } from '@/modules/issuePicture/schema';
+import { Card } from '@/components/card';
 
 const MapComponent = dynamic(() => import('@/components/map'), {
 	ssr: false
@@ -229,7 +230,7 @@ const IssueDetailView = ({
 			/>
 
 			{/* Full viewport background */}
-			<div className="fixed inset-0 bg-gradient-to-br from-orange-50 via-amber-50 to-orange-50 -z-10" />
+			<div className="fixed inset-0 bg-linear-to-br from-orange-50 via-amber-50 to-orange-50 -z-10" />
 			{/* Content */}
 			<div className="relative min-h-screen z-10">
 				<div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-6">
@@ -255,9 +256,12 @@ const IssueDetailView = ({
 									<div className="flex flex-wrap items-center gap-3 text-sm text-gray-600">
 										<span className="flex items-center gap-1.5">
 											<span className="font-medium">Reported by:</span>
-											<span className="text-gray-800">
+											<Link 
+												href={`/user/${issue.reporter?.id}`}
+												className="text-orange-600 hover:text-orange-700 font-medium hover:underline transition-colors"
+											>
 												{issue.reporter?.name ?? 'Unknown'}
-											</span>
+											</Link>
 										</span>
 										<span className="text-gray-400">•</span>
 										<span className="flex items-center gap-1.5">
@@ -283,16 +287,57 @@ const IssueDetailView = ({
 											)}
 										</span>
 									</div>
-								</div>
-								<div className="flex items-center gap-2">
-									<EditButton onClick={() => setIsEditing(!isEditing)} />
-									<DeleteButton
-										onClick={() => setShowDeleteConfirm(true)}
-										disabled={isDeleting}
-									/>
-								</div>
+							</div>
+							<div className="flex items-center gap-2">
+								{!isEditing ? (
+									<>
+										<Button
+											variant="secondary"
+											size="sm"
+											animation="scale"
+											onClick={() => setIsEditing(true)}
+										>
+											<Pencil className="w-4 h-4" />
+											Edit
+										</Button>
+										<Button
+											variant="destructive"
+											size="sm"
+											animation="scale"
+											onClick={() => setShowDeleteConfirm(true)}
+											disabled={isDeleting}
+										>
+											<Trash2 className="w-4 h-4" />
+											Delete
+										</Button>
+									</>
+								) : (
+									<>
+										<Button
+											variant="outline"
+											size="sm"
+											animation="scale"
+											onClick={handleCancel}
+											disabled={isSaving}
+										>
+											<X className="w-4 h-4" />
+											Cancel
+										</Button>
+										<Button
+											variant="success"
+											size="sm"
+											animation="scale"
+											onClick={handleSave}
+											disabled={isSaving}
+										>
+											<Save className="w-4 h-4" />
+											{isSaving ? 'Saving...' : 'Save'}
+										</Button>
+									</>
+								)}
 							</div>
 						</div>
+					</div>
 					</div>
 
 					<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -311,8 +356,8 @@ const IssueDetailView = ({
 												draggableMarker={isEditing}
 												onMarkerDragEnd={handleMarkerDragEnd}
 											/>
-											{isEditing && (
-												<div className="absolute top-4 left-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg z-[1000] pointer-events-none">
+									{isEditing && (
+										<div className="absolute top-4 left-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg z-1000 pointer-events-none">
 													<p className="text-sm text-gray-700 text-center font-medium">
 														Drag the marker to change the location
 													</p>
@@ -320,7 +365,7 @@ const IssueDetailView = ({
 											)}
 										</>
 									) : (
-										<div className="flex items-center justify-center h-full bg-gradient-to-br from-orange-100 to-amber-100">
+										<div className="flex items-center justify-center h-full bg-linear-to-br from-orange-100 to-amber-100">
 											<div className="text-center">
 												<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto mb-2" />
 												<span className="text-sm text-gray-600">
@@ -464,55 +509,36 @@ const IssueDetailView = ({
 										<div className="flex gap-3">
 											<Button
 												variant="outline"
-												className="flex-1 h-12 rounded-lg border-orange-200 hover:bg-orange-50 transition-all duration-200"
+												size="lg"
+												animation="scale"
+												className="flex-1"
 												onClick={handleCancel}
 												disabled={isSaving}
 											>
+												<X className="w-4 h-4" />
 												Cancel
 											</Button>
 											<Button
-												className="flex-1 h-12 rounded-lg bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+												variant="default"
+												size="lg"
+												animation="scale"
+												className="flex-1"
 												onClick={handleSave}
 												disabled={isSaving}
 											>
-												{isSaving ? (
-													<span className="flex items-center justify-center gap-2">
-														<svg
-															className="animate-spin h-5 w-5"
-															xmlns="http://www.w3.org/2000/svg"
-															fill="none"
-															viewBox="0 0 24 24"
-														>
-															<circle
-																className="opacity-25"
-																cx="12"
-																cy="12"
-																r="10"
-																stroke="currentColor"
-																strokeWidth="4"
-															/>
-															<path
-																className="opacity-75"
-																fill="currentColor"
-																d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-															/>
-														</svg>
-														Saving...
-													</span>
-												) : (
-													'Save Changes'
-												)}
+												<Save className="w-4 h-4" />
+												{isSaving ? 'Saving...' : 'Save Changes'}
 											</Button>
-										</div>
 									</div>
-								)}
-							</div>
+								</div>
+							)}
 						</div>
 					</div>
 				</div>
 			</div>
-		</>
-	);
+		</div>
+	</>
+);
 };
 
 export default IssueDetailView;

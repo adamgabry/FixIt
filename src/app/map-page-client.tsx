@@ -1,9 +1,9 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef, useState, useMemo } from 'react';
 
 import { MapView } from '@/modules/issue/components/map-view';
-import { FloatingAddButton } from '@/components/floating-add-button';
+import { FloatingAddButton } from '@/components/buttons/floating-add-button';
 import { type Issue } from '@/modules/issue/schema';
 import { useIssueFilters } from '@/hooks/useIssueFilters';
 import { IssueFilters } from '@/modules/issue/components/issue-filters';
@@ -28,23 +28,38 @@ export const MapPageClient = ({ initialIssues }: MapPageClientProps) => {
 		}
 	};
 
+	// Memoize filters component to prevent duplicate renders
+	const filtersComponent = useMemo(() => <IssueFilters {...filters} />, [filters]);
+
 	return (
-		<div className="w-full h-full flex relative">
-			<div className="z-20">
-				<SlidingSidebar>
-					<IssueFilters {...filters} />
-				</SlidingSidebar>
+		<>
+			{/* Mobile: Filters above map - same behavior as list page */}
+			<div className="md:hidden">
+				{filtersComponent}
 			</div>
 
-			<div className="flex-1 h-full relative">
-				<MapView
-					issues={filters.filteredIssues}
-					onIssueCreated={handleIssueCreated}
-					onOpenCreatorRef={openCreatorRef}
-					onCreatorOpenChange={setIsCreatorOpen}
-				/>
-				{!isCreatorOpen && <FloatingAddButton onClick={handleOpenCreator} />}
+			{/* Map container */}
+			<div className="w-full h-[calc(100vh-5rem)] md:h-[calc(100vh-5rem)] min-h-[500px] flex relative md:rounded-xl overflow-hidden md:shadow-lg md:border md:border-orange-200/50 bg-linear-to-br from-orange-50/30 via-amber-50/20 to-orange-50/30">
+				{/* Subtle gradient overlay for visual depth */}
+				<div className="absolute inset-0 bg-linear-to-br from-orange-50/10 via-transparent to-amber-50/10 pointer-events-none z-10" />
+				
+				{/* Desktop: Sidebar with filters */}
+				<div className="hidden md:block z-20">
+					<SlidingSidebar>
+						{filtersComponent}
+					</SlidingSidebar>
+				</div>
+
+				<div className="flex-1 h-full relative">
+					<MapView
+						issues={filters.filteredIssues}
+						onIssueCreated={handleIssueCreated}
+						onOpenCreatorRef={openCreatorRef}
+						onCreatorOpenChange={setIsCreatorOpen}
+					/>
+					{!isCreatorOpen && <FloatingAddButton onClick={handleOpenCreator} />}
+				</div>
 			</div>
-		</div>
+		</>
 	);
 };

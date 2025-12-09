@@ -18,6 +18,7 @@ import { getUserByIdFacade } from '@/modules/user/facade';
 import { type IssueRow } from '@/db/schema/issues';
 import { getPicturesByIssueFacade } from '@/modules/issuePicture/facade';
 import { hasStaffPermissions, requireAuth } from '@/modules/auth/server';
+import { Role } from '@/modules/user/schema';
 
 const mapIssueValuesSchemaToIssue = async (issue: IssueRow): Promise<Issue> => {
 	const reporter = await getUserByIdFacade(issue.reporterId);

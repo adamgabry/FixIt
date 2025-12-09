@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useMap } from 'react-leaflet';
 import { LocateFixed } from 'lucide-react';
 
-import { Button } from '@/components/button';
+import { Button } from '@/components/buttons/button';
 import { useLocation } from '@/lib/use-location';
 
 export const LocationButton = () => {
@@ -28,7 +28,7 @@ export const LocationButton = () => {
 
 	return (
 		<div
-			className="absolute bottom-4 left-4 z-[1000]"
+			className="absolute bottom-4 left-4 z-1000"
 			data-location-button
 			onClick={e => e.stopPropagation()}
 		>
