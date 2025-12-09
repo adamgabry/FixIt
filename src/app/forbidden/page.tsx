@@ -22,7 +22,7 @@ const ForbiddenPage = () => (
 				<div className="space-y-2">
 					<h1 className="text-4xl font-bold text-gray-900">Access Denied</h1>
 					<p className="text-lg text-gray-600">
-						Oops! You don't have permission to view this page
+						Oops! You don&apos;t have permission to view this page
 					</p>
 				</div>
 
@@ -45,7 +45,11 @@ const ForbiddenPage = () => (
 				{/* Actions */}
 				<div className="flex flex-col sm:flex-row gap-3 pt-4 w-full sm:w-auto">
 					<Link href="/issues/list">
-						<Button variant="default" animation="lift" className="w-full sm:w-auto">
+						<Button
+							variant="default"
+							animation="lift"
+							className="w-full sm:w-auto"
+						>
 							<Home className="w-4 h-4" />
 							Go to Home
 						</Button>

@@ -131,8 +131,8 @@ export const IssuesMapContainer = ({
 		zoom={zoom}
 		style={{ height: '100%', width: '100%' }}
 		className="z-0"
-		zoomControl={true}
-		scrollWheelZoom={true}
+		zoomControl
+		scrollWheelZoom
 	>
 		<TileLayer
 			attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

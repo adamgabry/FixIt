@@ -17,8 +17,7 @@ const buttonVariants = cva(
 					'bg-red-600 hover:bg-red-700 active:bg-red-800 text-white border-2 border-red-500/60 hover:border-red-600 shadow-md hover:shadow-lg shadow-red-500/20',
 				outline:
 					'border-2 border-orange-200 bg-white/80 hover:bg-orange-50 hover:border-orange-300 backdrop-blur-sm',
-				ghost:
-					'hover:bg-orange-50 hover:text-orange-900 text-gray-700',
+				ghost: 'hover:bg-orange-50 hover:text-orange-900 text-gray-700',
 				link: 'text-orange-600 underline-offset-4 hover:underline hover:text-orange-700',
 				success:
 					'bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-md hover:shadow-lg border-2 border-orange-400/60 hover:border-orange-500'
@@ -50,10 +49,7 @@ export type ButtonProps = {
 	VariantProps<typeof buttonVariants>;
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-	(
-		{ className, variant, size, animation, asChild = false, ...props },
-		ref
-	) => {
+	({ className, variant, size, animation, asChild = false, ...props }, ref) => {
 		const Comp = asChild ? Slot : 'button';
 
 		return (

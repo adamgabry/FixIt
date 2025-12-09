@@ -49,7 +49,7 @@ export const MapPageClient = ({ initialIssues }: MapPageClientProps) => {
 			<div className="w-full h-[calc(100vh-5rem)] md:h-[calc(100vh-5rem)] min-h-[500px] flex relative md:rounded-xl overflow-hidden md:shadow-lg md:border md:border-orange-200/50 bg-linear-to-br from-orange-50/30 via-amber-50/20 to-orange-50/30">
 				{/* Subtle gradient overlay for visual depth */}
 				<div className="absolute inset-0 bg-linear-to-br from-orange-50/10 via-transparent to-amber-50/10 pointer-events-none z-10" />
-				
+
 				{/* Desktop: Sidebar with filters */}
 				{!isMobile && (
 					<div className="z-20">

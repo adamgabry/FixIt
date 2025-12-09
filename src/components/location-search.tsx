@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Search, X, MapPin } from 'lucide-react';
+
 import { geocode, type GeocodeResult } from '@/lib/geocoding';
 
 type LocationSearchProps = {
@@ -28,21 +29,27 @@ export const LocationSearch = ({
 			clearTimeout(searchTimeoutRef.current);
 		}
 
-		if (!query.trim()) {
-			setResults([]);
-			setShowResults(false);
-			setIsSearching(false);
-			return;
-		}
+		const trimmedQuery = query.trim();
 
-		setIsSearching(true);
-		searchTimeoutRef.current = setTimeout(async () => {
-			const searchResults = await geocode(query, 5);
-			setResults(searchResults);
-			setShowResults(true);
-			setIsSearching(false);
-			setSelectedIndex(-1);
-		}, 500); // 500ms debounce
+		// Always use setTimeout to avoid synchronous setState in effect
+		searchTimeoutRef.current = setTimeout(
+			async () => {
+				if (!trimmedQuery) {
+					setResults([]);
+					setShowResults(false);
+					setIsSearching(false);
+					return;
+				}
+
+				setIsSearching(true);
+				const searchResults = await geocode(trimmedQuery, 5);
+				setResults(searchResults);
+				setShowResults(true);
+				setIsSearching(false);
+				setSelectedIndex(-1);
+			},
+			trimmedQuery ? 500 : 0
+		); // 500ms debounce for non-empty queries
 
 		return () => {
 			if (searchTimeoutRef.current) {
@@ -70,9 +77,7 @@ export const LocationSearch = ({
 
 			if (e.key === 'ArrowDown') {
 				e.preventDefault();
-				setSelectedIndex(prev =>
-					prev < results.length - 1 ? prev + 1 : prev
-				);
+				setSelectedIndex(prev => (prev < results.length - 1 ? prev + 1 : prev));
 			} else if (e.key === 'ArrowUp') {
 				e.preventDefault();
 				setSelectedIndex(prev => (prev > 0 ? prev - 1 : -1));
@@ -189,4 +194,3 @@ export const LocationSearch = ({
 		</div>
 	);
 };
-

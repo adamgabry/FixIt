@@ -67,7 +67,6 @@ const MapCenterUpdater = ({
 	return null;
 };
 
-
 const LocationPickerMapContent = ({
 	coords,
 	onCoordsChange

@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useMap } from 'react-leaflet';
 import { Search, X, MapPin } from 'lucide-react';
+
 import { geocode, type GeocodeResult } from '@/lib/geocoding';
 
 type MapSearchProps = {
@@ -30,21 +31,27 @@ export const MapSearch = ({
 			clearTimeout(searchTimeoutRef.current);
 		}
 
-		if (!query.trim()) {
-			setResults([]);
-			setShowResults(false);
-			setIsSearching(false);
-			return;
-		}
+		const trimmedQuery = query.trim();
 
-		setIsSearching(true);
-		searchTimeoutRef.current = setTimeout(async () => {
-			const searchResults = await geocode(query, 5);
-			setResults(searchResults);
-			setShowResults(true);
-			setIsSearching(false);
-			setSelectedIndex(-1);
-		}, 500); // 500ms debounce
+		// Always use setTimeout to avoid synchronous setState in effect
+		searchTimeoutRef.current = setTimeout(
+			async () => {
+				if (!trimmedQuery) {
+					setResults([]);
+					setShowResults(false);
+					setIsSearching(false);
+					return;
+				}
+
+				setIsSearching(true);
+				const searchResults = await geocode(trimmedQuery, 5);
+				setResults(searchResults);
+				setShowResults(true);
+				setIsSearching(false);
+				setSelectedIndex(-1);
+			},
+			trimmedQuery ? 500 : 0
+		); // 500ms debounce for non-empty queries
 
 		return () => {
 			if (searchTimeoutRef.current) {
@@ -52,34 +59,6 @@ export const MapSearch = ({
 			}
 		};
 	}, [query]);
-
-	// Handle keyboard navigation
-	const handleKeyDown = useCallback(
-		(e: React.KeyboardEvent<HTMLInputElement>) => {
-			if (!showResults || results.length === 0) return;
-
-			if (e.key === 'ArrowDown') {
-				e.preventDefault();
-				setSelectedIndex(prev =>
-					prev < results.length - 1 ? prev + 1 : prev
-				);
-			} else if (e.key === 'ArrowUp') {
-				e.preventDefault();
-				setSelectedIndex(prev => (prev > 0 ? prev - 1 : -1));
-			} else if (e.key === 'Enter') {
-				e.preventDefault();
-				if (selectedIndex >= 0 && selectedIndex < results.length) {
-					handleSelectResult(results[selectedIndex]);
-				} else if (results.length > 0) {
-					handleSelectResult(results[0]);
-				}
-			} else if (e.key === 'Escape') {
-				setShowResults(false);
-				inputRef.current?.blur();
-			}
-		},
-		[showResults, results, selectedIndex]
-	);
 
 	// Handle result selection
 	const handleSelectResult = useCallback(
@@ -98,6 +77,32 @@ export const MapSearch = ({
 			inputRef.current?.blur();
 		},
 		[map, onResultSelect]
+	);
+
+	// Handle keyboard navigation
+	const handleKeyDown = useCallback(
+		(e: React.KeyboardEvent<HTMLInputElement>) => {
+			if (!showResults || results.length === 0) return;
+
+			if (e.key === 'ArrowDown') {
+				e.preventDefault();
+				setSelectedIndex(prev => (prev < results.length - 1 ? prev + 1 : prev));
+			} else if (e.key === 'ArrowUp') {
+				e.preventDefault();
+				setSelectedIndex(prev => (prev > 0 ? prev - 1 : -1));
+			} else if (e.key === 'Enter') {
+				e.preventDefault();
+				if (selectedIndex >= 0 && selectedIndex < results.length) {
+					handleSelectResult(results[selectedIndex]);
+				} else if (results.length > 0) {
+					handleSelectResult(results[0]);
+				}
+			} else if (e.key === 'Escape') {
+				setShowResults(false);
+				inputRef.current?.blur();
+			}
+		},
+		[showResults, results, selectedIndex, handleSelectResult]
 	);
 
 	// Clear search
@@ -181,9 +186,7 @@ export const MapSearch = ({
 										type="button"
 										onClick={() => handleSelectResult(result)}
 										className={`w-full text-left px-4 py-3 hover:bg-orange-50 transition-colors flex items-start gap-3 ${
-											selectedIndex === index
-												? 'bg-orange-50'
-												: ''
+											selectedIndex === index ? 'bg-orange-50' : ''
 										}`}
 									>
 										<MapPin className="h-4 w-4 text-orange-500 mt-0.5 flex-shrink-0" />
@@ -204,4 +207,3 @@ export const MapSearch = ({
 		</div>
 	);
 };
-

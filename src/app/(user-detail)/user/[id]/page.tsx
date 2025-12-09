@@ -19,7 +19,7 @@ const UserPage = async ({ params }: { params: Promise<{ id: string }> }) => {
 	return (
 		<div className="space-y-6">
 			<ProfileOverview user={user} />
-			
+
 			<div className="px-6">
 				<h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-3">
 					Reported issues
@@ -30,7 +30,7 @@ const UserPage = async ({ params }: { params: Promise<{ id: string }> }) => {
 					)}
 				</h2>
 			</div>
-			
+
 			{issuesReportedByUser.length > 0 ? (
 				<IssueList issues={issuesReportedByUser} />
 			) : (

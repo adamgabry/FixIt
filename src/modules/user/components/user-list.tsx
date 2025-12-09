@@ -1,22 +1,22 @@
-
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+
 import { UserCard } from '@/modules/user/components/user-card';
 import { Role, type User } from '@/modules/user/schema';
 
 // Fetch users and session user from API
-async function fetchUsersAndMe() {
+const fetchUsersAndMe = async () => {
 	const [usersRes, meRes] = await Promise.all([
 		fetch('/api/users'),
-		fetch('/api/auth/me'),
+		fetch('/api/auth/me')
 	]);
 	const users: User[] = await usersRes.json();
 	const me = meRes.ok ? await meRes.json() : null;
 	return { users, me };
-}
+};
 
-export function UserList() {
+export const UserList = () => {
 	const [users, setUsers] = useState<User[]>([]);
 	const [me, setMe] = useState<User | null>(null);
 	const [search, setSearch] = useState('');
@@ -33,9 +33,9 @@ export function UserList() {
 		let filtered = users;
 		if (search.trim()) {
 			const q = search.trim().toLowerCase();
-			filtered = users.filter(u => 
-				u.name.toLowerCase().includes(q) || 
-				u.email.toLowerCase().includes(q)
+			filtered = users.filter(
+				u =>
+					u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)
 			);
 		}
 		// Sort: me first, then admins, then staff, then users
@@ -72,4 +72,4 @@ export function UserList() {
 			</ul>
 		</div>
 	);
-}
+};

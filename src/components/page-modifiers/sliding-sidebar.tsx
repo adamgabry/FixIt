@@ -26,7 +26,7 @@ export const SlidingSidebar: React.FC<SidebarProps> = ({
 			style={{ width: isCollapsed ? collapsedWidth : defaultWidth }}
 		>
 			<div className="p-3 border-b border-orange-200/50 flex items-center justify-end">
-				<button 
+				<button
 					onClick={() => setIsCollapsed(!isCollapsed)}
 					className={cn(
 						'p-2 rounded-lg transition-colors',
@@ -43,7 +43,9 @@ export const SlidingSidebar: React.FC<SidebarProps> = ({
 					)}
 				</button>
 			</div>
-			<div className={cn('flex-1 overflow-y-auto m-2', isCollapsed && 'hidden')}>
+			<div
+				className={cn('flex-1 overflow-y-auto m-2', isCollapsed && 'hidden')}
+			>
 				{children}
 			</div>
 		</div>

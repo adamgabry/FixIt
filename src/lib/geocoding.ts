@@ -116,17 +116,19 @@ export const geocode = async (
 			return [];
 		}
 
-		return data.map((item: {
-			display_name: string;
-			lat: string;
-			lon: string;
-			importance?: number;
-		}) => ({
-			displayName: item.display_name,
-			lat: parseFloat(item.lat),
-			lng: parseFloat(item.lon),
-			importance: item.importance
-		}));
+		return data.map(
+			(item: {
+				display_name: string;
+				lat: string;
+				lon: string;
+				importance?: number;
+			}) => ({
+				displayName: item.display_name,
+				lat: parseFloat(item.lat),
+				lng: parseFloat(item.lon),
+				importance: item.importance
+			})
+		);
 	} catch (error) {
 		console.error('Forward geocoding error:', error);
 		return [];

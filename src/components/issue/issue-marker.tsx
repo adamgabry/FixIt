@@ -6,11 +6,12 @@ import { useRouter } from 'next/navigation';
 import { ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 
-import { type Issue, type IssueType, type IssueStatus } from '@/modules/issue/schema';
 import {
-	ISSUE_TYPE_COLORS,
-	createColoredMarkerSvg
-} from '@/lib/issue-utils';
+	type Issue,
+	type IssueType,
+	type IssueStatus
+} from '@/modules/issue/schema';
+import { ISSUE_TYPE_COLORS, createColoredMarkerSvg } from '@/lib/issue-utils';
 import { IssueStatusBadge } from '@/modules/issue/components/issue-status-badge';
 import { IssueTypeBadge } from '@/modules/issue/components/issue-type-badge';
 import { Button } from '@/components/buttons/button';

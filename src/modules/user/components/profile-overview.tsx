@@ -1,5 +1,4 @@
 import { type User } from '@/modules/user/schema';
-import { LabeledItem } from '@/components/labeled-item';
 import { ProfilePicture } from '@/modules/user/components/profile-picture';
 
 type ProfileOverviewProps = {

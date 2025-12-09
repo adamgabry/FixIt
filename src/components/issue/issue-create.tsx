@@ -139,7 +139,9 @@ export const IssueCreator = ({
 					</label>
 					{/* Location Search */}
 					<div className="mb-2">
-						<LocationSearch onResultSelect={(lat, lng) => setCoords({ lat, lng })} />
+						<LocationSearch
+							onResultSelect={(lat, lng) => setCoords({ lat, lng })}
+						/>
 					</div>
 					<LocationPickerMap
 						coords={coords}
@@ -230,12 +232,12 @@ export const IssueCreator = ({
 							className="flex-1"
 							disabled={isSubmitting}
 						>
-						<Send className="w-4 h-4" />
-						{isSubmitting ? 'Creating...' : 'Create Issue'}
-					</Button>
-				</div>
-			</form>
-		</div>
-	</SlidingPanel>
-);
+							<Send className="w-4 h-4" />
+							{isSubmitting ? 'Creating...' : 'Create Issue'}
+						</Button>
+					</div>
+				</form>
+			</div>
+		</SlidingPanel>
+	);
 };
