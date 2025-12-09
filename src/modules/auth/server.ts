@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 
 import { auth } from '@/lib/auth';
 import { Role } from '@/modules/user/schema';
+import {Session} from "better-auth";
 
 export const getSession = async () =>
 	await auth.api.getSession({
@@ -32,8 +33,3 @@ export const requireRoles = async (allowedRoles: Role[]) => {
 export const requireAdmin = async () => requireRoles([Role.ADMIN]);
 
 export const requireStaff = async () => requireRoles([Role.STAFF, Role.ADMIN]);
-
-export const hasStaffPermissions = async () => {
-	const session = await requireAuth();
-	return session.user.role === Role.STAFF || session.user.role === Role.ADMIN;
-};
