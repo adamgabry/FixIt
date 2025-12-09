@@ -1,6 +1,7 @@
 'use client';
 
-import { RotateCcw, Filter } from 'lucide-react';
+import { useState } from 'react';
+import { RotateCcw, Filter, ChevronDown, ChevronUp } from 'lucide-react';
 
 import {
 	ISSUE_TYPE_LABELS,
@@ -34,37 +35,63 @@ export const IssueFilters = ({
 	setSearchAction,
 	resetFiltersAction
 }: IssueFiltersProps) => {
+	// Collapsed by default on mobile, always expanded on desktop
+	const [isExpanded, setIsExpanded] = useState(false);
+
 	const hasActiveFilters =
 		types.length < Object.values(IssueType).length ||
 		statuses.length < Object.values(IssueStatus).length ||
 		search.trim().length > 0;
 
+	const toggleExpanded = () => setIsExpanded(!isExpanded);
+
 	return (
-		<Card variant="elevated" className="mb-6">
-			<div className="flex items-center justify-between mb-4 pb-3 border-b border-orange-200/50">
-				<div className="flex items-center gap-2">
-					<Filter className="w-5 h-5 text-orange-600" />
-					<h2 className="text-lg font-semibold text-gray-900">Filters</h2>
+		<Card variant="elevated" className="mb-6 w-full">
+			<div className="flex items-center justify-between gap-2 mb-4 pb-3 border-b border-orange-200/50">
+				<button
+					onClick={toggleExpanded}
+					className="flex items-center gap-1.5 md:gap-2 md:cursor-default flex-1 min-w-0"
+					type="button"
+				>
+					<Filter className="w-4 h-4 md:w-5 md:h-5 text-orange-600 shrink-0" />
+					<h2 className="text-base md:text-lg font-semibold text-gray-900 whitespace-nowrap">Filters</h2>
 					{hasActiveFilters && (
-						<span className="ml-2 px-2 py-0.5 bg-orange-100 text-orange-700 text-xs font-medium rounded-full">
+						<span className="px-1.5 md:px-2 py-0.5 bg-orange-100 text-orange-700 text-xs font-medium rounded-full whitespace-nowrap shrink-0">
 							Active
 						</span>
 					)}
-				</div>
+					{/* Mobile toggle icon */}
+					<span className="md:hidden ml-auto text-gray-600 shrink-0">
+						{isExpanded ? (
+							<ChevronUp className="w-5 h-5" />
+						) : (
+							<ChevronDown className="w-5 h-5" />
+						)}
+					</span>
+				</button>
 				<Button
 					variant="ghost"
 					size="sm"
 					animation="scale"
 					onClick={resetFiltersAction}
 					disabled={!hasActiveFilters}
-					className="text-gray-600 hover:text-orange-600"
+					className="text-gray-600 hover:text-orange-600 shrink-0 px-2! md:px-3!"
 				>
 					<RotateCcw className="w-4 h-4" />
-					Reset
+					<span className="hidden md:inline ml-1">Reset</span>
 				</Button>
 			</div>
 
-			<div className="space-y-6">
+			{/* Mobile: collapsible, Desktop: always visible */}
+			<div
+				className={`
+					overflow-hidden md:overflow-visible
+					transition-all duration-300 ease-in-out md:transition-none
+					md:max-h-none! md:opacity-100!
+					${isExpanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}
+				`}
+			>
+				<div className="space-y-6">
 				<FilterRow
 					label="Issue Type"
 					options={Object.values(IssueType)}
@@ -83,6 +110,7 @@ export const IssueFilters = ({
 				/>
 
 				<SearchFilter value={search} onChangeAction={setSearchAction} />
+				</div>
 			</div>
 		</Card>
 	);
