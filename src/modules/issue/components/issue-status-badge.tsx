@@ -8,7 +8,10 @@ type IssueStatusBadgeProps = {
 	status: IssueStatus;
 };
 
-const statusVariantMap: Record<IssueStatus, 'success' | 'warning' | 'info' | 'default'> = {
+const statusVariantMap: Record<
+	IssueStatus,
+	'success' | 'warning' | 'info' | 'default'
+> = {
 	REPORTED: 'warning',
 	IN_PROGRESS: 'info',
 	RESOLVED: 'success',

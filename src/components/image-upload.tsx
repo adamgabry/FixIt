@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 
 type ImageUploadProps = {
 	value: File[];
@@ -67,10 +68,13 @@ export const ImageUpload = ({
 							className="flex items-center justify-between p-2 bg-white/60 border border-orange-200 rounded-lg"
 						>
 							<div className="flex items-center gap-3">
-								<img
+								<Image
 									src={previewUrls[idx] ?? URL.createObjectURL(file)}
 									alt={file.name}
+									width={48}
+									height={48}
 									className="w-12 h-12 object-cover rounded-md border"
+									unoptimized
 								/>
 								<div className="text-sm text-gray-700">
 									<p className="font-medium">{file.name}</p>

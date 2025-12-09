@@ -18,6 +18,7 @@ import { ImageUpload } from '@/components/image-upload';
 import { storage } from '@/firebase';
 
 import { SlidingPanel } from '../page-modifiers/sliding-panel';
+import { LocationSearch } from '../location-search';
 
 // Dynamic import for Leaflet map to avoid SSR issues
 const LocationPickerMap = dynamic(
@@ -136,6 +137,12 @@ export const IssueCreator = ({
 					<label className="block text-sm font-semibold mb-2 text-gray-700">
 						Location <span className="text-red-500">*</span>
 					</label>
+					{/* Location Search */}
+					<div className="mb-2">
+						<LocationSearch
+							onResultSelect={(lat, lng) => setCoords({ lat, lng })}
+						/>
+					</div>
 					<LocationPickerMap
 						coords={coords}
 						onCoordsChange={setCoords}
@@ -225,12 +232,12 @@ export const IssueCreator = ({
 							className="flex-1"
 							disabled={isSubmitting}
 						>
-						<Send className="w-4 h-4" />
-						{isSubmitting ? 'Creating...' : 'Create Issue'}
-					</Button>
-				</div>
-			</form>
-		</div>
-	</SlidingPanel>
-);
+							<Send className="w-4 h-4" />
+							{isSubmitting ? 'Creating...' : 'Create Issue'}
+						</Button>
+					</div>
+				</form>
+			</div>
+		</SlidingPanel>
+	);
 };

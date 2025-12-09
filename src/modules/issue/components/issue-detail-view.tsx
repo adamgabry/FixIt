@@ -259,7 +259,7 @@ const IssueDetailView = ({
 									<div className="flex flex-wrap items-center gap-3 text-sm text-gray-600">
 										<span className="flex items-center gap-1.5">
 											<span className="font-medium">Reported by:</span>
-											<Link 
+											<Link
 												href={`/user/${issue.reporter?.id}`}
 												className="text-orange-600 hover:text-orange-700 font-medium hover:underline transition-colors"
 											>
@@ -290,6 +290,55 @@ const IssueDetailView = ({
 											)}
 										</span>
 									</div>
+								</div>
+								<div className="flex items-center gap-2">
+									{!isEditing ? (
+										<>
+											<Button
+												variant="secondary"
+												size="sm"
+												animation="scale"
+												onClick={() => setIsEditing(true)}
+											>
+												<Pencil className="w-4 h-4" />
+												Edit
+											</Button>
+											<Button
+												variant="destructive"
+												size="sm"
+												animation="scale"
+												onClick={() => setShowDeleteConfirm(true)}
+												disabled={isDeleting}
+											>
+												<Trash2 className="w-4 h-4" />
+												Delete
+											</Button>
+										</>
+									) : (
+										<>
+											<Button
+												variant="outline"
+												size="sm"
+												animation="scale"
+												onClick={handleCancel}
+												disabled={isSaving}
+											>
+												<X className="w-4 h-4" />
+												Cancel
+											</Button>
+											<Button
+												variant="success"
+												size="sm"
+												animation="scale"
+												onClick={handleSave}
+												disabled={isSaving}
+											>
+												<Save className="w-4 h-4" />
+												{isSaving ? 'Saving...' : 'Save'}
+											</Button>
+										</>
+									)}
+								</div>
 							</div>
 							<div className="flex items-center gap-2">
 								{!isEditing && (
@@ -355,7 +404,6 @@ const IssueDetailView = ({
 							</div>
 						</div>
 					</div>
-					</div>
 
 					<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 						{/* MAP SECTION */}
@@ -373,8 +421,8 @@ const IssueDetailView = ({
 												draggableMarker={isEditing}
 												onMarkerDragEnd={handleMarkerDragEnd}
 											/>
-									{isEditing && (
-										<div className="absolute top-4 left-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg z-1000 pointer-events-none">
+											{isEditing && (
+												<div className="absolute top-4 left-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg z-1000 pointer-events-none">
 													<p className="text-sm text-gray-700 text-center font-medium">
 														Drag the marker to change the location
 													</p>
@@ -546,16 +594,16 @@ const IssueDetailView = ({
 												<Save className="w-4 h-4" />
 												{isSaving ? 'Saving...' : 'Save Changes'}
 											</Button>
+										</div>
 									</div>
-								</div>
-							)}
+								)}
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-	</>
-);
+		</>
+	);
 };
 
 export default IssueDetailView;

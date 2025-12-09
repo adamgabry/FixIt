@@ -27,6 +27,5 @@ export const getUserByIdFacade = async (id: string) => {
 	return mapUserRowToUser(userRow);
 };
 
-export const updateUserFacade = async (id: string, role: Role) => {
-	return updateUser(id, role);
-};
+export const updateUserFacade = async (id: string, role: Role) =>
+	updateUser(id, role);

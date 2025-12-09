@@ -4,7 +4,6 @@ import React from 'react';
 import { X } from 'lucide-react';
 
 import { cn } from '@/lib/cn';
-import { Badge } from '@/components/badge';
 
 type FilterRowProps<T extends string> = {
 	label: string;
