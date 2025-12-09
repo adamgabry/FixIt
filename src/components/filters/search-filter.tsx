@@ -17,7 +17,7 @@ export const SearchFilter = ({ value, onChangeAction }: SearchFilterProps) => (
 			<Input
 				type="text"
 				placeholder="Start searching..."
-				value={value}
+				value={value || ''}
 				onChange={e => onChangeAction(e.target.value)}
 				className="pl-10 border-2 border-gray-200 focus:border-orange-400 bg-white/80 backdrop-blur-sm"
 			/>

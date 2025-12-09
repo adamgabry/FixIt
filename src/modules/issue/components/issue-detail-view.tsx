@@ -25,6 +25,8 @@ import { storage } from '@/firebase';
 import { ImageUpload } from '@/components/image-upload';
 import { IssueImagesList } from '@/modules/issue/components/issue-images-list';
 import { type IssuePicture } from '@/modules/issuePicture/schema';
+import { Card } from '@/components/card';
+import { IssueUpvoteButton } from '@/modules/issue/components/issue-upvote-button';
 
 const MapComponent = dynamic(() => import('@/components/map'), {
 	ssr: false
@@ -32,11 +34,13 @@ const MapComponent = dynamic(() => import('@/components/map'), {
 
 type IssueDetailViewProps = {
 	issue: Issue;
+	currentUserId: string | null;
 	initialEditMode?: boolean;
 };
 
 const IssueDetailView = ({
 	issue: initialIssue,
+	currentUserId,
 	initialEditMode = false
 }: IssueDetailViewProps) => {
 	const router = useRouter();
@@ -335,6 +339,68 @@ const IssueDetailView = ({
 										</>
 									)}
 								</div>
+							</div>
+							<div className="flex items-center gap-2">
+								{!isEditing && (
+									<IssueUpvoteButton
+										issueId={issue.id}
+										reporterId={issue.reporter.id}
+										currentUserId={currentUserId}
+										initialUpvoteCount={issue.numberOfUpvotes}
+										initialIsUpvoted={
+											currentUserId
+												? issue.upvoters.some(upvoter => upvoter.id === currentUserId)
+												: false
+										}
+										variant="default"
+									/>
+								)}
+								{!isEditing ? (
+									<>
+										<Button
+											variant="secondary"
+											size="sm"
+											animation="scale"
+											onClick={() => setIsEditing(true)}
+										>
+											<Pencil className="w-4 h-4" />
+											Edit
+										</Button>
+										<Button
+											variant="destructive"
+											size="sm"
+											animation="scale"
+											onClick={() => setShowDeleteConfirm(true)}
+											disabled={isDeleting}
+										>
+											<Trash2 className="w-4 h-4" />
+											Delete
+										</Button>
+									</>
+								) : (
+									<>
+										<Button
+											variant="outline"
+											size="sm"
+											animation="scale"
+											onClick={handleCancel}
+											disabled={isSaving}
+										>
+											<X className="w-4 h-4" />
+											Cancel
+										</Button>
+										<Button
+											variant="success"
+											size="sm"
+											animation="scale"
+											onClick={handleSave}
+											disabled={isSaving}
+										>
+											<Save className="w-4 h-4" />
+											{isSaving ? 'Saving...' : 'Save'}
+										</Button>
+									</>
+								)}
 							</div>
 						</div>
 					</div>

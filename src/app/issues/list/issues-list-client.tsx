@@ -12,9 +12,13 @@ import { IssueList } from '@/modules/issue/components/issue-list';
 
 type IssueListClientProps = {
 	initialIssues: Issue[];
+	currentUserId: string | null;
 };
 
-export const IssuesListClient = ({ initialIssues }: IssueListClientProps) => {
+export const IssuesListClient = ({
+	initialIssues,
+	currentUserId
+}: IssueListClientProps) => {
 	const filters = useIssueFilters(initialIssues);
 	const [isCreatorOpen, setIsCreatorOpen] = useState(false);
 
@@ -56,7 +60,7 @@ export const IssuesListClient = ({ initialIssues }: IssueListClientProps) => {
 			{filters.isLoading ? (
 				<p>Loading...</p>
 			) : (
-				<IssueList issues={filters.filteredIssues} />
+				<IssueList issues={filters.filteredIssues} currentUserId={currentUserId} />
 			)}
 			<FloatingAddButton onClick={handleOpenCreator} />
 			{coords && (

@@ -24,6 +24,7 @@ if (typeof window !== 'undefined') {
 
 type IssuesMapContainerProps = {
 	issues: Issue[];
+	currentUserId: string | null;
 	center?: [number, number];
 	zoom?: number;
 	onMapClick?: (coords: { lat: number; lng: number }) => void;
@@ -120,6 +121,7 @@ const AutoCenterOnLocation = ({
 
 export const IssuesMapContainer = ({
 	issues,
+	currentUserId,
 	center = [49.1951, 16.6068], // Default: Brno
 	zoom = 13,
 	onMapClick,
@@ -154,6 +156,7 @@ export const IssuesMapContainer = ({
 			<IssueMarker
 				key={issue.id}
 				issue={issue}
+				currentUserId={currentUserId}
 				position={[issue.latitude, issue.longitude]}
 			/>
 		))}

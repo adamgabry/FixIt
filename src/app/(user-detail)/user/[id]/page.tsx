@@ -4,6 +4,7 @@ import { ProfileOverview } from '@/modules/user/components/profile-overview';
 import { getUserByIdFacade } from '@/modules/user/facade';
 import { IssueList } from '@/modules/issue/components/issue-list';
 import { getIssuesFromUserFacade } from '@/modules/issue/facade';
+import { getSession } from '@/modules/auth/server';
 
 const UserPage = async ({ params }: { params: Promise<{ id: string }> }) => {
 	const { id } = await params;
@@ -15,6 +16,8 @@ const UserPage = async ({ params }: { params: Promise<{ id: string }> }) => {
 	}
 
 	const issuesReportedByUser = await getIssuesFromUserFacade(user.id);
+	const session = await getSession();
+	const currentUserId = session?.user?.id ?? null;
 
 	return (
 		<div className="space-y-6">
@@ -32,7 +35,7 @@ const UserPage = async ({ params }: { params: Promise<{ id: string }> }) => {
 			</div>
 
 			{issuesReportedByUser.length > 0 ? (
-				<IssueList issues={issuesReportedByUser} />
+				<IssueList issues={issuesReportedByUser} currentUserId={currentUserId} />
 			) : (
 				<div className="mx-6">
 					<div className="text-center py-16 bg-white rounded-xl border-2 border-dashed border-gray-200 shadow-sm">

@@ -26,6 +26,7 @@ const IssuesMapContainer = dynamic(
 
 type MapViewProps = {
 	issues: Issue[];
+	currentUserId: string | null;
 	onIssueCreated?: () => void;
 	onOpenCreatorRef?: MutableRefObject<(() => void) | null>;
 	onCreatorOpenChange?: (isOpen: boolean) => void;
@@ -33,6 +34,7 @@ type MapViewProps = {
 
 export const MapView: React.FC<MapViewProps> = ({
 	issues,
+	currentUserId,
 	onIssueCreated,
 	onOpenCreatorRef,
 	onCreatorOpenChange
@@ -115,10 +117,11 @@ export const MapView: React.FC<MapViewProps> = ({
 		}
 	}, [onOpenCreatorRef, handleOpenCreator]);
 
-	return (
+		return (
 		<div className="w-full h-full relative">
 			<IssuesMapContainer
 				issues={issues}
+				currentUserId={currentUserId}
 				onMapClick={handleMapClick}
 				onMapReady={handleMapReady}
 				initialUserLocation={userCoords}
