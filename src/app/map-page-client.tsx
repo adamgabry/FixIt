@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState, useMemo } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
 import { MapView } from '@/modules/issue/components/map-view';
 import { FloatingAddButton } from '@/components/buttons/floating-add-button';
@@ -17,6 +17,14 @@ export const MapPageClient = ({ initialIssues }: MapPageClientProps) => {
 	const filters = useIssueFilters(initialIssues);
 	const openCreatorRef = useRef<(() => void) | null>(null);
 	const [isCreatorOpen, setIsCreatorOpen] = useState(false);
+	const [isMobile, setIsMobile] = useState(false);
+
+	useEffect(() => {
+		const checkMobile = () => setIsMobile(window.innerWidth < 768);
+		checkMobile();
+		window.addEventListener('resize', checkMobile);
+		return () => window.removeEventListener('resize', checkMobile);
+	}, []);
 
 	const handleIssueCreated = () => {
 		filters.refetch();
@@ -28,15 +36,14 @@ export const MapPageClient = ({ initialIssues }: MapPageClientProps) => {
 		}
 	};
 
-	// Memoize filters component to prevent duplicate renders
-	const filtersComponent = useMemo(() => <IssueFilters {...filters} />, [filters]);
-
 	return (
 		<>
 			{/* Mobile: Filters above map - same behavior as list page */}
-			<div className="md:hidden">
-				{filtersComponent}
-			</div>
+			{isMobile && (
+				<div>
+					<IssueFilters {...filters} />
+				</div>
+			)}
 
 			{/* Map container */}
 			<div className="w-full h-[calc(100vh-5rem)] md:h-[calc(100vh-5rem)] min-h-[500px] flex relative md:rounded-xl overflow-hidden md:shadow-lg md:border md:border-orange-200/50 bg-linear-to-br from-orange-50/30 via-amber-50/20 to-orange-50/30">
@@ -44,11 +51,13 @@ export const MapPageClient = ({ initialIssues }: MapPageClientProps) => {
 				<div className="absolute inset-0 bg-linear-to-br from-orange-50/10 via-transparent to-amber-50/10 pointer-events-none z-10" />
 				
 				{/* Desktop: Sidebar with filters */}
-				<div className="hidden md:block z-20">
-					<SlidingSidebar>
-						{filtersComponent}
-					</SlidingSidebar>
-				</div>
+				{!isMobile && (
+					<div className="z-20">
+						<SlidingSidebar>
+							<IssueFilters {...filters} />
+						</SlidingSidebar>
+					</div>
+				)}
 
 				<div className="flex-1 h-full relative">
 					<MapView
