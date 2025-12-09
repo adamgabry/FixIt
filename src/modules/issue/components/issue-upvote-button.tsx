@@ -1,7 +1,9 @@
 'use client';
 
 import { ThumbsUp } from 'lucide-react';
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { toggleUpvoteAction } from '@/modules/issueLike/actions';
 import { cn } from '@/lib/cn';
@@ -23,10 +25,12 @@ export function IssueUpvoteButton({
 	initialIsUpvoted,
 	variant = 'default'
 }: IssueUpvoteButtonProps) {
+	const router = useRouter();
+	const queryClient = useQueryClient();
 	const [isUpvoted, setIsUpvoted] = useState(initialIsUpvoted);
 	const [upvoteCount, setUpvoteCount] = useState(initialUpvoteCount);
 	const [error, setError] = useState<string | null>(null);
-	const [isPending, startTransition] = useTransition();
+	const [isPending, setIsPending] = useState(false);
 
 	// Check if the current user is the issue reporter
 	const isOwnIssue = currentUserId === reporterId;
@@ -44,35 +48,77 @@ export function IssueUpvoteButton({
 		// Optimistic update
 		const previousUpvoted = isUpvoted;
 		const previousCount = upvoteCount;
-		setIsUpvoted(!isUpvoted);
-		setUpvoteCount(prevCount => (isUpvoted ? prevCount - 1 : prevCount + 1));
+		const newIsUpvoted = !isUpvoted;
+		const newCount = isUpvoted ? upvoteCount - 1 : upvoteCount + 1;
+		
+		setIsUpvoted(newIsUpvoted);
+		setUpvoteCount(newCount);
+		setIsPending(true);
 
-		startTransition(async () => {
-			try {
-				const result = await toggleUpvoteAction(issueId, currentUserId!);
+		// Optimistically update React Query cache if available
+		try {
+			queryClient.setQueryData(['issues'], (oldData: any) => {
+				if (!oldData) return oldData;
+				return oldData.map((issue: any) =>
+					issue.id === issueId
+						? { 
+							...issue, 
+							numberOfUpvotes: newCount,
+							upvoters: newIsUpvoted 
+								? [...issue.upvoters, { id: currentUserId }]
+								: issue.upvoters.filter((u: any) => u.id !== currentUserId)
+						}
+						: issue
+				);
+			});
+		} catch {
+			// QueryClient not available (detail page without React Query provider)
+		}
 
-				if (!result.success) {
-					// Revert optimistic update on error
-					setIsUpvoted(previousUpvoted);
-					setUpvoteCount(previousCount);
-					setError(result.error || 'Failed to toggle upvote');
+		try {
+			const result = await toggleUpvoteAction(issueId, currentUserId!);
 
-					// Clear error after 3 seconds
-					setTimeout(() => setError(null), 3000);
-				} else {
-					// Update with server state
-					setIsUpvoted(result.isUpvoted);
-				}
-			} catch (err) {
-				// Revert optimistic update on error
+			if (!result.success) {
+				// Revert optimistic updates on error
 				setIsUpvoted(previousUpvoted);
 				setUpvoteCount(previousCount);
-				setError('Something went wrong. Please try again.');
-
-				// Clear error after 3 seconds
+				setError(result.error || 'Failed to toggle upvote');
+				
+				// Revert cache if available
+				try {
+					queryClient.invalidateQueries({ queryKey: ['issues'] });
+				} catch {
+					// No cache to revert
+				}
+				
 				setTimeout(() => setError(null), 3000);
+			} else {
+				// Sync with server state
+				setIsUpvoted(result.isUpvoted);
+				// Invalidate to ensure consistency
+				try {
+					queryClient.invalidateQueries({ queryKey: ['issues'] });
+				} catch {
+					// QueryClient not available
+				}
+				router.refresh();
 			}
-		});
+		} catch (err) {
+			// Revert on error
+			setIsUpvoted(previousUpvoted);
+			setUpvoteCount(previousCount);
+			setError('Something went wrong. Please try again.');
+			
+			try {
+				queryClient.invalidateQueries({ queryKey: ['issues'] });
+			} catch {
+				// QueryClient not available
+			}
+			
+			setTimeout(() => setError(null), 3000);
+		} finally {
+			setIsPending(false);
+		}
 	};
 
 	const getAriaLabel = () => {
