@@ -19,6 +19,7 @@ const UserPage = async ({ params }: { params: Promise<{ id: string }> }) => {
 	return (
 		<div>
 			<ProfileOverview user={user} />
+			Reported issues
 			<IssueList issues={issuesReportedByUser} />
 		</div>
 	);

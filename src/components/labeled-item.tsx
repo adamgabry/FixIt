@@ -11,7 +11,7 @@ export const LabeledItem = ({
 		{children && (
 			<>
 				<span className="text-sm text-gray-500">{label}</span>
-				<div className="truncate text-2xl">{children}</div>
+				<div className="truncate text-m">{children}</div>
 			</>
 		)}
 	</div>
