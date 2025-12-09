@@ -28,7 +28,7 @@ export const LocationButton = () => {
 
 	return (
 		<div
-			className="absolute bottom-4 left-4 z-[1000]"
+			className="absolute bottom-4 left-4 z-1000"
 			data-location-button
 			onClick={e => e.stopPropagation()}
 		>
