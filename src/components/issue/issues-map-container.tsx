@@ -8,6 +8,7 @@ import 'leaflet/dist/leaflet.css';
 import { type Issue } from '@/modules/issue/schema';
 import { IssueMarker } from '@/components/issue/issue-marker';
 import { LocationButton } from '@/components/buttons/location-button';
+import { MapSearch } from '@/components/map-search';
 
 // Fix for default marker icon in Next.js
 if (typeof window !== 'undefined') {
@@ -38,7 +39,7 @@ const MapClickHandler = ({
 }) => {
 	useMapEvents({
 		click: (e: L.LeafletMouseEvent) => {
-			// Check if the click originated from the location button or its children
+			// Check if the click originated from the location button, search bar, or their children
 			const target = e.originalEvent.target as HTMLElement;
 			if (target) {
 				// Check if the click target is within the location button container
@@ -47,6 +48,12 @@ const MapClickHandler = ({
 				);
 				if (locationButtonContainer) {
 					// Ignore clicks from location button
+					return;
+				}
+				// Check if the click target is within the map search container
+				const mapSearchContainer = target.closest('[data-map-search]');
+				if (mapSearchContainer) {
+					// Ignore clicks from map search
 					return;
 				}
 			}
@@ -131,6 +138,14 @@ export const IssuesMapContainer = ({
 			attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 			url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 		/>
+		{/* Map Search */}
+		<div
+			className="absolute top-4 right-4 w-auto min-w-[220px] max-w-[280px] z-[1000]"
+			data-map-search
+			onClick={e => e.stopPropagation()}
+		>
+			<MapSearch />
+		</div>
 		<LocationButton />
 		<MapClickHandler onMapClick={onMapClick} />
 		<MapCenterGetter onMapReady={onMapReady} />

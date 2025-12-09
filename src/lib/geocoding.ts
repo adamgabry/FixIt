@@ -1,5 +1,5 @@
 /**
- * Reverse geocoding utility to convert coordinates to human-readable addresses
+ * Geocoding utilities to convert between addresses and coordinates
  * Uses OpenStreetMap Nominatim API (free, no API key required)
  */
 
@@ -8,6 +8,13 @@ export type Address = {
 	street?: string;
 	city?: string;
 	country?: string;
+};
+
+export type GeocodeResult = {
+	displayName: string;
+	lat: number;
+	lng: number;
+	importance?: number;
 };
 
 /**
@@ -68,5 +75,60 @@ export const reverseGeocode = async (
 	} catch (error) {
 		console.error('Reverse geocoding error:', error);
 		return null;
+	}
+};
+
+/**
+ * Converts an address/place name to coordinates (forward geocoding)
+ * @param query - Address or place name to search for
+ * @param limit - Maximum number of results to return (default: 5)
+ * @returns Promise resolving to an array of geocode results or empty array if geocoding fails
+ */
+export const geocode = async (
+	query: string,
+	limit: number = 5
+): Promise<GeocodeResult[]> => {
+	try {
+		if (!query.trim()) {
+			return [];
+		}
+
+		// Use Nominatim API (free, no API key required)
+		// Rate limit: 1 request per second
+		// Restrict search to Czech Republic (cz) and Slovakia (sk)
+		const encodedQuery = encodeURIComponent(query);
+		const response = await fetch(
+			`https://nominatim.openstreetmap.org/search?format=json&q=${encodedQuery}&limit=${limit}&addressdetails=1&countrycodes=cz,sk`,
+			{
+				headers: {
+					'User-Agent': 'FixIt App' // Required by Nominatim
+				}
+			}
+		);
+
+		if (!response.ok) {
+			throw new Error('Geocoding request failed');
+		}
+
+		const data = await response.json();
+
+		if (!Array.isArray(data) || data.length === 0) {
+			return [];
+		}
+
+		return data.map((item: {
+			display_name: string;
+			lat: string;
+			lon: string;
+			importance?: number;
+		}) => ({
+			displayName: item.display_name,
+			lat: parseFloat(item.lat),
+			lng: parseFloat(item.lon),
+			importance: item.importance
+		}));
+	} catch (error) {
+		console.error('Forward geocoding error:', error);
+		return [];
 	}
 };
