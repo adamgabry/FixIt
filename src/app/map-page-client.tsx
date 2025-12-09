@@ -11,9 +11,10 @@ import { SlidingSidebar } from '@/components/page-modifiers/sliding-sidebar';
 
 type MapPageClientProps = {
 	initialIssues: Issue[];
+	currentUserId: string | null;
 };
 
-export const MapPageClient = ({ initialIssues }: MapPageClientProps) => {
+export const MapPageClient = ({ initialIssues, currentUserId }: MapPageClientProps) => {
 	const filters = useIssueFilters(initialIssues);
 	const openCreatorRef = useRef<(() => void) | null>(null);
 	const [isCreatorOpen, setIsCreatorOpen] = useState(false);
@@ -62,6 +63,7 @@ export const MapPageClient = ({ initialIssues }: MapPageClientProps) => {
 				<div className="flex-1 h-full relative">
 					<MapView
 						issues={filters.filteredIssues}
+						currentUserId={currentUserId}
 						onIssueCreated={handleIssueCreated}
 						onOpenCreatorRef={openCreatorRef}
 						onCreatorOpenChange={setIsCreatorOpen}
