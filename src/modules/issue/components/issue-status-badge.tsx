@@ -2,7 +2,7 @@ import React from 'react';
 
 import { type IssueStatus } from '@/modules/issue/schema';
 import { ISSUE_STATUS_LABELS } from '@/lib/issue-utils';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/badge';
 
 type IssueStatusBadgeProps = {
 	status: IssueStatus;

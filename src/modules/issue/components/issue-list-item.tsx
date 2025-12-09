@@ -14,7 +14,7 @@ import {
 import { IssueStatusBadge } from '@/modules/issue/components/issue-status-badge';
 import { IssueTypeBadge } from '@/modules/issue/components/issue-type-badge';
 import { Button } from '@/components/button';
-import { Card } from '@/components/ui/card';
+import { Card } from '@/components/card';
 
 export const IssueListItem = ({ issue }: { issue: Issue }) => {
 	const router = useRouter();

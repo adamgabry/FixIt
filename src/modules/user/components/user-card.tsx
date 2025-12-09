@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { type User } from '@/modules/user/schema';
 import { ProfilePicture } from '@/modules/user/components/profile-picture';
 import { UserRoleChanger } from '@/modules/user/components/user-role-changer';
-import { Card } from '@/components/ui/card';
+import { Card } from '@/components/card';
 
 type UserCardProps = {
 	user: User;

@@ -2,7 +2,7 @@ import React from 'react';
 
 import { ISSUE_TYPE_COLORS, ISSUE_TYPE_LABELS } from '@/lib/issue-utils';
 import { type IssueType } from '@/modules/issue/schema';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/badge';
 
 type IssueTypeBadgeProps = {
 	type: IssueType;

@@ -24,7 +24,7 @@ import { storage } from '@/firebase';
 import { ImageUpload } from '@/components/image-upload';
 import { IssueImagesList } from '@/modules/issue/components/issue-images-list';
 import { type IssuePicture } from '@/modules/issuePicture/schema';
-import { Card } from '@/components/ui/card';
+import { Card } from '@/components/card';
 
 const MapComponent = dynamic(() => import('@/components/map'), {
 	ssr: false
