@@ -13,7 +13,7 @@ import {
 	type IssueValuesSchema
 } from '@/modules/issue/schema';
 import { createIssueAction } from '@/modules/issue/actions';
-import { Button } from '@/components/button';
+import { Button } from '@/components/buttons/button';
 import { ImageUpload } from '@/components/image-upload';
 import { storage } from '@/firebase';
 

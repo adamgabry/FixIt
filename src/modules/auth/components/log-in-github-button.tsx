@@ -1,7 +1,7 @@
 'use client';
 
 import { signIn, useSession } from '@/modules/auth/client';
-import { Button } from '@/components/button';
+import { Button } from '@/components/buttons/button';
 
 export const LogInGithubButton = () => {
 	const { data: session } = useSession();

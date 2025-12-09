@@ -3,7 +3,7 @@
 import { useRef, useState, useMemo } from 'react';
 
 import { MapView } from '@/modules/issue/components/map-view';
-import { FloatingAddButton } from '@/components/floating-add-button';
+import { FloatingAddButton } from '@/components/buttons/floating-add-button';
 import { type Issue } from '@/modules/issue/schema';
 import { useIssueFilters } from '@/hooks/useIssueFilters';
 import { IssueFilters } from '@/modules/issue/components/issue-filters';

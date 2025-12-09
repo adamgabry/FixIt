@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useMap } from 'react-leaflet';
 import { LocateFixed } from 'lucide-react';
 
-import { Button } from '@/components/button';
+import { Button } from '@/components/buttons/button';
 import { useLocation } from '@/lib/use-location';
 
 export const LocationButton = () => {

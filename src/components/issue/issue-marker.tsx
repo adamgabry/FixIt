@@ -13,7 +13,7 @@ import {
 } from '@/lib/issue-utils';
 import { IssueStatusBadge } from '@/modules/issue/components/issue-status-badge';
 import { IssueTypeBadge } from '@/modules/issue/components/issue-type-badge';
-import { Button } from '@/components/button';
+import { Button } from '@/components/buttons/button';
 
 type IssueMarkerProps = {
 	issue: Issue;

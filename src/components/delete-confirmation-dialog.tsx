@@ -2,7 +2,7 @@
 
 import { AlertTriangle } from 'lucide-react';
 
-import { Button } from '@/components/button';
+import { Button } from '@/components/buttons/button';
 import { cn } from '@/lib/cn';
 
 type DeleteConfirmationDialogProps = {

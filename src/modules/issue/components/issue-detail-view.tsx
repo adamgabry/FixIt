@@ -12,7 +12,7 @@ import { Pencil, Trash2, Save, X } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { reverseGeocode, type Address } from '@/lib/geocoding';
 import { Input } from '@/components/input';
-import { Button } from '@/components/button';
+import { Button } from '@/components/buttons/button';
 import { DeleteConfirmationDialog } from '@/components/delete-confirmation-dialog';
 import {
 	type Issue,

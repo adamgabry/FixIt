@@ -10,7 +10,7 @@ import {
 } from '@/lib/issue-utils';
 import { FilterRow } from '@/components/filters/filter-row';
 import { SearchFilter } from '@/components/filters/search-filter';
-import { Button } from '@/components/button';
+import { Button } from '@/components/buttons/button';
 import { IssueType, IssueStatus } from '@/modules/issue/schema';
 import { Card } from '@/components/card';
 

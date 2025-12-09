@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { ShieldAlert, Home, ArrowLeft } from 'lucide-react';
 
 import { Card } from '@/components/card';
-import { Button } from '@/components/button';
+import { Button } from '@/components/buttons/button';
 
 const ForbiddenPage = () => (
 	<div className="min-h-screen flex items-center justify-center p-4 bg-linear-to-br from-orange-50/30 via-amber-50/20 to-orange-50/30">

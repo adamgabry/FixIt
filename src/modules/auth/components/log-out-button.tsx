@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 
 import { signOut, useSession } from '@/modules/auth/client';
-import { Button } from '@/components/button';
+import { Button } from '@/components/buttons/button';
 
 export const LogOutButton = () => {
 	const { data: session } = useSession();
