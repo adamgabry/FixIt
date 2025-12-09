@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React from 'react';
+import { Heart, Pencil } from 'lucide-react';
 
 import {
 	type Issue,
@@ -13,6 +14,7 @@ import {
 import { IssueStatusBadge } from '@/modules/issue/components/issue-status-badge';
 import { IssueTypeBadge } from '@/modules/issue/components/issue-type-badge';
 import { Button } from '@/components/button';
+import { Card } from '@/components/ui/card';
 
 export const IssueListItem = ({ issue }: { issue: Issue }) => {
 	const router = useRouter();
@@ -28,7 +30,12 @@ export const IssueListItem = ({ issue }: { issue: Issue }) => {
 	};
 
 	return (
-		<li className="max-w-sm border m-5 flex flex-col relative">
+		<Card
+			variant="elevated"
+			hover="lift"
+			padding="none"
+			className="max-w-sm flex flex-col overflow-hidden"
+		>
 			<div className="p-4 flex justify-between items-start gap-4 flex-1">
 				<Link
 					href={`/issues/${issue.id}`}
@@ -43,16 +50,23 @@ export const IssueListItem = ({ issue }: { issue: Issue }) => {
 
 				<div className="flex flex-col gap-1 items-end">
 					<Button
-						variant="secondary"
+						variant="ghost"
 						size="sm"
+						animation="scale"
 						onClick={handleLike}
 						className="flex items-center gap-1"
 					>
-						{`Like ${issue.numberOfUpvotes}`}
+						<Heart className="w-4 h-4" />
+						{issue.numberOfUpvotes}
 					</Button>
 
-					{/* TODO show only for admins and users who are creators of this + TODO redirect to issue edit/remove*/}
-					<Button variant="outline" size="sm" onClick={handleEdit}>
+					<Button
+						variant="secondary"
+						size="sm"
+						animation="scale"
+						onClick={handleEdit}
+					>
+						<Pencil className="w-4 h-4" />
 						Edit
 					</Button>
 				</div>
@@ -61,18 +75,18 @@ export const IssueListItem = ({ issue }: { issue: Issue }) => {
 			<Link href={`/issues/${issue.id}`} className="w-full h-48 relative">
 				{issue.pictureUrls[0] ? (
 					<Image
-						className="object-cover rounded-b-base"
+						className="object-cover"
 						src={issue.pictureUrls[0]}
-						alt="Here should be picture"
+						alt={issue.title}
 						fill
 						unoptimized
 					/>
 				) : (
-					<div className="bg-gray-300 w-full h-full rounded-b-base flex items-center justify-center">
+					<div className="bg-linear-to-br from-orange-100 via-amber-50 to-orange-100 w-full h-full flex items-center justify-center text-gray-400">
 						No image
 					</div>
 				)}
 			</Link>
-		</li>
+		</Card>
 	);
 };

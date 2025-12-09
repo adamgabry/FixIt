@@ -5,12 +5,14 @@ export const UserList = async () => {
 	const users = await getUsersFacade();
 
 	return (
-		<ul>
-			{users.map(user => (
-				<li key={user.id}>
-					<UserCard user={user} />
-				</li>
-			))}
-		</ul>
+		<div className="p-6 max-w-4xl mx-auto">
+			<ul className="space-y-0">
+				{users.map(user => (
+					<li key={user.id}>
+						<UserCard user={user} />
+					</li>
+				))}
+			</ul>
+		</div>
 	);
 };

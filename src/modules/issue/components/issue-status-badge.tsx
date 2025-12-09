@@ -2,15 +2,23 @@ import React from 'react';
 
 import { type IssueStatus } from '@/modules/issue/schema';
 import { ISSUE_STATUS_LABELS } from '@/lib/issue-utils';
+import { Badge } from '@/components/ui/badge';
 
 type IssueStatusBadgeProps = {
 	status: IssueStatus;
 };
 
+const statusVariantMap: Record<IssueStatus, 'success' | 'warning' | 'info' | 'default'> = {
+	REPORTED: 'warning',
+	IN_PROGRESS: 'info',
+	RESOLVED: 'success',
+	CLOSED: 'default'
+};
+
 export const IssueStatusBadge: React.FC<IssueStatusBadgeProps> = ({
 	status
 }) => (
-	<span className="inline-flex items-center bg-brand-softer border border-brand-subtle text-fg-brand-strong text-xs font-medium px-1.5 py-0.5 rounded-sm">
+	<Badge variant={statusVariantMap[status] || 'default'}>
 		{ISSUE_STATUS_LABELS[status]}
-	</span>
+	</Badge>
 );

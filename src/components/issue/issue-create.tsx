@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { getDownloadURL, ref, uploadBytes } from '@firebase/storage';
 import { v4 } from 'uuid';
+import { X, Send } from 'lucide-react';
 
 import {
 	IssueStatus,
@@ -77,7 +78,7 @@ export const IssueCreator = ({
 
 		try {
 			// TODO: Get actual logged-in user ID - currently using hardcoded value
-			const reporterId = 1;
+			const reporterId = '1';
 
 			const uploadedUrls = await Promise.all(
 				images.map(async file => {
@@ -207,48 +208,29 @@ export const IssueCreator = ({
 						<Button
 							type="button"
 							variant="outline"
+							size="lg"
+							animation="scale"
 							onClick={onCloseAction}
-							className="flex-1 border-orange-200 hover:bg-orange-50 hover:border-orange-300"
+							className="flex-1"
 							disabled={isSubmitting}
 						>
+							<X className="w-4 h-4" />
 							Cancel
 						</Button>
 						<Button
 							type="submit"
-							className="flex-1 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold shadow-md hover:shadow-lg border-2 border-orange-400/60 hover:border-orange-500 transition-all duration-200"
+							variant="default"
+							size="lg"
+							animation="scale"
+							className="flex-1"
 							disabled={isSubmitting}
 						>
-							{isSubmitting ? (
-								<span className="flex items-center justify-center gap-2">
-									<svg
-										className="animate-spin h-4 w-4"
-										xmlns="http://www.w3.org/2000/svg"
-										fill="none"
-										viewBox="0 0 24 24"
-									>
-										<circle
-											className="opacity-25"
-											cx="12"
-											cy="12"
-											r="10"
-											stroke="currentColor"
-											strokeWidth="4"
-										/>
-										<path
-											className="opacity-75"
-											fill="currentColor"
-											d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-										/>
-									</svg>
-									Creating...
-								</span>
-							) : (
-								'Create Issue'
-							)}
-						</Button>
-					</div>
-				</form>
-			</div>
-		</SlidingPanel>
-	);
+						<Send className="w-4 h-4" />
+						{isSubmitting ? 'Creating...' : 'Create Issue'}
+					</Button>
+				</div>
+			</form>
+		</div>
+	</SlidingPanel>
+);
 };
