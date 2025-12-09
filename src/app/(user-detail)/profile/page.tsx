@@ -25,8 +25,12 @@ const ProfilePage = async () => {
 			<TwoTabComponent
 				tab1Label="Reported by me"
 				tab2Label="Liked by me"
-				tab1Content={<IssueList issues={issuesReportedByUser} />}
-				tab2Content={<IssueList issues={issuesLikedByUser} />}
+				tab1Content={
+					<IssueList issues={issuesReportedByUser} currentUserId={loggedInUser.id} />
+				}
+				tab2Content={
+					<IssueList issues={issuesLikedByUser} currentUserId={loggedInUser.id} />
+				}
 			/>
 		</div>
 	);
