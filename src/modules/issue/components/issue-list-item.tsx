@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React from 'react';
-import { Heart, Pencil } from 'lucide-react';
+import { Pencil } from 'lucide-react';
 
 import {
 	type Issue,
@@ -15,8 +15,15 @@ import { IssueStatusBadge } from '@/modules/issue/components/issue-status-badge'
 import { IssueTypeBadge } from '@/modules/issue/components/issue-type-badge';
 import { Button } from '@/components/buttons/button';
 import { Card } from '@/components/card';
+import { IssueUpvoteButton } from '@/modules/issue/components/issue-upvote-button';
 
-export const IssueListItem = ({ issue }: { issue: Issue }) => {
+export const IssueListItem = ({
+	issue,
+	currentUserId
+}: {
+	issue: Issue;
+	currentUserId: string | null;
+}) => {
 	const router = useRouter();
 
 	const handleEdit = (e: React.MouseEvent) => {
@@ -25,9 +32,10 @@ export const IssueListItem = ({ issue }: { issue: Issue }) => {
 		router.push(`/issues/${issue.id}?edit=true`);
 	};
 
-	const handleLike = (_e: React.MouseEvent) => {
-		console.log('Like clicked', issue.id);
-	};
+	// Check if current user has upvoted this issue
+	const isUpvoted = currentUserId
+		? issue.upvoters.some(upvoter => upvoter.id === currentUserId)
+		: false;
 
 	return (
 		<Card
@@ -49,16 +57,14 @@ export const IssueListItem = ({ issue }: { issue: Issue }) => {
 				</Link>
 
 				<div className="flex flex-col gap-1 items-end">
-					<Button
-						variant="ghost"
-						size="sm"
-						animation="scale"
-						onClick={handleLike}
-						className="flex items-center gap-1"
-					>
-						<Heart className="w-4 h-4" />
-						{issue.numberOfUpvotes}
-					</Button>
+					<IssueUpvoteButton
+						issueId={issue.id}
+						reporterId={issue.reporter.id}
+						currentUserId={currentUserId}
+						initialUpvoteCount={issue.numberOfUpvotes}
+						initialIsUpvoted={isUpvoted}
+						variant="compact"
+					/>
 
 					<Button
 						variant="secondary"
