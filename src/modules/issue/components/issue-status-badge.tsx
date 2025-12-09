@@ -12,10 +12,10 @@ const statusVariantMap: Record<
 	IssueStatus,
 	'success' | 'warning' | 'info' | 'default'
 > = {
-	REPORTED: 'warning',
-	IN_PROGRESS: 'info',
-	RESOLVED: 'success',
-	CLOSED: 'default'
+	[IssueStatus.REPORTED]: 'warning',
+	[IssueStatus.IN_PROGRESS]: 'info',
+	[IssueStatus.FIXED]: 'success',
+	[IssueStatus.CLOSED]: 'default'
 };
 
 export const IssueStatusBadge: React.FC<IssueStatusBadgeProps> = ({
