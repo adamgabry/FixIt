@@ -65,6 +65,7 @@ export const IssueListItem = ({ issue }: { issue: Issue }) => {
 						size="sm"
 						animation="scale"
 						onClick={handleEdit}
+						className="hidden md:flex"
 					>
 						<Pencil className="w-4 h-4" />
 						Edit
