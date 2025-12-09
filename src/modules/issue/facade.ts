@@ -17,8 +17,7 @@ import { getUsersWhoLikedIssueFacade } from '@/modules/issueLike/facade';
 import { getUserByIdFacade } from '@/modules/user/facade';
 import { type IssueRow } from '@/db/schema/issues';
 import { getPicturesByIssueFacade } from '@/modules/issuePicture/facade';
-import { hasStaffPermissions, requireAuth } from '@/modules/auth/server';
-import { Role } from '@/modules/user/schema';
+import { requireAuth, requireStaff } from '@/modules/auth/server';
 
 const mapIssueValuesSchemaToIssue = async (issue: IssueRow): Promise<Issue> => {
 	const reporter = await getUserByIdFacade(issue.reporterId);
@@ -52,15 +51,10 @@ const mapIssueValuesSchemaToIssue = async (issue: IssueRow): Promise<Issue> => {
 
 const requireIssueModifyPermission = async (issue: IssueRow) => {
 	const session = await requireAuth();
-
 	const isOwner = issue.reporterId === session.user.id;
-	const hasStaffPermissions =
-		session.user.role === Role.STAFF || session.user.role === Role.ADMIN;
 
-	if (!isOwner && !hasStaffPermissions) {
-		throw new Error(
-			'Forbidden: You do not have permission to modify this issue'
-		);
+	if (!isOwner) {
+		await requireStaff();
 	}
 };
 
