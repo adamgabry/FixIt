@@ -1,6 +1,6 @@
 'use client';
 
-import { Heart } from 'lucide-react';
+import { ThumbsUp } from 'lucide-react';
 import { useState, useTransition } from 'react';
 
 import { toggleUpvoteAction } from '@/modules/issueLike/actions';
@@ -112,7 +112,7 @@ export function IssueUpvoteButton({
 					error && 'animate-shake'
 				)}
 			>
-				<Heart
+				<ThumbsUp
 					className={cn(
 						'transition-all duration-200',
 						isCompact ? 'w-5 h-5 md:w-4 md:h-4' : 'w-4 h-4',

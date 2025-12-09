@@ -14,9 +14,11 @@ import {
 import { IssueStatusBadge } from '@/modules/issue/components/issue-status-badge';
 import { IssueTypeBadge } from '@/modules/issue/components/issue-type-badge';
 import { Button } from '@/components/buttons/button';
+import { IssueUpvoteButton } from '@/modules/issue/components/issue-upvote-button';
 
 type IssueMarkerProps = {
 	issue: Issue;
+	currentUserId: string | null;
 	position: [number, number];
 };
 
@@ -33,13 +35,17 @@ const createIssueIcon = (type: IssueType): L.Icon => {
 	});
 };
 
-export const IssueMarker = ({ issue, position }: IssueMarkerProps) => {
+export const IssueMarker = ({ issue, currentUserId, position }: IssueMarkerProps) => {
 	const router = useRouter();
 	const icon = createIssueIcon(issue.type as IssueType);
 
 	const handleViewDetails = () => {
 		router.push(`/issues/${issue.id}`);
 	};
+
+	const isUpvoted = currentUserId
+		? issue.upvoters.some(upvoter => upvoter.id === currentUserId)
+		: false;
 
 	return (
 		<Marker position={position} icon={icon}>
@@ -70,6 +76,16 @@ export const IssueMarker = ({ issue, position }: IssueMarkerProps) => {
 						<div className="flex flex-wrap gap-2 mb-3">
 							<IssueStatusBadge status={issue.status as IssueStatus} />
 							<IssueTypeBadge type={issue.type as IssueType} />
+						</div>
+						<div className="flex items-center gap-2 mb-2">
+							<IssueUpvoteButton
+								issueId={issue.id}
+								reporterId={issue.reporter.id}
+								currentUserId={currentUserId}
+								initialUpvoteCount={issue.numberOfUpvotes}
+								initialIsUpvoted={isUpvoted}
+								variant="compact"
+							/>
 						</div>
 						<Button
 							variant="default"
