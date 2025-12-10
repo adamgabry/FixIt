@@ -350,52 +350,6 @@ const IssueDetailView = ({
 										variant="default"
 									/>
 								)}
-								{!isEditing ? (
-									<>
-										<Button
-											variant="secondary"
-											size="sm"
-											animation="scale"
-											onClick={() => setIsEditing(true)}
-										>
-											<Pencil className="w-4 h-4" />
-											Edit
-										</Button>
-										<Button
-											variant="destructive"
-											size="sm"
-											animation="scale"
-											onClick={() => setShowDeleteConfirm(true)}
-											disabled={isDeleting}
-										>
-											<Trash2 className="w-4 h-4" />
-											Delete
-										</Button>
-									</>
-								) : (
-									<>
-										<Button
-											variant="outline"
-											size="sm"
-											animation="scale"
-											onClick={handleCancel}
-											disabled={isSaving}
-										>
-											<X className="w-4 h-4" />
-											Cancel
-										</Button>
-										<Button
-											variant="success"
-											size="sm"
-											animation="scale"
-											onClick={handleSave}
-											disabled={isSaving}
-										>
-											<Save className="w-4 h-4" />
-											{isSaving ? 'Saving...' : 'Save'}
-										</Button>
-									</>
-								)}
 							</div>
 						</div>
 					</div>
