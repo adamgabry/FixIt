@@ -8,7 +8,7 @@ import 'leaflet/dist/leaflet.css';
 import { type Issue } from '@/modules/issue/schema';
 import { IssueMarker } from '@/modules/issue/components/issue-marker';
 import { LocationButton } from '@/components/buttons/location-button';
-import { MapSearch } from '@/components/map-search';
+import { MapSearch } from '@/modules/map/map-search';
 
 if (typeof window !== 'undefined') {
 	delete (L.Icon.Default.prototype as unknown as { _getIconUrl?: unknown })

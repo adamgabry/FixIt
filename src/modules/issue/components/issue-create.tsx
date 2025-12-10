@@ -19,7 +19,7 @@ import { storage } from '@/firebase';
 import { useSession } from '@/modules/auth/client';
 
 import { SlidingPanel } from '../../../components/page-modifiers/sliding-panel';
-import { LocationSearch } from '../../../components/location-search';
+import { LocationSearch } from '../../map/location-search';
 
 // Dynamic import for Leaflet map to avoid SSR issues
 const LocationPickerMap = dynamic(

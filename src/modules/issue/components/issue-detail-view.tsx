@@ -29,7 +29,7 @@ import { IssueUpvoteButton } from '@/modules/issue/components/issue-upvote-butto
 import { hasStaffPermissions, useSession } from '@/modules/auth/client';
 import { type Role } from '@/modules/user/schema';
 
-const MapComponent = dynamic(() => import('@/components/map'), {
+const MapComponent = dynamic(() => import('@/modules/map/map'), {
 	ssr: false
 });
 
