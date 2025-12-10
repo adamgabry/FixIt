@@ -26,6 +26,7 @@ const IssueDetailPage = async ({
 		<IssueDetailView
 			issue={issue}
 			currentUserId={currentUserId}
+			currentUserRole={session?.user?.role ?? null}
 			initialEditMode={initialEditMode}
 		/>
 	);

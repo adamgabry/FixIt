@@ -27,6 +27,7 @@ import { IssueImagesList } from '@/modules/issue/components/issue-images-list';
 import { type IssuePicture } from '@/modules/issuePicture/schema';
 import { IssueUpvoteButton } from '@/modules/issue/components/issue-upvote-button';
 import { hasStaffPermissions, useSession } from '@/modules/auth/client';
+import { Role } from '@/modules/user/schema';
 
 const MapComponent = dynamic(() => import('@/components/map'), {
 	ssr: false
@@ -35,12 +36,14 @@ const MapComponent = dynamic(() => import('@/components/map'), {
 type IssueDetailViewProps = {
 	issue: Issue;
 	currentUserId: string | null;
+	currentUserRole: Role | null;
 	initialEditMode?: boolean;
 };
 
 const IssueDetailView = ({
 	issue: initialIssue,
 	currentUserId,
+	currentUserRole,
 	initialEditMode = false
 }: IssueDetailViewProps) => {
 	const router = useRouter();
@@ -67,8 +70,11 @@ const IssueDetailView = ({
 	const lat = issue.latitude;
 	const lng = issue.longitude;
 
-	const hasStaffPermissionsFlag = hasStaffPermissions(session?.user?.role);
-	const isUsersIssue = session?.user?.id === issue.reporter.id;
+	const resolvedUserId = session?.user?.id ?? currentUserId;
+	const resolvedUserRole = session?.user?.role ?? currentUserRole ?? undefined;
+
+	const hasStaffPermissionsFlag = hasStaffPermissions(resolvedUserRole);
+	const isUsersIssue = resolvedUserId === issue.reporter.id;
 
 	// Sync local state when initialIssue prop changes (after save/refresh)
 	useEffect(() => {
