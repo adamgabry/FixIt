@@ -27,7 +27,7 @@ import { IssueImagesList } from '@/modules/issue/components/issue-images-list';
 import { type IssuePicture } from '@/modules/issuePicture/schema';
 import { IssueUpvoteButton } from '@/modules/issue/components/issue-upvote-button';
 import { hasStaffPermissions, useSession } from '@/modules/auth/client';
-import { Role } from '@/modules/user/schema';
+import { type Role } from '@/modules/user/schema';
 
 const MapComponent = dynamic(() => import('@/components/map'), {
 	ssr: false
