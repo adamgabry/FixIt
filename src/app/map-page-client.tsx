@@ -14,7 +14,10 @@ type MapPageClientProps = {
 	currentUserId: string | null;
 };
 
-export const MapPageClient = ({ initialIssues, currentUserId }: MapPageClientProps) => {
+export const MapPageClient = ({
+	initialIssues,
+	currentUserId
+}: MapPageClientProps) => {
 	const filters = useIssueFilters(initialIssues);
 	const openCreatorRef = useRef<(() => void) | null>(null);
 	const [isCreatorOpen, setIsCreatorOpen] = useState(false);
@@ -64,11 +67,13 @@ export const MapPageClient = ({ initialIssues, currentUserId }: MapPageClientPro
 					<MapView
 						issues={filters.filteredIssues}
 						currentUserId={currentUserId}
-						onIssueCreated={handleIssueCreated}
-						onOpenCreatorRef={openCreatorRef}
-						onCreatorOpenChange={setIsCreatorOpen}
+						onIssueCreatedAction={handleIssueCreated}
+						onOpenCreatorRefAction={openCreatorRef}
+						onCreatorOpenChangeAction={setIsCreatorOpen}
 					/>
-					{!isCreatorOpen && <FloatingAddButton onClick={handleOpenCreator} />}
+					{!isCreatorOpen && (
+						<FloatingAddButton onClickAction={handleOpenCreator} />
+					)}
 				</div>
 			</div>
 		</>

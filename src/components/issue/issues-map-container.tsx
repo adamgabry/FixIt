@@ -10,7 +10,6 @@ import { IssueMarker } from '@/components/issue/issue-marker';
 import { LocationButton } from '@/components/buttons/location-button';
 import { MapSearch } from '@/components/map-search';
 
-// Fix for default marker icon in Next.js
 if (typeof window !== 'undefined') {
 	delete (L.Icon.Default.prototype as unknown as { _getIconUrl?: unknown })
 		._getIconUrl;
@@ -27,12 +26,11 @@ type IssuesMapContainerProps = {
 	currentUserId: string | null;
 	center?: [number, number];
 	zoom?: number;
-	onMapClick?: (coords: { lat: number; lng: number }) => void;
-	onMapReady?: (getCenter: () => { lat: number; lng: number }) => void;
+	onMapClickAction?: (coords: { lat: number; lng: number }) => void;
+	onMapReadyAction?: (getCenter: () => { lat: number; lng: number }) => void;
 	initialUserLocation?: { lat: number; lng: number } | null;
 };
 
-// Component to handle map clicks
 const MapClickHandler = ({
 	onMapClick
 }: {
@@ -40,21 +38,16 @@ const MapClickHandler = ({
 }) => {
 	useMapEvents({
 		click: (e: L.LeafletMouseEvent) => {
-			// Check if the click originated from the location button, search bar, or their children
 			const target = e.originalEvent.target as HTMLElement;
 			if (target) {
-				// Check if the click target is within the location button container
 				const locationButtonContainer = target.closest(
 					'[data-location-button]'
 				);
 				if (locationButtonContainer) {
-					// Ignore clicks from location button
 					return;
 				}
-				// Check if the click target is within the map search container
 				const mapSearchContainer = target.closest('[data-map-search]');
 				if (mapSearchContainer) {
-					// Ignore clicks from map search
 					return;
 				}
 			}
@@ -70,7 +63,6 @@ const MapClickHandler = ({
 	return null;
 };
 
-// Component to expose map center getter
 const MapCenterGetter = ({
 	onMapReady
 }: {
@@ -80,7 +72,6 @@ const MapCenterGetter = ({
 	const hasCalledRef = React.useRef(false);
 
 	React.useEffect(() => {
-		// Only call onMapReady once when map is ready
 		if (onMapReady && !hasCalledRef.current) {
 			onMapReady(() => {
 				const center = map.getCenter();
@@ -96,7 +87,6 @@ const MapCenterGetter = ({
 	return null;
 };
 
-// Component to center map on user's location when available
 const AutoCenterOnLocation = ({
 	userLocation
 }: {
@@ -106,7 +96,6 @@ const AutoCenterOnLocation = ({
 	const hasCenteredRef = React.useRef(false);
 
 	React.useEffect(() => {
-		// Center map on user location once when it becomes available
 		if (userLocation && !hasCenteredRef.current) {
 			map.flyTo([userLocation.lat, userLocation.lng], 15, {
 				animate: true,
@@ -124,8 +113,8 @@ export const IssuesMapContainer = ({
 	currentUserId,
 	center = [49.1951, 16.6068], // Default: Brno
 	zoom = 13,
-	onMapClick,
-	onMapReady,
+	onMapClickAction,
+	onMapReadyAction,
 	initialUserLocation
 }: IssuesMapContainerProps) => (
 	<MapContainer
@@ -140,7 +129,6 @@ export const IssuesMapContainer = ({
 			attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 			url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 		/>
-		{/* Map Search */}
 		<div
 			className="absolute top-4 right-4 w-auto min-w-[220px] max-w-[280px] z-[1000]"
 			data-map-search
@@ -149,8 +137,8 @@ export const IssuesMapContainer = ({
 			<MapSearch />
 		</div>
 		<LocationButton />
-		<MapClickHandler onMapClick={onMapClick} />
-		<MapCenterGetter onMapReady={onMapReady} />
+		<MapClickHandler onMapClick={onMapClickAction} />
+		<MapCenterGetter onMapReady={onMapReadyAction} />
 		<AutoCenterOnLocation userLocation={initialUserLocation} />
 		{issues.map(issue => (
 			<IssueMarker

@@ -1,8 +1,3 @@
-/**
- * Geocoding utilities to convert between addresses and coordinates
- * Uses OpenStreetMap Nominatim API (free, no API key required)
- */
-
 export type Address = {
 	displayName: string;
 	street?: string;
@@ -17,24 +12,16 @@ export type GeocodeResult = {
 	importance?: number;
 };
 
-/**
- * Converts latitude and longitude to a human-readable address
- * @param lat - Latitude
- * @param lng - Longitude
- * @returns Promise resolving to an address object or null if geocoding fails
- */
 export const reverseGeocode = async (
 	lat: number,
 	lng: number
 ): Promise<Address | null> => {
 	try {
-		// Use Nominatim API (free, no API key required)
-		// Rate limit: 1 request per second
 		const response = await fetch(
 			`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`,
 			{
 				headers: {
-					'User-Agent': 'FixIt App' // Required by Nominatim
+					'User-Agent': 'FixIt App'
 				}
 			}
 		);
@@ -52,7 +39,6 @@ export const reverseGeocode = async (
 		const address = data.address;
 		const displayName = data.display_name ?? '';
 
-		// Extract address components
 		const street = [address.road, address.house_number]
 			.filter(Boolean)
 			.join(' ');
@@ -78,12 +64,6 @@ export const reverseGeocode = async (
 	}
 };
 
-/**
- * Converts an address/place name to coordinates (forward geocoding)
- * @param query - Address or place name to search for
- * @param limit - Maximum number of results to return (default: 5)
- * @returns Promise resolving to an array of geocode results or empty array if geocoding fails
- */
 export const geocode = async (
 	query: string,
 	limit: number = 5
@@ -93,15 +73,12 @@ export const geocode = async (
 			return [];
 		}
 
-		// Use Nominatim API (free, no API key required)
-		// Rate limit: 1 request per second
-		// Restrict search to Czech Republic (cz) and Slovakia (sk)
 		const encodedQuery = encodeURIComponent(query);
 		const response = await fetch(
 			`https://nominatim.openstreetmap.org/search?format=json&q=${encodedQuery}&limit=${limit}&addressdetails=1&countrycodes=cz,sk`,
 			{
 				headers: {
-					'User-Agent': 'FixIt App' // Required by Nominatim
+					'User-Agent': 'FixIt App'
 				}
 			}
 		);

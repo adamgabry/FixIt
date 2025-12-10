@@ -35,7 +35,10 @@ const UserPage = async ({ params }: { params: Promise<{ id: string }> }) => {
 			</div>
 
 			{issuesReportedByUser.length > 0 ? (
-				<IssueList issues={issuesReportedByUser} currentUserId={currentUserId} />
+				<IssueList
+					issues={issuesReportedByUser}
+					currentUserId={currentUserId}
+				/>
 			) : (
 				<div className="mx-6">
 					<div className="text-center py-16 bg-white rounded-xl border-2 border-dashed border-gray-200 shadow-sm">

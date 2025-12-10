@@ -3,8 +3,7 @@ import {
 	deleteLike,
 	getIssuesLikedByUser,
 	getLikeByUserAndIssue,
-	getUsersWhoLikedIssue,
-	updateLike
+	getUsersWhoLikedIssue
 } from '@/modules/issueLike/server';
 import { type User } from '@/modules/user/schema';
 import { getUserByIdFacade } from '@/modules/user/facade';
@@ -67,23 +66,6 @@ export const createLikeFacade = async (
 
 	if (!user || !issue) {
 		throw new Error('User or Issue not found for the created like');
-	}
-
-	return { user, issue };
-};
-
-export const updateLikeFacade = async (
-	userId: string,
-	issueId: number,
-	data: Partial<IssueLikeValuesSchema>
-): Promise<IssueLike> => {
-	const like = await updateLike(userId, issueId, data);
-
-	const user = await getUserByIdFacade(like.userId);
-	const issue = await getIssueByIdFacade(like.issueId);
-
-	if (!user || !issue) {
-		throw new Error('User or Issue not found for the updated like');
 	}
 
 	return { user, issue };

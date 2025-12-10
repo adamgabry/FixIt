@@ -6,12 +6,12 @@ import { Search, X, MapPin } from 'lucide-react';
 import { geocode, type GeocodeResult } from '@/lib/geocoding';
 
 type LocationSearchProps = {
-	onResultSelect: (lat: number, lng: number) => void;
+	onResultSelectAction: (lat: number, lng: number) => void;
 	className?: string;
 };
 
 export const LocationSearch = ({
-	onResultSelect,
+	onResultSelectAction,
 	className = ''
 }: LocationSearchProps) => {
 	const [query, setQuery] = useState('');
@@ -31,7 +31,6 @@ export const LocationSearch = ({
 
 		const trimmedQuery = query.trim();
 
-		// Always use setTimeout to avoid synchronous setState in effect
 		searchTimeoutRef.current = setTimeout(
 			async () => {
 				if (!trimmedQuery) {
@@ -48,8 +47,8 @@ export const LocationSearch = ({
 				setIsSearching(false);
 				setSelectedIndex(-1);
 			},
-			trimmedQuery ? 500 : 0
-		); // 500ms debounce for non-empty queries
+			trimmedQuery ? 500 : 0 // 500ms debounce for non-empty queries
+		);
 
 		return () => {
 			if (searchTimeoutRef.current) {
@@ -58,19 +57,17 @@ export const LocationSearch = ({
 		};
 	}, [query]);
 
-	// Handle result selection
 	const handleSelectResult = useCallback(
 		(result: GeocodeResult) => {
-			onResultSelect(result.lat, result.lng);
+			onResultSelectAction(result.lat, result.lng);
 			setQuery(result.displayName);
 			setShowResults(false);
 			setResults([]);
 			inputRef.current?.blur();
 		},
-		[onResultSelect]
+		[onResultSelectAction]
 	);
 
-	// Handle keyboard navigation
 	const handleKeyDown = useCallback(
 		(e: React.KeyboardEvent<HTMLInputElement>) => {
 			if (!showResults || results.length === 0) return;
@@ -96,7 +93,6 @@ export const LocationSearch = ({
 		[showResults, results, selectedIndex, handleSelectResult]
 	);
 
-	// Clear search
 	const handleClear = useCallback(() => {
 		setQuery('');
 		setResults([]);
@@ -104,9 +100,9 @@ export const LocationSearch = ({
 		inputRef.current?.focus();
 	}, []);
 
-	// Close results when clicking outside
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
+			// close results
 			if (
 				resultsRef.current &&
 				!resultsRef.current.contains(event.target as Node) &&
@@ -155,7 +151,6 @@ export const LocationSearch = ({
 				)}
 			</div>
 
-			{/* Search Results */}
 			{showResults && (
 				<div
 					ref={resultsRef}

@@ -8,7 +8,6 @@ import { type Issue } from '@/modules/issue/schema';
 import { IssueCreator } from '@/components/issue/issue-create';
 import { useLocation } from '@/lib/use-location';
 
-// Dynamic import for Leaflet map
 const IssuesMapContainer = dynamic(
 	() =>
 		import('@/components/issue/issues-map-container').then(
@@ -27,17 +26,17 @@ const IssuesMapContainer = dynamic(
 type MapViewProps = {
 	issues: Issue[];
 	currentUserId: string | null;
-	onIssueCreated?: () => void;
-	onOpenCreatorRef?: MutableRefObject<(() => void) | null>;
-	onCreatorOpenChange?: (isOpen: boolean) => void;
+	onIssueCreatedAction?: () => void;
+	onOpenCreatorRefAction?: MutableRefObject<(() => void) | null>;
+	onCreatorOpenChangeAction?: (isOpen: boolean) => void;
 };
 
 export const MapView: React.FC<MapViewProps> = ({
 	issues,
 	currentUserId,
-	onIssueCreated,
-	onOpenCreatorRef,
-	onCreatorOpenChange
+	onIssueCreatedAction,
+	onOpenCreatorRefAction,
+	onCreatorOpenChangeAction
 }) => {
 	const [isCreatorOpen, setIsCreatorOpen] = useState(false);
 	const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(
@@ -51,10 +50,8 @@ export const MapView: React.FC<MapViewProps> = ({
 		null
 	);
 
-	// Get user's current location
 	const { coords: userCoords, requestLocation } = useLocation();
 
-	// Request location when component mounts
 	useEffect(() => {
 		if (typeof window !== 'undefined' && navigator.geolocation) {
 			requestLocation();
@@ -71,7 +68,6 @@ export const MapView: React.FC<MapViewProps> = ({
 	);
 
 	const handleOpenCreator = useCallback(() => {
-		// Request fresh location when opening creator
 		if (typeof window !== 'undefined' && navigator.geolocation) {
 			requestLocation();
 		}
@@ -89,20 +85,17 @@ export const MapView: React.FC<MapViewProps> = ({
 
 	const handleCloseCreator = useCallback(() => {
 		setIsCreatorOpen(false);
-		// Don't clear coords, keep them for potential reopening
 	}, []);
 
-	// Notify parent when creator open state changes
 	useEffect(() => {
-		if (onCreatorOpenChange) {
-			onCreatorOpenChange(isCreatorOpen);
+		if (onCreatorOpenChangeAction) {
+			onCreatorOpenChangeAction(isCreatorOpen);
 		}
-	}, [isCreatorOpen, onCreatorOpenChange]);
+	}, [isCreatorOpen, onCreatorOpenChangeAction]);
 
 	const handleMapReady = useCallback(
 		(getCenter: () => { lat: number; lng: number }) => {
 			getMapCenterRef.current = getCenter;
-			// Update default coords when map is ready
 			if (getMapCenterRef.current) {
 				setDefaultCoords(getMapCenterRef.current());
 			}
@@ -110,20 +103,19 @@ export const MapView: React.FC<MapViewProps> = ({
 		[]
 	);
 
-	// Expose openCreator function via ref
 	useEffect(() => {
-		if (onOpenCreatorRef) {
-			onOpenCreatorRef.current = handleOpenCreator;
+		if (onOpenCreatorRefAction) {
+			onOpenCreatorRefAction.current = handleOpenCreator;
 		}
-	}, [onOpenCreatorRef, handleOpenCreator]);
+	}, [onOpenCreatorRefAction, handleOpenCreator]);
 
-		return (
+	return (
 		<div className="w-full h-full relative">
 			<IssuesMapContainer
 				issues={issues}
 				currentUserId={currentUserId}
-				onMapClick={handleMapClick}
-				onMapReady={handleMapReady}
+				onMapClickAction={handleMapClick}
+				onMapReadyAction={handleMapReady}
 				initialUserLocation={userCoords}
 			/>
 			<IssueCreator
@@ -131,9 +123,8 @@ export const MapView: React.FC<MapViewProps> = ({
 				coords={coords ?? defaultCoords}
 				onCloseAction={handleCloseCreator}
 				onSubmitAction={async () => {
-					// This will be handled by IssueCreator internally
-					if (onIssueCreated) {
-						onIssueCreated();
+					if (onIssueCreatedAction) {
+						onIssueCreatedAction();
 					}
 				}}
 			/>

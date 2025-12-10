@@ -1,5 +1,5 @@
 'use client';
-
+//TODO refactor when fixing
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
@@ -144,12 +144,12 @@ export const IssueCreator = ({
 					{/* Location Search */}
 					<div className="mb-2">
 						<LocationSearch
-							onResultSelect={(lat, lng) => setCoords({ lat, lng })}
+							onResultSelectAction={(lat, lng) => setCoords({ lat, lng })}
 						/>
 					</div>
 					<LocationPickerMap
 						coords={coords}
-						onCoordsChange={setCoords}
+						onCoordsChangeAction={setCoords}
 						height="200px"
 					/>
 					<p className="mt-2 text-xs text-gray-600 text-center font-medium">

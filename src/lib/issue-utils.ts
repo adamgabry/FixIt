@@ -1,8 +1,5 @@
-import { IssueType, IssueStatus, type Issue } from '@/modules/issue/schema';
+import { IssueType, IssueStatus } from '@/modules/issue/schema';
 
-/**
- * Color mapping for issue types
- */
 export const ISSUE_TYPE_COLORS: Record<IssueType, string> = {
 	[IssueType.HOOLIGANISM]: '#ef4444', // red - vandalism/hooliganism
 	[IssueType.IMPROVEMENT_IDEA]: '#22c55e', // green - ideas for improvement
@@ -11,9 +8,6 @@ export const ISSUE_TYPE_COLORS: Record<IssueType, string> = {
 	[IssueType.ROAD]: '#6366f1' // indigo - road issues
 };
 
-/**
- * Human-readable labels for issue types
- */
 export const ISSUE_TYPE_LABELS: Record<IssueType, string> = {
 	[IssueType.HOOLIGANISM]: 'Hooliganism',
 	[IssueType.IMPROVEMENT_IDEA]: 'Improvement Idea',
@@ -22,9 +16,6 @@ export const ISSUE_TYPE_LABELS: Record<IssueType, string> = {
 	[IssueType.ROAD]: 'Road Issue'
 };
 
-/**
- * Human-readable labels for issue statuses
- */
 export const ISSUE_STATUS_LABELS: Record<IssueStatus, string> = {
 	[IssueStatus.REPORTED]: 'Reported',
 	[IssueStatus.FIXED]: 'Fixed',
@@ -32,57 +23,18 @@ export const ISSUE_STATUS_LABELS: Record<IssueStatus, string> = {
 	[IssueStatus.CLOSED]: 'Closed'
 };
 
-/**
- * Filter options for the sidebar
- */
 export type IssueFilters = {
 	types: IssueType[];
 	statuses: IssueStatus[];
 	searchQuery: string;
 };
 
-/**
- * Default filter state (all options selected)
- */
 export const DEFAULT_FILTERS: IssueFilters = {
 	types: Object.values(IssueType),
 	statuses: Object.values(IssueStatus),
 	searchQuery: ''
 };
 
-/**
- * Filter issues based on the provided filters
- */
-export const filterIssues = (issues: Issue[], filters: IssueFilters): Issue[] =>
-	issues.filter(issue => {
-		// Filter by type
-		if (!filters.types.includes(issue.type as IssueType)) {
-			return false;
-		}
-
-		// Filter by status
-		if (!filters.statuses.includes(issue.status as IssueStatus)) {
-			return false;
-		}
-
-		// Filter by search query (title or description)
-		if (filters.searchQuery) {
-			const query = filters.searchQuery.toLowerCase();
-			const matchesTitle = issue.title.toLowerCase().includes(query);
-			const matchesDescription = issue.description
-				.toLowerCase()
-				.includes(query);
-			if (!matchesTitle && !matchesDescription) {
-				return false;
-			}
-		}
-
-		return true;
-	});
-
-/**
- * Create a colored SVG marker icon for Leaflet
- */
 export const createColoredMarkerSvg = (color: string): string => {
 	const svg = `
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 36" width="24" height="36">

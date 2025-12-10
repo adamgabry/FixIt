@@ -7,7 +7,9 @@ const IssuesListPage = async () => {
 	const session = await getSession();
 	const currentUserId = session?.user?.id ?? null;
 
-	return <IssuesListClient initialIssues={issues} currentUserId={currentUserId} />;
+	return (
+		<IssuesListClient initialIssues={issues} currentUserId={currentUserId} />
+	);
 };
 
 export default IssuesListPage;

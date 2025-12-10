@@ -1,6 +1,9 @@
 import React from 'react';
 
-import { IssueStatus, type IssueStatus as IssueStatusType } from '@/modules/issue/schema';
+import {
+	IssueStatus,
+	type IssueStatus as IssueStatusType
+} from '@/modules/issue/schema';
 import { ISSUE_STATUS_LABELS } from '@/lib/issue-utils';
 import { Badge } from '@/components/badge';
 

@@ -7,8 +7,8 @@ import { cn } from '@/lib/cn';
 
 type DeleteConfirmationDialogProps = {
 	isOpen: boolean;
-	onClose: () => void;
-	onConfirm: () => void;
+	onCloseAction: () => void;
+	onConfirmAction: () => void;
 	isDeleting?: boolean;
 	title?: string;
 	message?: string;
@@ -18,8 +18,8 @@ type DeleteConfirmationDialogProps = {
 
 export const DeleteConfirmationDialog = ({
 	isOpen,
-	onClose,
-	onConfirm,
+	onCloseAction,
+	onConfirmAction,
 	isDeleting = false,
 	title = 'Delete Issue',
 	message = 'Are you sure you want to delete this issue? This action cannot be undone.',
@@ -46,7 +46,7 @@ export const DeleteConfirmationDialog = ({
 				<div className="flex gap-3 justify-end mt-6 pt-4 border-t border-orange-200/50">
 					<Button
 						variant="outline"
-						onClick={onClose}
+						onClick={onCloseAction}
 						disabled={isDeleting}
 						className={cn(
 							'border-orange-200 hover:bg-orange-50',
@@ -57,7 +57,7 @@ export const DeleteConfirmationDialog = ({
 					</Button>
 					<Button
 						variant="destructive"
-						onClick={onConfirm}
+						onClick={onConfirmAction}
 						disabled={isDeleting}
 						className={cn(
 							'bg-red-600 hover:bg-red-700 text-white',

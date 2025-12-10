@@ -8,23 +8,23 @@ import { useQueryClient } from '@tanstack/react-query';
 import { toggleUpvoteAction } from '@/modules/issueLike/actions';
 import { cn } from '@/lib/cn';
 
-interface IssueUpvoteButtonProps {
+type IssueUpvoteButtonProps = {
 	issueId: number;
 	reporterId: string;
 	currentUserId: string | null;
 	initialUpvoteCount: number;
 	initialIsUpvoted: boolean;
 	variant?: 'default' | 'compact';
-}
+};
 
-export function IssueUpvoteButton({
+export const IssueUpvoteButton = ({
 	issueId,
 	reporterId,
 	currentUserId,
 	initialUpvoteCount,
 	initialIsUpvoted,
 	variant = 'default'
-}: IssueUpvoteButtonProps) {
+}: IssueUpvoteButtonProps) => {
 	const router = useRouter();
 	const queryClient = useQueryClient();
 	const [isUpvoted, setIsUpvoted] = useState(initialIsUpvoted);
@@ -32,7 +32,6 @@ export function IssueUpvoteButton({
 	const [error, setError] = useState<string | null>(null);
 	const [isPending, setIsPending] = useState(false);
 
-	// Check if the current user is the issue reporter
 	const isOwnIssue = currentUserId === reporterId;
 	const isDisabled = !currentUserId || isOwnIssue || isPending;
 
@@ -42,79 +41,64 @@ export function IssueUpvoteButton({
 
 		if (isDisabled) return;
 
-		// Clear any existing error
 		setError(null);
 
-		// Optimistic update
 		const previousUpvoted = isUpvoted;
 		const previousCount = upvoteCount;
 		const newIsUpvoted = !isUpvoted;
 		const newCount = isUpvoted ? upvoteCount - 1 : upvoteCount + 1;
-		
+
 		setIsUpvoted(newIsUpvoted);
 		setUpvoteCount(newCount);
 		setIsPending(true);
 
-		// Optimistically update React Query cache if available
 		try {
 			queryClient.setQueryData(['issues'], (oldData: any) => {
 				if (!oldData) return oldData;
 				return oldData.map((issue: any) =>
 					issue.id === issueId
-						? { 
-							...issue, 
-							numberOfUpvotes: newCount,
-							upvoters: newIsUpvoted 
-								? [...issue.upvoters, { id: currentUserId }]
-								: issue.upvoters.filter((u: any) => u.id !== currentUserId)
-						}
+						? {
+								...issue,
+								numberOfUpvotes: newCount,
+								upvoters: newIsUpvoted
+									? [...issue.upvoters, { id: currentUserId }]
+									: issue.upvoters.filter((u: any) => u.id !== currentUserId)
+							}
 						: issue
 				);
 			});
-		} catch {
-			// QueryClient not available (detail page without React Query provider)
-		}
+		} catch {}
 
 		try {
 			const result = await toggleUpvoteAction(issueId, currentUserId!);
 
 			if (!result.success) {
-				// Revert optimistic updates on error
 				setIsUpvoted(previousUpvoted);
 				setUpvoteCount(previousCount);
-				setError(result.error || 'Failed to toggle upvote');
-				
-				// Revert cache if available
+				setError(result.error ?? 'Failed to toggle upvote');
+
 				try {
 					queryClient.invalidateQueries({ queryKey: ['issues'] });
-				} catch {
-					// No cache to revert
-				}
-				
+				} catch {}
+
 				setTimeout(() => setError(null), 3000);
 			} else {
-				// Sync with server state
 				setIsUpvoted(result.isUpvoted);
-				// Invalidate to ensure consistency
 				try {
 					queryClient.invalidateQueries({ queryKey: ['issues'] });
-				} catch {
-					// QueryClient not available
-				}
+				} catch {}
 				router.refresh();
 			}
 		} catch (err) {
-			// Revert on error
+			// revert
 			setIsUpvoted(previousUpvoted);
 			setUpvoteCount(previousCount);
 			setError('Something went wrong. Please try again.');
-			
+
 			try {
 				queryClient.invalidateQueries({ queryKey: ['issues'] });
-			} catch {
-				// QueryClient not available
-			}
-			
+			} catch {}
+
 			setTimeout(() => setError(null), 3000);
 		} finally {
 			setIsPending(false);
@@ -150,7 +134,8 @@ export function IssueUpvoteButton({
 					'inline-flex items-center justify-center gap-1.5 rounded-lg text-sm font-medium transition-all duration-200',
 					'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2',
 					isCompact ? 'p-2 min-h-11 min-w-11' : 'px-3 py-2 min-h-11',
-					!isDisabled && 'hover:bg-orange-50 hover:scale-[1.02] active:scale-[0.98] cursor-pointer',
+					!isDisabled &&
+						'hover:bg-orange-50 hover:scale-[1.02] active:scale-[0.98] cursor-pointer',
 					isUpvoted && !isDisabled && 'text-orange-500',
 					!isUpvoted && !isDisabled && 'text-gray-600',
 					isDisabled && 'opacity-40 cursor-not-allowed',
@@ -180,4 +165,4 @@ export function IssueUpvoteButton({
 			)}
 		</div>
 	);
-}
+};

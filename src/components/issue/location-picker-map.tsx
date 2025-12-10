@@ -14,7 +14,6 @@ import { Maximize2, Minimize2 } from 'lucide-react';
 
 import 'leaflet/dist/leaflet.css';
 
-// Fix for default marker icon in Next.js
 if (typeof window !== 'undefined') {
 	delete (L.Icon.Default.prototype as unknown as { _getIconUrl?: unknown })
 		._getIconUrl;
@@ -28,11 +27,10 @@ if (typeof window !== 'undefined') {
 
 type LocationPickerMapProps = {
 	coords: { lat: number; lng: number };
-	onCoordsChange: (coords: { lat: number; lng: number }) => void;
+	onCoordsChangeAction: (coords: { lat: number; lng: number }) => void;
 	height?: string;
 };
 
-// Component to handle map clicks
 const MapClickHandler = ({
 	onCoordsChange
 }: {
@@ -49,7 +47,6 @@ const MapClickHandler = ({
 	return null;
 };
 
-// Component to update map center when coords change
 const MapCenterUpdater = ({
 	coords
 }: {
@@ -92,49 +89,43 @@ const LocationPickerMapContent = ({
 
 export const LocationPickerMap = ({
 	coords,
-	onCoordsChange,
+	onCoordsChangeAction,
 	height = '200px'
 }: LocationPickerMapProps) => {
 	const [isExpanded, setIsExpanded] = useState(false);
 
 	if (isExpanded) {
 		return (
-			<>
-				{/* Expanded Map Overlay */}
+			<div
+				className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4"
+				onClick={() => setIsExpanded(false)}
+			>
 				<div
-					className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4"
-					onClick={() => setIsExpanded(false)}
+					className="bg-white rounded-lg shadow-2xl w-full max-w-4xl h-[80vh] relative"
+					onClick={e => e.stopPropagation()}
 				>
-					<div
-						className="bg-white rounded-lg shadow-2xl w-full max-w-4xl h-[80vh] relative"
-						onClick={e => e.stopPropagation()}
+					<button
+						onClick={() => setIsExpanded(false)}
+						className="absolute top-4 right-4 z-[101] bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors"
+						title="Minimize map"
 					>
-						{/* Close/Expand Button */}
-						<button
-							onClick={() => setIsExpanded(false)}
-							className="absolute top-4 right-4 z-[101] bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors"
-							title="Minimize map"
-						>
-							<Minimize2 className="h-5 w-5 text-gray-700" />
-						</button>
+						<Minimize2 className="h-5 w-5 text-gray-700" />
+					</button>
 
-						{/* Expanded Map */}
-						<div className="h-full w-full rounded-lg overflow-hidden">
-							<LocationPickerMapContent
-								coords={coords}
-								onCoordsChange={onCoordsChange}
-							/>
-						</div>
+					<div className="h-full w-full rounded-lg overflow-hidden">
+						<LocationPickerMapContent
+							coords={coords}
+							onCoordsChange={onCoordsChangeAction}
+						/>
+					</div>
 
-						{/* Instructions */}
-						<div className="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg">
-							<p className="text-sm text-gray-700 text-center">
-								Click on the map to select the issue location
-							</p>
-						</div>
+					<div className="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg">
+						<p className="text-sm text-gray-700 text-center">
+							Click on the map to select the issue location
+						</p>
 					</div>
 				</div>
-			</>
+			</div>
 		);
 	}
 
@@ -147,7 +138,7 @@ export const LocationPickerMap = ({
 			>
 				<LocationPickerMapContent
 					coords={coords}
-					onCoordsChange={onCoordsChange}
+					onCoordsChange={onCoordsChangeAction}
 				/>
 
 				{/* Expand Button */}

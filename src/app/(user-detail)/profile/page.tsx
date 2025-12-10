@@ -26,10 +26,16 @@ const ProfilePage = async () => {
 				tab1Label="Reported by me"
 				tab2Label="Liked by me"
 				tab1Content={
-					<IssueList issues={issuesReportedByUser} currentUserId={loggedInUser.id} />
+					<IssueList
+						issues={issuesReportedByUser}
+						currentUserId={loggedInUser.id}
+					/>
 				}
 				tab2Content={
-					<IssueList issues={issuesLikedByUser} currentUserId={loggedInUser.id} />
+					<IssueList
+						issues={issuesLikedByUser}
+						currentUserId={loggedInUser.id}
+					/>
 				}
 			/>
 		</div>
