@@ -19,6 +19,7 @@ import { storage } from '@/firebase';
 
 import { SlidingPanel } from '../page-modifiers/sliding-panel';
 import { LocationSearch } from '../location-search';
+import { useSession } from '@/modules/auth/client';
 
 // Dynamic import for Leaflet map to avoid SSR issues
 const LocationPickerMap = dynamic(
@@ -55,6 +56,7 @@ export const IssueCreator = ({
 	onSubmitAction
 }: Props) => {
 	const router = useRouter();
+	const { data: session } = useSession();
 	const [title, setTitle] = useState('');
 	const [type, setType] = useState<IssueType>(
 		Object.values(IssueType)[0] as IssueType
@@ -78,8 +80,10 @@ export const IssueCreator = ({
 		setIsSubmitting(true);
 
 		try {
-			// TODO: Get actual logged-in user ID - currently using hardcoded value
-			const reporterId = '1';
+			const reporterId = session?.user?.id ?? '';
+			if (!reporterId) {
+				throw new Error('User not found');
+			}
 
 			const uploadedUrls = await Promise.all(
 				images.map(async file => {
