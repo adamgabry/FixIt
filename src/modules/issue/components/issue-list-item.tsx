@@ -16,6 +16,7 @@ import { IssueTypeBadge } from '@/modules/issue/components/issue-type-badge';
 import { Button } from '@/components/buttons/button';
 import { Card } from '@/components/card';
 import { IssueUpvoteButton } from '@/modules/issue/components/issue-upvote-button';
+import { hasStaffPermissions, useSession } from '@/modules/auth/client';
 
 export const IssueListItem = ({
 	issue,
@@ -25,6 +26,9 @@ export const IssueListItem = ({
 	currentUserId: string | null;
 }) => {
 	const router = useRouter();
+	const { data: session } = useSession();	
+	const hasStaffPermissionsFlag = hasStaffPermissions(session?.user?.role);
+	const isUsersIssue = currentUserId === issue.reporter.id;
 
 	const handleEdit = (e: React.MouseEvent) => {
 		e.preventDefault();
@@ -65,7 +69,8 @@ export const IssueListItem = ({
 						variant="compact"
 					/>
 
-					<Button
+					{(hasStaffPermissionsFlag || isUsersIssue) && (
+						<Button
 						variant="secondary"
 						size="sm"
 						animation="scale"
@@ -73,8 +78,9 @@ export const IssueListItem = ({
 						className="hidden md:flex"
 					>
 						<Pencil className="w-4 h-4" />
-						Edit
-					</Button>
+							Edit
+						</Button>
+					)}
 				</div>
 			</div>
 
