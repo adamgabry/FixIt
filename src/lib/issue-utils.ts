@@ -2,7 +2,7 @@ import { IssueType, IssueStatus } from '@/modules/issue/schema';
 
 export const ISSUE_TYPE_COLORS: Record<IssueType, string> = {
 	[IssueType.HOOLIGANISM]: '#ef4444', // red - vandalism/hooliganism
-	[IssueType.IMPROVEMENT_IDEA]: '#22c55e', // green - ideas for improvement
+	[IssueType.IMPROVEMENT_IDEA]: '#FFAFCC', // pink - ideas for improvement
 	[IssueType.NATURE_PROBLEM]: '#10b981', // emerald - nature/environment issues
 	[IssueType.BROKEN]: '#f59e0b', // amber - broken infrastructure
 	[IssueType.ROAD]: '#6366f1' // indigo - road issues
