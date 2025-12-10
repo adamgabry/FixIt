@@ -13,29 +13,34 @@ import { SearchFilter } from '@/components/filters/search-filter';
 import { Button } from '@/components/buttons/button';
 import { IssueType, IssueStatus } from '@/modules/issue/schema';
 import { Card } from '@/components/card';
+import { SortRow } from '@/components/filters/sort-row';
+import { type SortField, type SortOrder } from '@/hooks/useIssueFilters';
 
 type IssueFiltersProps = {
+	omitSort?: boolean;
 	types: IssueType[];
 	statuses: IssueStatus[];
 	search: string;
-
+	sortBy: { field: SortField; order?: SortOrder };
+	setSortAction: (field: SortField, order?: SortOrder) => void;
 	toggleTypeAction: (t: IssueType) => void;
 	toggleStatusAction: (s: IssueStatus) => void;
-
 	setSearchAction: (value: string) => void;
 	resetFiltersAction: () => void;
 };
 
 export const IssueFilters = ({
+	omitSort = false,
 	types,
 	statuses,
 	search,
+	sortBy,
+	setSortAction,
 	toggleTypeAction,
 	toggleStatusAction,
 	setSearchAction,
 	resetFiltersAction
 }: IssueFiltersProps) => {
-	// Collapsed by default on mobile, always expanded on desktop
 	const [isExpanded, setIsExpanded] = useState(false);
 
 	const hasActiveFilters =
@@ -62,7 +67,6 @@ export const IssueFilters = ({
 							Active
 						</span>
 					)}
-					{/* Mobile toggle icon */}
 					<span className="md:hidden ml-auto text-gray-600 shrink-0">
 						{isExpanded ? (
 							<ChevronUp className="w-5 h-5" />
@@ -84,13 +88,7 @@ export const IssueFilters = ({
 				</Button>
 			</div>
 
-			{/* Mobile: collapsible, Desktop: always visible */}
-			<div
-				className={`
-					md:block
-					${isExpanded ? 'block' : 'hidden'}
-				`}
-			>
+			<div className={`md:block ${isExpanded ? 'block' : 'hidden'}`}>
 				<div className="space-y-6 mt-4">
 					<FilterRow
 						label="Issue Type"
@@ -108,7 +106,9 @@ export const IssueFilters = ({
 						onToggleAction={toggleStatusAction}
 						getOptionLabelAction={s => ISSUE_STATUS_LABELS[s]}
 					/>
-
+					{omitSort ? null : (
+						<SortRow currentSort={sortBy} setSort={setSortAction} />
+					)}
 					<SearchFilter value={search} onChangeAction={setSearchAction} />
 				</div>
 			</div>

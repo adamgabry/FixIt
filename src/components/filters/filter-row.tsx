@@ -4,6 +4,7 @@ import React from 'react';
 import { X } from 'lucide-react';
 
 import { cn } from '@/lib/cn';
+import { Button } from '@/components/buttons/button';
 
 type FilterRowProps<T extends string> = {
 	label: string;
@@ -29,7 +30,7 @@ export const FilterRow = <T extends string>({
 			{options.map(option => {
 				const isSelected = selected.includes(option);
 				return (
-					<button
+					<Button
 						key={option}
 						onClick={() => onToggleAction(option)}
 						className={cn(
@@ -53,7 +54,7 @@ export const FilterRow = <T extends string>({
 						{isSelected && (
 							<X className="w-4 h-4 ml-1 text-orange-600 opacity-70 group-hover:opacity-100" />
 						)}
-					</button>
+					</Button>
 				);
 			})}
 		</div>

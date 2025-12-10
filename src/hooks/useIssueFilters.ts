@@ -11,12 +11,21 @@ import {
 	type IssueStatus
 } from '@/modules/issue/schema';
 
+export type SortField = 'upvotes' | 'createdAt';
+export type SortOrder = 'asc' | 'desc';
+
 export const useIssueFilters = (initialIssues: Issue[]) => {
 	const [types, setTypes] = useState<IssueType[]>(DEFAULT_FILTERS.types);
 	const [statuses, setStatuses] = useState<IssueStatus[]>(
 		DEFAULT_FILTERS.statuses
 	);
 	const [search, setSearchAction] = useState('');
+	const [sortBy, setSortBy] = useState<{ field: SortField; order?: SortOrder }>(
+		{
+			field: 'createdAt',
+			order: 'desc'
+		}
+	);
 
 	const toggleTypeAction = (t: IssueType) =>
 		setTypes(prev =>
@@ -32,6 +41,11 @@ export const useIssueFilters = (initialIssues: Issue[]) => {
 		setTypes(DEFAULT_FILTERS.types);
 		setStatuses(DEFAULT_FILTERS.statuses);
 		setSearchAction('');
+		setSortBy({ field: 'createdAt', order: 'desc' });
+	};
+
+	const setSortAction = (field: SortField, order?: SortOrder) => {
+		setSortBy({ field, order });
 	};
 
 	const {
@@ -45,13 +59,36 @@ export const useIssueFilters = (initialIssues: Issue[]) => {
 	});
 
 	const filteredIssues = useMemo(() => {
-		if (!search.trim()) return issues;
-		return issues.filter(
-			i =>
-				i.title.toLowerCase().includes(search.toLowerCase()) ||
-				i.description.toLowerCase().includes(search.toLowerCase())
-		);
-	}, [issues, search]);
+		let filtered = issues;
+
+		if (search.trim()) {
+			const lower = search.toLowerCase();
+			filtered = filtered.filter(
+				i =>
+					i.title.toLowerCase().includes(lower) ||
+					i.description.toLowerCase().includes(lower)
+			);
+		}
+
+		filtered.sort((a, b) => {
+			const { field, order } = sortBy;
+
+			if (field === 'upvotes') {
+				return order === 'asc'
+					? a.numberOfUpvotes - b.numberOfUpvotes
+					: b.numberOfUpvotes - a.numberOfUpvotes;
+			}
+
+			if (field === 'createdAt') {
+				return order === 'asc'
+					? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+					: new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+			}
+
+			return 0;
+		});
+		return filtered;
+	}, [issues, search, sortBy]);
 
 	return {
 		types,
@@ -63,6 +100,8 @@ export const useIssueFilters = (initialIssues: Issue[]) => {
 		resetFiltersAction,
 		filteredIssues,
 		isLoading,
-		refetch
+		refetch,
+		sortBy,
+		setSortAction
 	};
 };
