@@ -9,7 +9,10 @@ type UserRoleChangerProps = {
 	onRoleUpdated?: (newRole: Role) => void;
 };
 
-export const UserRoleChanger = ({ user, onRoleUpdated }: UserRoleChangerProps) => {
+export const UserRoleChanger = ({
+	user,
+	onRoleUpdated
+}: UserRoleChangerProps) => {
 	const handleChange = async (newRole: Role) => {
 		if (newRole !== user.role) {
 			await updateUserAction(user.id, newRole as Role);

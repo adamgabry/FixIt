@@ -19,7 +19,7 @@ import { type IssueRow } from '@/db/schema/issues';
 import { getPicturesByIssueFacade } from '@/modules/issuePicture/facade';
 import { requireAuth, requireStaff } from '@/modules/auth/server';
 
-const mapIssueValuesSchemaToIssue = async (issue: IssueRow): Promise<Issue> => {
+const mapIssueRowToIssue = async (issue: IssueRow): Promise<Issue> => {
 	const reporter = await getUserByIdFacade(issue.reporterId);
 	if (!reporter) {
 		throw new Error(
@@ -60,13 +60,13 @@ const requireIssueModifyPermission = async (issue: IssueRow) => {
 
 export const getIssuesFacade = async (): Promise<Issue[]> => {
 	const issues = await getIssues();
-	return await Promise.all(issues.map(mapIssueValuesSchemaToIssue));
+	return await Promise.all(issues.map(mapIssueRowToIssue));
 };
 
 export const getIssueByIdFacade = async (id: number): Promise<Issue | null> => {
 	const issue = await getIssueById(id);
 	if (!issue) return null;
-	return await mapIssueValuesSchemaToIssue(issue);
+	return await mapIssueRowToIssue(issue);
 };
 
 export const getIssuesFilteredFacade = async ({
@@ -81,21 +81,21 @@ export const getIssuesFilteredFacade = async ({
 		types: types ?? null
 	});
 
-	return Promise.all(rows.map(mapIssueValuesSchemaToIssue));
+	return Promise.all(rows.map(mapIssueRowToIssue));
 };
 
 export const getIssuesFromUserFacade = async (
 	userId: string
 ): Promise<Issue[]> => {
 	const issues = await getIssuesFromUser(userId);
-	return await Promise.all(issues.map(mapIssueValuesSchemaToIssue));
+	return await Promise.all(issues.map(mapIssueRowToIssue));
 };
 
 export const createIssueFacade = async (data: IssueValuesSchema) => {
 	const session = await requireAuth();
 
 	const issue = await createIssue({ ...data, reporterId: session.user.id });
-	return await mapIssueValuesSchemaToIssue(issue);
+	return await mapIssueRowToIssue(issue);
 };
 
 //TODO: should always expect the whole IssueValueSchema (and NEVER accidentally change reporter id !)
@@ -112,7 +112,7 @@ export const updateIssueFacade = async (
 	await requireIssueModifyPermission(issue);
 
 	const updatedIssue = await updateIssue(issueId, data as IssueValuesSchema);
-	return await mapIssueValuesSchemaToIssue(updatedIssue);
+	return await mapIssueRowToIssue(updatedIssue);
 };
 
 export const deleteIssueFacade = async (id: number) => {

@@ -403,40 +403,43 @@ const IssueDetailView = ({
 						<div className="order-2 lg:order-2">
 							<div className="bg-white/50 backdrop-blur-sm rounded-xl shadow-md border border-orange-200/50 p-4 sm:p-6 space-y-6">
 								{/* Status */}
-								{hasStaffPermissionsFlag && <div className="flex flex-col gap-2">
-									<label className="text-sm font-semibold text-gray-700">
-										Status
-									</label>
-									<select
-										value={issue.status}
-										onChange={e =>
-											setIssue({
-												...issue,
-												status: e.target.value as Issue['status']
-											})
-										}
-										disabled={!isEditing}
-										className={cn(
-											'border border-orange-200 bg-white/80 backdrop-blur-sm',
-											'flex h-10 w-full rounded-lg px-3 py-2 text-sm',
-											'transition-all duration-200',
-											'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2',
-											'disabled:opacity-50 disabled:cursor-not-allowed',
-											!isEditing && 'cursor-default'
-										)}
-									>
-										{ISSUE_STATUS_VALUES.map(status => (
-											<option key={status} value={status}>
-												{status
-													.split('_')
-													.map(
-														word => word.charAt(0).toUpperCase() + word.slice(1)
-													)
-													.join(' ')}
-											</option>
-										))}
-									</select>
-								</div>}
+								{hasStaffPermissionsFlag && (
+									<div className="flex flex-col gap-2">
+										<label className="text-sm font-semibold text-gray-700">
+											Status
+										</label>
+										<select
+											value={issue.status}
+											onChange={e =>
+												setIssue({
+													...issue,
+													status: e.target.value as Issue['status']
+												})
+											}
+											disabled={!isEditing}
+											className={cn(
+												'border border-orange-200 bg-white/80 backdrop-blur-sm',
+												'flex h-10 w-full rounded-lg px-3 py-2 text-sm',
+												'transition-all duration-200',
+												'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2',
+												'disabled:opacity-50 disabled:cursor-not-allowed',
+												!isEditing && 'cursor-default'
+											)}
+										>
+											{ISSUE_STATUS_VALUES.map(status => (
+												<option key={status} value={status}>
+													{status
+														.split('_')
+														.map(
+															word =>
+																word.charAt(0).toUpperCase() + word.slice(1)
+														)
+														.join(' ')}
+												</option>
+											))}
+										</select>
+									</div>
+								)}
 
 								{/* Type */}
 								<div className="flex flex-col gap-2">

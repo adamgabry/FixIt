@@ -73,7 +73,7 @@ export const UserList = () => {
 											? {
 													...u,
 													role: newRole
-											  }
+												}
 											: u
 									)
 								)

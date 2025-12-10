@@ -16,10 +16,10 @@ import { createIssueAction } from '@/modules/issue/actions';
 import { Button } from '@/components/buttons/button';
 import { ImageUpload } from '@/components/image-upload';
 import { storage } from '@/firebase';
+import { useSession } from '@/modules/auth/client';
 
 import { SlidingPanel } from '../page-modifiers/sliding-panel';
 import { LocationSearch } from '../location-search';
-import { useSession } from '@/modules/auth/client';
 
 // Dynamic import for Leaflet map to avoid SSR issues
 const LocationPickerMap = dynamic(
