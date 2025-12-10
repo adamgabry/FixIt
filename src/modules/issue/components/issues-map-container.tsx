@@ -6,7 +6,7 @@ import L from 'leaflet';
 
 import 'leaflet/dist/leaflet.css';
 import { type Issue } from '@/modules/issue/schema';
-import { IssueMarker } from '@/components/issue/issue-marker';
+import { IssueMarker } from '@/modules/issue/components/issue-marker';
 import { LocationButton } from '@/components/buttons/location-button';
 import { MapSearch } from '@/components/map-search';
 

@@ -18,13 +18,13 @@ import { ImageUpload } from '@/components/image-upload';
 import { storage } from '@/firebase';
 import { useSession } from '@/modules/auth/client';
 
-import { SlidingPanel } from '../page-modifiers/sliding-panel';
-import { LocationSearch } from '../location-search';
+import { SlidingPanel } from '../../../components/page-modifiers/sliding-panel';
+import { LocationSearch } from '../../../components/location-search';
 
 // Dynamic import for Leaflet map to avoid SSR issues
 const LocationPickerMap = dynamic(
 	() =>
-		import('@/components/issue/location-picker-map').then(
+		import('@/modules/issue/components/location-picker-map').then(
 			mod => mod.LocationPickerMap
 		),
 	{

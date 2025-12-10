@@ -5,12 +5,12 @@ import dynamic from 'next/dynamic';
 import type { MutableRefObject } from 'react';
 
 import { type Issue } from '@/modules/issue/schema';
-import { IssueCreator } from '@/components/issue/issue-create';
+import { IssueCreator } from '@/modules/issue/components/issue-create';
 import { useLocation } from '@/lib/use-location';
 
 const IssuesMapContainer = dynamic(
 	() =>
-		import('@/components/issue/issues-map-container').then(
+		import('@/modules/issue/components/issues-map-container').then(
 			mod => mod.IssuesMapContainer
 		),
 	{

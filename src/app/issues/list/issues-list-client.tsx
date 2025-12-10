@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 
 import { FloatingAddButton } from '@/components/buttons/floating-add-button';
-import { IssueCreator } from '@/components/issue/issue-create';
+import { IssueCreator } from '@/modules/issue/components/issue-create';
 import { useLocation } from '@/lib/use-location';
 import { useIssueFilters } from '@/hooks/useIssueFilters';
 import type { Issue } from '@/modules/issue/schema';
