@@ -26,6 +26,7 @@ import { ImageUpload } from '@/components/image-upload';
 import { IssueImagesList } from '@/modules/issue/components/issue-images-list';
 import { type IssuePicture } from '@/modules/issuePicture/schema';
 import { IssueUpvoteButton } from '@/modules/issue/components/issue-upvote-button';
+import { hasStaffPermissions, useSession } from '@/modules/auth/client';
 
 const MapComponent = dynamic(() => import('@/components/map'), {
 	ssr: false
@@ -43,6 +44,7 @@ const IssueDetailView = ({
 	initialEditMode = false
 }: IssueDetailViewProps) => {
 	const router = useRouter();
+	const { data: session } = useSession();
 	const [issue, setIssue] = useState(initialIssue);
 	const [isEditing, setIsEditing] = useState(initialEditMode);
 	const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -64,6 +66,9 @@ const IssueDetailView = ({
 
 	const lat = issue.latitude;
 	const lng = issue.longitude;
+
+	const hasStaffPermissionsFlag = hasStaffPermissions(session?.user?.role);
+	const isUsersIssue = session?.user?.id === issue.reporter.id;
 
 	// Sync local state when initialIssue prop changes (after save/refresh)
 	useEffect(() => {
@@ -284,54 +289,56 @@ const IssueDetailView = ({
 										</span>
 									</div>
 								</div>
-								<div className="flex items-center gap-2">
-									{!isEditing ? (
-										<>
-											<Button
-												variant="secondary"
-												size="sm"
-												animation="scale"
-												onClick={() => setIsEditing(true)}
-											>
-												<Pencil className="w-4 h-4" />
-												Edit
-											</Button>
-											<Button
-												variant="destructive"
-												size="sm"
-												animation="scale"
-												onClick={() => setShowDeleteConfirm(true)}
-												disabled={isDeleting}
-											>
-												<Trash2 className="w-4 h-4" />
-												Delete
-											</Button>
-										</>
-									) : (
-										<>
-											<Button
-												variant="outline"
-												size="sm"
-												animation="scale"
-												onClick={handleCancel}
-												disabled={isSaving}
-											>
-												<X className="w-4 h-4" />
-												Cancel
-											</Button>
-											<Button
-												variant="success"
-												size="sm"
-												animation="scale"
-												onClick={handleSave}
-												disabled={isSaving}
-											>
-												<Save className="w-4 h-4" />
-												{isSaving ? 'Saving...' : 'Save'}
-											</Button>
-										</>
-									)}
-								</div>
+								{(isUsersIssue || hasStaffPermissionsFlag) && (
+									<div className="flex items-center gap-2">
+										{!isEditing ? (
+											<>
+												<Button
+													variant="secondary"
+													size="sm"
+													animation="scale"
+													onClick={() => setIsEditing(true)}
+												>
+													<Pencil className="w-4 h-4" />
+													Edit
+												</Button>
+												<Button
+													variant="destructive"
+													size="sm"
+													animation="scale"
+													onClick={() => setShowDeleteConfirm(true)}
+													disabled={isDeleting}
+												>
+													<Trash2 className="w-4 h-4" />
+													Delete
+												</Button>
+											</>
+										) : (
+											<>
+												<Button
+													variant="outline"
+													size="sm"
+													animation="scale"
+													onClick={handleCancel}
+													disabled={isSaving}
+												>
+													<X className="w-4 h-4" />
+													Cancel
+												</Button>
+												<Button
+													variant="success"
+													size="sm"
+													animation="scale"
+													onClick={handleSave}
+													disabled={isSaving}
+												>
+													<Save className="w-4 h-4" />
+													{isSaving ? 'Saving...' : 'Save'}
+												</Button>
+											</>
+										)}
+									</div>
+								)}
 							</div>
 							<div className="flex items-center gap-2">
 								{!isEditing && (
@@ -396,7 +403,7 @@ const IssueDetailView = ({
 						<div className="order-2 lg:order-2">
 							<div className="bg-white/50 backdrop-blur-sm rounded-xl shadow-md border border-orange-200/50 p-4 sm:p-6 space-y-6">
 								{/* Status */}
-								<div className="flex flex-col gap-2">
+								{hasStaffPermissionsFlag && <div className="flex flex-col gap-2">
 									<label className="text-sm font-semibold text-gray-700">
 										Status
 									</label>
@@ -429,7 +436,7 @@ const IssueDetailView = ({
 											</option>
 										))}
 									</select>
-								</div>
+								</div>}
 
 								{/* Type */}
 								<div className="flex flex-col gap-2">
