@@ -6,12 +6,14 @@ import { UserRoleDropdown } from '@/modules/user/components/user-role-dropdown';
 
 type UserRoleChangerProps = {
 	user: User;
+	onRoleUpdated?: (newRole: Role) => void;
 };
 
-export const UserRoleChanger = ({ user }: UserRoleChangerProps) => {
+export const UserRoleChanger = ({ user, onRoleUpdated }: UserRoleChangerProps) => {
 	const handleChange = async (newRole: Role) => {
 		if (newRole !== user.role) {
 			await updateUserAction(user.id, newRole as Role);
+			onRoleUpdated?.(newRole);
 		}
 	};
 

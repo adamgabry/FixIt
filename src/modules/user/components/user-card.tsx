@@ -7,9 +7,10 @@ import { Card } from '@/components/card';
 
 type UserCardProps = {
 	user: User;
+	onRoleUpdated?: (newRole: User['role']) => void;
 };
 
-export const UserCard = ({ user }: UserCardProps) => (
+export const UserCard = ({ user, onRoleUpdated }: UserCardProps) => (
 	<Card variant="outlined" hover="lift" clickable className="mb-4">
 		<div className="flex items-center gap-4 transition-opacity">
 			<Link
@@ -26,7 +27,7 @@ export const UserCard = ({ user }: UserCardProps) => (
 				)}
 			</Link>
 
-			<UserRoleChanger user={user} />
+			<UserRoleChanger user={user} onRoleUpdated={onRoleUpdated} />
 		</div>
 	</Card>
 );

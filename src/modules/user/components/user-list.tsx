@@ -64,7 +64,21 @@ export const UserList = () => {
 			<ul className="space-y-0">
 				{filteredSortedUsers.map(user => (
 					<li key={user.id}>
-						<UserCard user={user} />
+						<UserCard
+							user={user}
+							onRoleUpdated={newRole =>
+								setUsers(prev =>
+									prev.map(u =>
+										u.id === user.id
+											? {
+													...u,
+													role: newRole
+											  }
+											: u
+									)
+								)
+							}
+						/>
 					</li>
 				))}
 			</ul>
