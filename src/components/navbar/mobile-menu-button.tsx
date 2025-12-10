@@ -6,16 +6,16 @@ import { cn } from '@/lib/cn';
 
 type MobileMenuButtonProps = {
 	isOpen: boolean;
-	onClick: () => void;
+	onClickAction: () => void;
 };
 
 export const MobileMenuButton = ({
 	isOpen,
-	onClick
+	onClickAction
 }: MobileMenuButtonProps) => (
 	<button
 		type="button"
-		onClick={onClick}
+		onClick={onClickAction}
 		className={cn(
 			'md:hidden p-2.5 rounded-xl transition-all duration-200',
 			'hover:bg-white/50 active:scale-95',

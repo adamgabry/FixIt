@@ -25,7 +25,6 @@ import { storage } from '@/firebase';
 import { ImageUpload } from '@/components/image-upload';
 import { IssueImagesList } from '@/modules/issue/components/issue-images-list';
 import { type IssuePicture } from '@/modules/issuePicture/schema';
-import { Card } from '@/components/card';
 import { IssueUpvoteButton } from '@/modules/issue/components/issue-upvote-button';
 
 const MapComponent = dynamic(() => import('@/components/map'), {
@@ -124,14 +123,12 @@ const IssueDetailView = ({
 		};
 	}, [lat, lng]);
 
-	// Handle marker drag end
 	const handleMarkerDragEnd = (newLat: number, newLng: number) => {
 		setIssue({
 			...issue,
 			latitude: newLat,
 			longitude: newLng
 		});
-		// Update markers for map
 		if (typeof window !== 'undefined') {
 			import('leaflet').then(L => {
 				setInitialMarkers([new L.LatLng(newLat, newLng)]);
@@ -143,9 +140,7 @@ const IssueDetailView = ({
 		setIsDeleting(true);
 		try {
 			await deleteIssueAction(issue.id);
-			// Close dialog
 			setShowDeleteConfirm(false);
-			// Navigate away - use replace to avoid back button issues
 			router.replace('/');
 		} catch (error) {
 			console.error('Error deleting issue:', error);
@@ -227,14 +222,12 @@ const IssueDetailView = ({
 		<>
 			<DeleteConfirmationDialog
 				isOpen={showDeleteConfirm}
-				onClose={() => setShowDeleteConfirm(false)}
-				onConfirm={handleDelete}
+				onCloseAction={() => setShowDeleteConfirm(false)}
+				onConfirmAction={handleDelete}
 				isDeleting={isDeleting}
 			/>
 
-			{/* Full viewport background */}
 			<div className="fixed inset-0 bg-linear-to-br from-orange-50 via-amber-50 to-orange-50 -z-10" />
-			{/* Content */}
 			<div className="relative min-h-screen z-10">
 				<div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-6">
 					{/* Header Section */}
@@ -349,7 +342,9 @@ const IssueDetailView = ({
 										initialUpvoteCount={issue.numberOfUpvotes}
 										initialIsUpvoted={
 											currentUserId
-												? issue.upvoters.some(upvoter => upvoter.id === currentUserId)
+												? issue.upvoters.some(
+														upvoter => upvoter.id === currentUserId
+													)
 												: false
 										}
 										variant="default"
@@ -406,7 +401,7 @@ const IssueDetailView = ({
 					</div>
 
 					<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-						{/* MAP SECTION */}
+						{/* Map section */}
 						<div className="order-1 lg:order-1">
 							<div className="bg-white/50 backdrop-blur-sm rounded-xl shadow-md border border-orange-200/50 overflow-hidden">
 								<div className="relative w-full h-[400px] md:h-[500px] lg:h-[600px]">
@@ -443,7 +438,7 @@ const IssueDetailView = ({
 							</div>
 						</div>
 
-						{/* DETAILS SECTION */}
+						{/* Details section */}
 						<div className="order-2 lg:order-2">
 							<div className="bg-white/50 backdrop-blur-sm rounded-xl shadow-md border border-orange-200/50 p-4 sm:p-6 space-y-6">
 								{/* Status */}

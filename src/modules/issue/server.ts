@@ -105,7 +105,7 @@ export const updateIssue = async (
 };
 
 export const deleteIssue = async (id: number) => {
-	// Delete related records first to avoid foreign key constraints
+	// Delete related records first
 	await db.delete(issueLikes).where(eq(issueLikes.issueId, id));
 	await db.delete(issuePictures).where(eq(issuePictures.issueId, id));
 

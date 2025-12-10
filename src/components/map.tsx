@@ -5,7 +5,6 @@ import type { LatLng } from 'leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-// Fix for default marker icon in Next.js
 if (typeof window !== 'undefined') {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -36,7 +35,6 @@ const ClickMarker = ({ onAdd }: { onAdd: (latlng: LatLng) => void }) => {
 	return null;
 };
 
-// Draggable marker component
 const DraggableMarker = ({
 	position,
 	onDragEnd
@@ -68,7 +66,6 @@ const MapComponent = ({
 	draggableMarker = false,
 	onMarkerDragEnd
 }: MapComponentProps) => {
-	// Use useMemo to derive initial state from props without useEffect
 	const [addedMarkers, setAddedMarkers] = useState<LatLng[]>([]);
 	const markers = useMemo(
 		() => [...initialMarkers, ...addedMarkers],
@@ -77,7 +74,6 @@ const MapComponent = ({
 
 	const addMarker = (latlng: LatLng) => {
 		setAddedMarkers(prev => [...prev, latlng]);
-		// You can also send it to your backend here
 	};
 
 	return (
@@ -95,7 +91,6 @@ const MapComponent = ({
 			{canCreateMarker && <ClickMarker onAdd={addMarker} />}
 
 			{markers.map((pos, idx) => {
-				// If draggable and this is the first marker, make it draggable
 				if (draggableMarker && idx === 0 && initialMarkers.length > 0) {
 					return (
 						<DraggableMarker

@@ -1,11 +1,8 @@
-import { getIssueByIdFacade } from '@/modules/issue/facade';
-
 import {
 	createPictures,
 	deletePictureByUrl,
 	deletePicturesByIssue,
-	getPicturesByIssue,
-	updatePictureByUrl
+	getPicturesByIssue
 } from './server';
 import { type IssuePictureValuesSchema } from './schema';
 
@@ -32,21 +29,6 @@ export const createPicturesFacade = async (
 			url: pic.url!,
 			issueId: pic.issueId
 		}));
-};
-
-export const updatePictureFacade = async (
-	url: string,
-	data: Partial<IssuePictureValuesSchema>
-) => {
-	const picture = await updatePictureByUrl(url, data);
-	const issue = await getIssueByIdFacade(picture.issueId);
-	if (!issue) throw new Error(`Issue ${picture.issueId} not found`);
-
-	return {
-		...picture,
-		url: picture.url!,
-		issue
-	};
 };
 
 export const deletePictureFacade = async (url: string) => {

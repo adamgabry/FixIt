@@ -4,8 +4,6 @@ import { db } from '@/db';
 import { issueLikes } from '@/db/schema/likes';
 import { type IssueLikeValuesSchema } from '@/modules/issueLike/schema';
 
-export const getLikes = async () => db.query.issueLikes.findMany();
-
 export const getIssuesLikedByUser = async (userId: string) =>
 	db.query.issueLikes.findMany({
 		where: eq(issueLikes.userId, userId)
@@ -34,24 +32,6 @@ export const createLike = async (newLike: IssueLikeValuesSchema) => {
 	}
 
 	const result = await db.insert(issueLikes).values(newLike).returning();
-
-	return result[0];
-};
-
-export const updateLike = async (
-	userId: string,
-	issueId: number,
-	data: Partial<IssueLikeValuesSchema>
-) => {
-	const result = await db
-		.update(issueLikes)
-		.set(data)
-		.where(and(eq(issueLikes.userId, userId), eq(issueLikes.issueId, issueId)))
-		.returning();
-
-	if (result.length === 0) {
-		throw new Error(`Like not found for user ${userId} and issue ${issueId}`);
-	}
 
 	return result[0];
 };

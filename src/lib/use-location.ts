@@ -33,7 +33,6 @@ export const useLocation = (autoRequest = false) => {
 
 	useEffect(() => {
 		if (autoRequest) {
-			// Use setTimeout to defer the state update outside of the effect
 			const timeoutId = setTimeout(() => {
 				requestLocation();
 			}, 0);

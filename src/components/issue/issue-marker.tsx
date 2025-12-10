@@ -23,9 +23,6 @@ type IssueMarkerProps = {
 	position: [number, number];
 };
 
-/**
- * Create a custom Leaflet icon for an issue type
- */
 const createIssueIcon = (type: IssueType): L.Icon => {
 	const color = ISSUE_TYPE_COLORS[type];
 	return L.icon({
@@ -36,7 +33,29 @@ const createIssueIcon = (type: IssueType): L.Icon => {
 	});
 };
 
-export const IssueMarker = ({ issue, currentUserId, position }: IssueMarkerProps) => {
+export const IssueMarkerImage = ({
+	src,
+	title
+}: {
+	src?: string;
+	title: string;
+}) => (
+	<div className="relative w-full h-32">
+		{src ? (
+			<Image src={src} alt={title} fill className="object-cover" unoptimized />
+		) : (
+			<div className="bg-linear-to-br from-orange-100 via-amber-50 to-orange-100 w-full h-full flex items-center justify-center text-gray-400 text-xs">
+				No image
+			</div>
+		)}
+	</div>
+);
+
+export const IssueMarker = ({
+	issue,
+	currentUserId,
+	position
+}: IssueMarkerProps) => {
 	const router = useRouter();
 	const icon = createIssueIcon(issue.type as IssueType);
 
@@ -52,24 +71,8 @@ export const IssueMarker = ({ issue, currentUserId, position }: IssueMarkerProps
 		<Marker position={position} icon={icon}>
 			<Popup className="custom-popup">
 				<div className="min-w-[280px] max-w-[320px] bg-white rounded-xl overflow-hidden shadow-lg border border-orange-200/50">
-					{/* Image Section */}
-					<div className="relative w-full h-32">
-						{issue.pictureUrls[0] ? (
-							<Image
-								src={issue.pictureUrls[0]}
-								alt={issue.title}
-								fill
-								className="object-cover"
-								unoptimized
-							/>
-						) : (
-							<div className="bg-linear-to-br from-orange-100 via-amber-50 to-orange-100 w-full h-full flex items-center justify-center text-gray-400 text-xs">
-								No image
-							</div>
-						)}
-					</div>
+					<IssueMarkerImage src={issue.pictureUrls[0]} title={issue.title} />
 
-					{/* Content Section */}
 					<div className="p-3">
 						<h3 className="font-semibold text-base mb-2 text-gray-900 line-clamp-2">
 							{issue.title}

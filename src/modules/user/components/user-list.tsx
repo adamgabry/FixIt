@@ -5,7 +5,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { UserCard } from '@/modules/user/components/user-card';
 import { Role, type User } from '@/modules/user/schema';
 
-// Fetch users and session user from API
 const fetchUsersAndMe = async () => {
 	const [usersRes, meRes] = await Promise.all([
 		fetch('/api/users'),
@@ -28,7 +27,6 @@ export const UserList = () => {
 		});
 	}, []);
 
-	// Filter and sort users
 	const filteredSortedUsers = useMemo(() => {
 		let filtered = users;
 		if (search.trim()) {

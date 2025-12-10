@@ -50,7 +50,7 @@ export const Navbar = () => {
 					{/* Mobile Menu Button */}
 					<MobileMenuButton
 						isOpen={mobileMenuOpen}
-						onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+						onClickAction={() => setMobileMenuOpen(!mobileMenuOpen)}
 					/>
 				</div>
 			</div>

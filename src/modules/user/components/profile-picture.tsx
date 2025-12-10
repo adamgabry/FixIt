@@ -6,10 +6,12 @@ type ProfilePictureProps = {
 	size?: number;
 };
 
+const PROFILE_PICTURE_SIZE = 32;
+
 export const ProfilePicture = ({
 	imageUrl,
 	name,
-	size = 32
+	size = PROFILE_PICTURE_SIZE
 }: ProfilePictureProps) => (
 	<Image
 		src={imageUrl}

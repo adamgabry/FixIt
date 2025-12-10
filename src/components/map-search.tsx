@@ -7,13 +7,13 @@ import { Search, X, MapPin } from 'lucide-react';
 import { geocode, type GeocodeResult } from '@/lib/geocoding';
 
 type MapSearchProps = {
+	onResultSelectAction?: (lat: number, lng: number) => void;
 	className?: string;
-	onResultSelect?: (lat: number, lng: number) => void;
 };
 
 export const MapSearch = ({
 	className = '',
-	onResultSelect
+	onResultSelectAction
 }: MapSearchProps) => {
 	const [query, setQuery] = useState('');
 	const [results, setResults] = useState<GeocodeResult[]>([]);
@@ -68,15 +68,15 @@ export const MapSearch = ({
 				duration: 1.5
 			});
 			// Call optional callback if provided
-			if (onResultSelect) {
-				onResultSelect(result.lat, result.lng);
+			if (onResultSelectAction) {
+				onResultSelectAction(result.lat, result.lng);
 			}
 			setQuery(result.displayName);
 			setShowResults(false);
 			setResults([]);
 			inputRef.current?.blur();
 		},
-		[map, onResultSelect]
+		[map, onResultSelectAction]
 	);
 
 	// Handle keyboard navigation

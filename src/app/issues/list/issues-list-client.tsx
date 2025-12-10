@@ -60,9 +60,12 @@ export const IssuesListClient = ({
 			{filters.isLoading ? (
 				<p>Loading...</p>
 			) : (
-				<IssueList issues={filters.filteredIssues} currentUserId={currentUserId} />
+				<IssueList
+					issues={filters.filteredIssues}
+					currentUserId={currentUserId}
+				/>
 			)}
-			<FloatingAddButton onClick={handleOpenCreator} />
+			<FloatingAddButton onClickAction={handleOpenCreator} />
 			{coords && (
 				<IssueCreator
 					isOpen={isCreatorOpen}
