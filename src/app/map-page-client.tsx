@@ -71,7 +71,7 @@ export const MapPageClient = ({
 						onOpenCreatorRefAction={openCreatorRef}
 						onCreatorOpenChangeAction={setIsCreatorOpen}
 					/>
-					{!isCreatorOpen && (
+					{!isCreatorOpen && currentUserId && (
 						<FloatingAddButton onClickAction={handleOpenCreator} />
 					)}
 				</div>

@@ -65,7 +65,7 @@ export const IssuesListClient = ({
 					currentUserId={currentUserId}
 				/>
 			)}
-			<FloatingAddButton onClickAction={handleOpenCreator} />
+			{currentUserId && <FloatingAddButton onClickAction={handleOpenCreator} />}
 			{coords && (
 				<IssueCreator
 					isOpen={isCreatorOpen}
