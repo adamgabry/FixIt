@@ -42,10 +42,8 @@ export const issueSchema = z.object({
 	upvoters: z.array(userSchema)
 });
 
-// TODO used only when selecting, map DB row to this type, perform counting of likes, extracting urls from pictures,...
 export type Issue = z.infer<typeof issueSchema>;
 
-//TODO: used for inserts and updates
 export const issueValuesSchema = z.object({
 	title: z.string().min(1),
 	description: z.string().min(1),
@@ -57,5 +55,4 @@ export const issueValuesSchema = z.object({
 	reporterId: z.string()
 });
 
-//TODO: rename to IssueValues
 export type IssueValuesSchema = z.infer<typeof issueValuesSchema>;

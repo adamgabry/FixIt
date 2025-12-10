@@ -13,7 +13,6 @@ export const createIssueAction = async (data: IssueValuesSchema) => {
 	return createIssueFacade(data);
 };
 
-//TODO: move ownerships checks to action?
 export const updateIssueAction = async (
 	id: number,
 	data: Partial<IssueValuesSchema>

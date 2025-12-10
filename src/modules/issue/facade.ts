@@ -98,7 +98,6 @@ export const createIssueFacade = async (data: IssueValuesSchema) => {
 	return await mapIssueRowToIssue(issue);
 };
 
-//TODO: should always expect the whole IssueValueSchema (and NEVER accidentally change reporter id !)
 export const updateIssueFacade = async (
 	issueId: number,
 	data: Partial<IssueValuesSchema>

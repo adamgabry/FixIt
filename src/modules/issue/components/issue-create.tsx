@@ -1,5 +1,4 @@
 'use client';
-//TODO refactor when fixing
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
@@ -93,7 +92,6 @@ export const IssueCreator = ({
 				})
 			);
 
-			// TODO here should be used the zod
 			const issueData: IssueValuesSchema = {
 				title,
 				type,
