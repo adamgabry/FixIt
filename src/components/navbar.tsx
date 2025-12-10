@@ -31,7 +31,7 @@ export const Navbar = () => {
 						<nav className="hidden md:block" aria-label="Main navigation">
 							<ul className="flex items-center gap-2">
 								<li>
-									<NavbarLink href="/issues/list">List</NavbarLink>
+									<NavbarLink href="/issues/list">Issues</NavbarLink>
 								</li>
 								{isAdmin && (
 									<li>
