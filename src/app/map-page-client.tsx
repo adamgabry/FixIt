@@ -45,7 +45,7 @@ export const MapPageClient = ({
 			{/* Mobile: Filters above map - same behavior as list page */}
 			{isMobile && (
 				<div>
-					<IssueFilters {...filters} />
+					<IssueFilters omitSort {...filters} />
 				</div>
 			)}
 
@@ -58,7 +58,7 @@ export const MapPageClient = ({
 				{!isMobile && (
 					<div className="z-20">
 						<SlidingSidebar>
-							<IssueFilters {...filters} />
+							<IssueFilters omitSort {...filters} />
 						</SlidingSidebar>
 					</div>
 				)}

@@ -32,7 +32,6 @@ export const IssueListItem = ({
 		router.push(`/issues/${issue.id}?edit=true`);
 	};
 
-	// Check if current user has upvoted this issue
 	const isUpvoted = currentUserId
 		? issue.upvoters.some(upvoter => upvoter.id === currentUserId)
 		: false;
