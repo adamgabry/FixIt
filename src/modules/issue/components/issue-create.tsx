@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { getDownloadURL, ref, uploadBytes } from '@firebase/storage';
@@ -7,7 +7,7 @@ import { v4 } from 'uuid';
 import { X, Send } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FormProvider, useForm } from 'react-hook-form';
-import { useActionState, useTransition, useEffect as useReactEffect } from 'react';
+import { useActionState, useTransition } from 'react';
 import { toast } from 'sonner';
 
 import { IssueType } from '@/modules/issue/schema';

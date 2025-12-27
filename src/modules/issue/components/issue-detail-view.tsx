@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import type { LatLng } from 'leaflet';
@@ -14,9 +14,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { useActionState, useTransition, useEffect as useReactEffect } from 'react';
 import { toast } from 'sonner';
 
-import { cn } from '@/lib/cn';
 import { reverseGeocode, type Address } from '@/lib/geocoding';
-import { Input } from '@/components/input';
 import { Button } from '@/components/buttons/button';
 import { DeleteConfirmationDialog } from '@/components/delete-confirmation-dialog';
 import {
