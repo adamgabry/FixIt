@@ -1,24 +1,31 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { getDownloadURL, ref, uploadBytes } from '@firebase/storage';
 import { v4 } from 'uuid';
 import { X, Send } from 'lucide-react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { FormProvider, useForm } from 'react-hook-form';
+import { useActionState, useTransition, useEffect as useReactEffect } from 'react';
+import { toast } from 'sonner';
 
-import {
-	IssueStatus,
-	IssueType,
-	type IssueValuesSchema
-} from '@/modules/issue/schema';
+import { IssueType } from '@/modules/issue/schema';
 import { createIssueAction } from '@/modules/issue/actions';
 import { Button } from '@/components/buttons/button';
 import { ImageUpload } from '@/components/image-upload';
 import { storage } from '@/firebase';
-import { useSession } from '@/modules/auth/client';
+import { FormInput } from '@/components/form/form-input';
+import { FormTextarea } from '@/components/form/form-textarea';
+import { FormSelect } from '@/components/form/form-select';
+import { SubmitButton } from '@/components/form/submit-button';
+import {
+	type CreateIssueFormSchema,
+	createIssueFormSchema
+} from './create-issue-form/schema';
 
-import { SlidingPanel } from '../../../components/page-modifiers/sliding-panel';
-import { LocationSearch } from '../../map/location-search';
+import { SlidingPanel } from '@/components/page-modifiers/sliding-panel';
+import { LocationSearch } from '@/modules/map/location-search';
 
 // Dynamic import for Leaflet map to avoid SSR issues
 const LocationPickerMap = dynamic(
@@ -55,77 +62,79 @@ export const IssueCreator = ({
 	onSubmitAction
 }: Props) => {
 	const router = useRouter();
-	const { data: session } = useSession();
-	const [title, setTitle] = useState('');
-	const [type, setType] = useState<IssueType>(
-		Object.values(IssueType)[0] as IssueType
-	);
-	const [description, setDescription] = useState('');
+	const [state, formAction] = useActionState(createIssueAction, null);
+	const [isPending, startTransition] = useTransition();
 	const [images, setImages] = useState<File[]>([]);
-	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [error, setError] = useState<string | null>(null);
 	const [coords, setCoords] = useState(initialCoords);
+	const handledRef = useRef(false);
+
+	const form = useForm<CreateIssueFormSchema>({
+		resolver: zodResolver(createIssueFormSchema),
+		defaultValues: {
+			type: Object.values(IssueType)[0] as IssueType,
+			latitude: initialCoords.lat,
+			longitude: initialCoords.lng
+		}
+	});
 
 	// Update coords when initialCoords changes (e.g., when clicking on main map)
 	useEffect(() => {
 		setCoords(initialCoords);
-	}, [initialCoords]);
+		form.setValue('latitude', initialCoords.lat);
+		form.setValue('longitude', initialCoords.lng);
+	}, [initialCoords, form]);
 
-	if (!isOpen) return null;
+	useEffect(() => {
+		if (!state || handledRef.current) return;
 
-	const handleSubmit = async (e: React.FormEvent) => {
-		e.preventDefault();
-		setError(null);
-		setIsSubmitting(true);
+		if (state.error) {
+			toast.error(state.error);
+			handledRef.current = true;
+		}
 
-		try {
-			const reporterId = session?.user?.id ?? '';
-			if (!reporterId) {
-				throw new Error('User not found');
-			}
+		if (state.success && state.issue) {
+			toast.success(`Issue "${state.issue.title}" created!`);
+			handledRef.current = true;
 
-			const uploadedUrls = await Promise.all(
-				images.map(async file => {
-					const path = `images/${file.name}-${v4()}`;
-					await uploadBytes(ref(storage, path), file);
-					return await getDownloadURL(ref(storage, path));
-				})
-			);
-
-			const issueData: IssueValuesSchema = {
-				title,
-				type,
-				status: IssueStatus.REPORTED,
-				description,
-				latitude: coords.lat,
-				longitude: coords.lng,
-				pictures: uploadedUrls,
-				reporterId
-			};
-
-			await createIssueAction(issueData);
-
-			// Reset form
-			setTitle('');
-			setType(Object.values(IssueType)[0] as IssueType);
-			setDescription('');
+			form.reset();
 			setImages([]);
 
-			// Refresh the page to show new issue
 			router.refresh();
-
-			if (onSubmitAction) {
-				onSubmitAction();
-			}
-
+			onSubmitAction?.();
 			onCloseAction();
-		} catch (err) {
-			setError(err instanceof Error ? err.message : 'Failed to create issue');
-			console.error('Error creating issue:', err);
-		} finally {
-			setIsSubmitting(false);
 		}
-	};
+	}, [state]);
+
+	const handleSubmit = form.handleSubmit(async values => {
+		// Upload images to Firebase first
+		const uploadedUrls = await Promise.all(
+			images.map(async file => {
+				const path = `images/${file.name}-${v4()}`;
+				await uploadBytes(ref(storage, path), file);
+				return await getDownloadURL(ref(storage, path));
+			})
+		);
+
+		// Create FormData with all values
+		const formData = new FormData();
+		formData.append('title', values.title);
+		formData.append('description', values.description);
+		formData.append('type', values.type);
+		formData.append('latitude', String(values.latitude));
+		formData.append('longitude', String(values.longitude));
+
+		// Append all picture URLs
+		uploadedUrls.forEach(url => {
+			formData.append('pictures', url);
+		});
+
+		startTransition(() => {
+			handledRef.current = false;
+			formAction(formData);
+		});
+	});
+
+	if (!isOpen) return null;
 
 	return (
 		<SlidingPanel
@@ -142,12 +151,20 @@ export const IssueCreator = ({
 					{/* Location Search */}
 					<div className="mb-2">
 						<LocationSearch
-							onResultSelectAction={(lat, lng) => setCoords({ lat, lng })}
+							onResultSelectAction={(lat, lng) => {
+								setCoords({ lat, lng });
+								form.setValue('latitude', lat);
+								form.setValue('longitude', lng);
+							}}
 						/>
 					</div>
 					<LocationPickerMap
 						coords={coords}
-						onCoordsChangeAction={setCoords}
+						onCoordsChangeAction={(newCoords) => {
+							setCoords(newCoords);
+							form.setValue('latitude', newCoords.lat);
+							form.setValue('longitude', newCoords.lng);
+						}}
 						height="200px"
 					/>
 					<p className="mt-2 text-xs text-gray-600 text-center font-medium">
@@ -155,90 +172,58 @@ export const IssueCreator = ({
 					</p>
 				</div>
 
-				{/* Error Message */}
-				{error && (
-					<div className="mb-4 p-3 bg-red-50 border-2 border-red-200 rounded-lg backdrop-blur-sm">
-						<p className="text-sm text-red-700 font-medium">{error}</p>
-					</div>
-				)}
-
 				{/* Form */}
-				<form onSubmit={handleSubmit} className="flex flex-col gap-4">
-					<div>
-						<label className="block text-sm font-semibold mb-2 text-gray-700">
-							Title <span className="text-red-500">*</span>
-						</label>
-						<input
-							type="text"
-							required
-							value={title}
-							onChange={e => setTitle(e.target.value)}
-							className="w-full border-2 border-orange-200 bg-white/80 backdrop-blur-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-400 transition-all duration-200"
+				<FormProvider {...form}>
+					<form onSubmit={handleSubmit} className="flex flex-col gap-4">
+						<FormInput
+							label="Title"
+							name="title"
 							placeholder="Enter issue title"
 						/>
-					</div>
 
-					<div>
-						<label className="block text-sm font-semibold mb-2 text-gray-700">
-							Type <span className="text-red-500">*</span>
-						</label>
-						<select
-							value={type}
-							onChange={e => setType(e.target.value as IssueType)}
-							className="w-full border-2 border-orange-200 bg-white/80 backdrop-blur-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-400 transition-all duration-200"
-						>
-							{Object.values(IssueType).map(typeValue => (
-								<option key={typeValue} value={typeValue}>
-									{typeValue
-										.replace(/_/g, ' ')
-										.replace(/\b\w/g, l => l.toUpperCase())}
-								</option>
-							))}
-						</select>
-					</div>
+						<FormSelect
+							label="Type"
+							name="type"
+							options={Object.values(IssueType).map(typeValue => ({
+								value: typeValue,
+								label: typeValue
+									.replace(/_/g, ' ')
+									.replace(/\b\w/g, l => l.toUpperCase())
+							}))}
+						/>
 
-					<div>
-						<label className="block text-sm font-semibold mb-2 text-gray-700">
-							Description <span className="text-red-500">*</span>
-						</label>
-						<textarea
+						<FormTextarea
+							label="Description"
+							name="description"
 							rows={4}
-							required
-							value={description}
-							onChange={e => setDescription(e.target.value)}
-							className="w-full border-2 border-orange-200 bg-white/80 backdrop-blur-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-400 resize-none transition-all duration-200"
 							placeholder="Describe the issue..."
 						/>
-					</div>
 
-					<ImageUpload value={images} onChangeAction={setImages} />
+						<ImageUpload value={images} onChangeAction={setImages} />
 
-					<div className="flex gap-3 mt-6 pt-4 border-t border-orange-200/50">
-						<Button
-							type="button"
-							variant="outline"
-							size="lg"
-							animation="scale"
-							onClick={onCloseAction}
-							className="flex-1"
-							disabled={isSubmitting}
-						>
-							<X className="w-4 h-4" />
-							Cancel
-						</Button>
-						<Button
-							type="submit"
-							variant="default"
-							size="lg"
-							animation="scale"
-							className="flex-1"
-							disabled={isSubmitting}
-						>
-							<Send className="w-4 h-4" />
-							{isSubmitting ? 'Creating...' : 'Create Issue'}
-						</Button>
-					</div>
-				</form>
+						<div className="flex gap-3 mt-6 pt-4 border-t border-orange-200/50">
+							<Button
+								type="button"
+								variant="outline"
+								size="lg"
+								animation="scale"
+								onClick={onCloseAction}
+								className="flex-1"
+								disabled={isPending}
+							>
+								<X className="w-4 h-4" />
+								Cancel
+							</Button>
+							<SubmitButton
+								isLoading={isPending}
+								className="flex-1"
+							>
+								<Send className="w-4 h-4" />
+								Create Issue
+							</SubmitButton>
+						</div>
+					</form>
+				</FormProvider>
 			</div>
 		</SlidingPanel>
 	);

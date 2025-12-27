@@ -9,6 +9,10 @@ import { uploadBytes } from 'firebase/storage';
 import { getDownloadURL, ref } from '@firebase/storage';
 import { v4 } from 'uuid';
 import { Pencil, Trash2, Save, X } from 'lucide-react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { FormProvider, useForm } from 'react-hook-form';
+import { useActionState, useTransition, useEffect as useReactEffect } from 'react';
+import { toast } from 'sonner';
 
 import { cn } from '@/lib/cn';
 import { reverseGeocode, type Address } from '@/lib/geocoding';
@@ -28,6 +32,14 @@ import { type IssuePicture } from '@/modules/issuePicture/schema';
 import { IssueUpvoteButton } from '@/modules/issue/components/issue-upvote-button';
 import { hasStaffPermissions, useSession } from '@/modules/auth/client';
 import { type Role } from '@/modules/user/schema';
+import { FormInput } from '@/components/form/form-input';
+import { FormTextarea } from '@/components/form/form-textarea';
+import { FormSelect } from '@/components/form/form-select';
+import { SubmitButton } from '@/components/form/submit-button';
+import {
+	type UpdateIssueFormSchema,
+	updateIssueFormSchema
+} from '@/modules/issue/components/update-issue-form/schema';
 
 const MapComponent = dynamic(() => import('@/modules/map/map'), {
 	ssr: false
@@ -48,12 +60,12 @@ const IssueDetailView = ({
 }: IssueDetailViewProps) => {
 	const router = useRouter();
 	const { data: session } = useSession();
+	const [state, formAction] = useActionState(updateIssueAction, null);
+	const [isPending, startTransition] = useTransition();
 	const [issue, setIssue] = useState(initialIssue);
 	const [isEditing, setIsEditing] = useState(initialEditMode);
 	const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
-	const [isSaving, setIsSaving] = useState(false);
-	const [saveError, setSaveError] = useState<string | null>(null);
 
 	const [initialMarkers, setInitialMarkers] = useState<LatLng[]>([]);
 	const [isMapReady, setIsMapReady] = useState(false);
@@ -66,6 +78,19 @@ const IssueDetailView = ({
 	);
 	const [newImages, setNewImages] = useState<File[]>([]);
 	const [_deletedImageUrls, setDeletedImageUrls] = useState<string[]>([]);
+
+	// Form setup
+	const form = useForm<UpdateIssueFormSchema>({
+		resolver: zodResolver(updateIssueFormSchema),
+		defaultValues: {
+			title: initialIssue.title,
+			description: initialIssue.description,
+			type: initialIssue.type,
+			status: initialIssue.status,
+			latitude: initialIssue.latitude,
+			longitude: initialIssue.longitude
+		}
+	});
 
 	const lat = issue.latitude;
 	const lng = issue.longitude;
@@ -84,7 +109,26 @@ const IssueDetailView = ({
 		);
 		setNewImages([]);
 		setDeletedImageUrls([]);
-	}, [initialIssue]);
+		form.reset({
+			title: initialIssue.title,
+			description: initialIssue.description,
+			type: initialIssue.type,
+			status: initialIssue.status,
+			latitude: initialIssue.latitude,
+			longitude: initialIssue.longitude
+		});
+	}, [initialIssue, form]);
+
+	// Handle action state changes
+	useReactEffect(() => {
+		if (state?.error) {
+			toast.error(state.error);
+		} else if (state?.success && state.issue) {
+			toast.success(`Issue "${state.issue.title}" updated!`);
+			setIsEditing(false);
+			router.refresh();
+		}
+	}, [state, router]);
 
 	// Initialize map markers
 	useEffect(() => {
@@ -140,6 +184,8 @@ const IssueDetailView = ({
 			latitude: newLat,
 			longitude: newLng
 		});
+		form.setValue('latitude', newLat);
+		form.setValue('longitude', newLng);
 		if (typeof window !== 'undefined') {
 			import('leaflet').then(L => {
 				setInitialMarkers([new L.LatLng(newLat, newLng)]);
@@ -163,60 +209,41 @@ const IssueDetailView = ({
 		}
 	};
 
-	const handleSave = async () => {
-		setIsSaving(true);
-		setSaveError(null);
+	const handleSave = form.handleSubmit(async values => {
+		// Upload new images to Firebase first
+		const uploadedImageUrls: string[] = await Promise.all(
+			newImages.map(async file => {
+				const path = `images/${file.name}-${v4()}`;
+				await uploadBytes(ref(storage, path), file);
+				return await getDownloadURL(ref(storage, path));
+			})
+		);
 
-		try {
-			if (!issue.title.trim()) {
-				setSaveError('Title is required');
-				setIsSaving(false);
-				return;
-			}
+		const picturesToUpdate: string[] = [
+			...existingImages.map(img => img.url),
+			...uploadedImageUrls
+		];
 
-			if (!issue.description?.trim()) {
-				setSaveError('Description is required');
-				setIsSaving(false);
-				return;
-			}
+		// Create FormData with all values
+		const formData = new FormData();
+		formData.append('id', String(issue.id));
+		formData.append('title', values.title);
+		formData.append('description', values.description);
+		formData.append('type', values.type);
+		formData.append('status', values.status);
+		formData.append('latitude', String(values.latitude));
+		formData.append('longitude', String(values.longitude));
+		formData.append('reporterId', issue.reporter.id);
 
-			const uploadedImageUrls: string[] = await Promise.all(
-				newImages.map(async file => {
-					const path = `images/${file.name}-${v4()}`;
-					await uploadBytes(ref(storage, path), file);
-					return await getDownloadURL(ref(storage, path));
-				})
-			);
+		// Append all picture URLs
+		picturesToUpdate.forEach(url => {
+			formData.append('pictures', url);
+		});
 
-			const picturesToUpdate: string[] = [
-				...existingImages.map(img => img.url),
-				...uploadedImageUrls
-			];
-
-			const updateData = {
-				title: issue.title.trim(),
-				description: issue.description.trim(),
-				latitude: issue.latitude,
-				longitude: issue.longitude,
-				type: issue.type,
-				status: issue.status,
-				reporterId: issue.reporter.id,
-				pictures: picturesToUpdate
-			};
-
-			await updateIssueAction(issue.id, updateData);
-
-			setIsEditing(false);
-			router.refresh();
-		} catch (error) {
-			console.error('Error saving issue:', error);
-			setSaveError(
-				error instanceof Error ? error.message : 'Failed to save changes'
-			);
-		} finally {
-			setIsSaving(false);
-		}
-	};
+		startTransition(() => {
+			formAction(formData);
+		});
+	});
 
 	const handleCancel = () => {
 		setIssue(initialIssue);
@@ -226,7 +253,14 @@ const IssueDetailView = ({
 		setNewImages([]);
 		setDeletedImageUrls([]);
 		setIsEditing(false);
-		setSaveError(null);
+		form.reset({
+			title: initialIssue.title,
+			description: initialIssue.description,
+			type: initialIssue.type,
+			status: initialIssue.status,
+			latitude: initialIssue.latitude,
+			longitude: initialIssue.longitude
+		});
 	};
 
 	return (
@@ -240,26 +274,25 @@ const IssueDetailView = ({
 
 			<div className="fixed inset-0 bg-linear-to-br from-orange-50 via-amber-50 to-orange-50 -z-10" />
 			<div className="relative min-h-screen z-10">
-				<div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-6">
-					{/* Header Section */}
-					<div className="mb-6">
-						<div className="bg-white/50 backdrop-blur-sm rounded-xl shadow-md border border-orange-200/50 p-4 sm:p-6">
-							<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-								<div className="flex-1 w-full">
-									{isEditing ? (
-										<Input
-											value={issue.title}
-											onChange={e =>
-												setIssue({ ...issue, title: e.target.value })
-											}
-											className="text-2xl sm:text-3xl font-bold mb-2 bg-white/80 backdrop-blur-sm border-orange-200 h-auto py-2 px-3 border-2"
-											placeholder="Issue title"
-										/>
-									) : (
-										<h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-											{issue.title}
-										</h1>
-									)}
+				<FormProvider {...form}>
+					<div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-6">
+						{/* Header Section */}
+						<div className="mb-6">
+							<div className="bg-white/50 backdrop-blur-sm rounded-xl shadow-md border border-orange-200/50 p-4 sm:p-6">
+								<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+									<div className="flex-1 w-full">
+										{isEditing ? (
+											<FormInput
+												name="title"
+												label=""
+												className="text-2xl sm:text-3xl font-bold mb-2 bg-white/80 backdrop-blur-sm border-orange-200 h-auto py-2 px-3 border-2"
+												placeholder="Issue title"
+											/>
+										) : (
+											<h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+												{issue.title}
+											</h1>
+										)}
 									<div className="flex flex-wrap items-center gap-3 text-sm text-gray-600">
 										<span className="flex items-center gap-1.5">
 											<span className="font-medium">Reported by:</span>
@@ -326,7 +359,7 @@ const IssueDetailView = ({
 													size="sm"
 													animation="scale"
 													onClick={handleCancel}
-													disabled={isSaving}
+													disabled={isPending}
 												>
 													<X className="w-4 h-4" />
 													Cancel
@@ -336,10 +369,10 @@ const IssueDetailView = ({
 													size="sm"
 													animation="scale"
 													onClick={handleSave}
-													disabled={isSaving}
+													disabled={isPending}
 												>
 													<Save className="w-4 h-4" />
-													{isSaving ? 'Saving...' : 'Save'}
+													{isPending ? 'Saving...' : 'Save'}
 												</Button>
 											</>
 										)}
@@ -407,104 +440,91 @@ const IssueDetailView = ({
 
 						{/* Details section */}
 						<div className="order-2 lg:order-2">
-							<div className="bg-white/50 backdrop-blur-sm rounded-xl shadow-md border border-orange-200/50 p-4 sm:p-6 space-y-6">
-								{/* Status */}
-								{hasStaffPermissionsFlag && (
-									<div className="flex flex-col gap-2">
-										<label className="text-sm font-semibold text-gray-700">
-											Status
-										</label>
-										<select
-											value={issue.status}
-											onChange={e =>
-												setIssue({
-													...issue,
-													status: e.target.value as Issue['status']
-												})
-											}
-											disabled={!isEditing}
-											className={cn(
-												'border border-orange-200 bg-white/80 backdrop-blur-sm',
-												'flex h-10 w-full rounded-lg px-3 py-2 text-sm',
-												'transition-all duration-200',
-												'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2',
-												'disabled:opacity-50 disabled:cursor-not-allowed',
-												!isEditing && 'cursor-default'
-											)}
-										>
-											{ISSUE_STATUS_VALUES.map(status => (
-												<option key={status} value={status}>
-													{status
+							<form onSubmit={handleSave} className="space-y-6">
+								<div className="bg-white/50 backdrop-blur-sm rounded-xl shadow-md border border-orange-200/50 p-4 sm:p-6 space-y-6">
+										{/* Status */}
+										{hasStaffPermissionsFlag && (
+											isEditing ? (
+												<FormSelect
+													name="status"
+													label="Status"
+													options={ISSUE_STATUS_VALUES.map(status => ({
+														value: status,
+														label: status
+															.split('_')
+															.map(
+																word =>
+																	word.charAt(0).toUpperCase() + word.slice(1)
+															)
+															.join(' ')
+													}))}
+												/>
+											) : (
+												<div className="flex flex-col gap-2">
+													<label className="text-sm font-semibold text-gray-700">
+														Status
+													</label>
+													<div className="text-sm text-gray-800">
+														{issue.status
+															.split('_')
+															.map(
+																word =>
+																	word.charAt(0).toUpperCase() + word.slice(1)
+															)
+															.join(' ')}
+													</div>
+												</div>
+											)
+										)}
+
+										{/* Type */}
+										{isEditing ? (
+											<FormSelect
+												name="type"
+												label="Type"
+												options={ISSUE_TYPE_VALUES.map(type => ({
+													value: type,
+													label: type
 														.split('_')
 														.map(
-															word =>
-																word.charAt(0).toUpperCase() + word.slice(1)
+															word => word.charAt(0).toUpperCase() + word.slice(1)
+														)
+														.join(' ')
+												}))}
+											/>
+										) : (
+											<div className="flex flex-col gap-2">
+												<label className="text-sm font-semibold text-gray-700">
+													Type
+												</label>
+												<div className="text-sm text-gray-800">
+													{issue.type
+														.split('_')
+														.map(
+															word => word.charAt(0).toUpperCase() + word.slice(1)
 														)
 														.join(' ')}
-												</option>
-											))}
-										</select>
-									</div>
-								)}
-
-								{/* Type */}
-								<div className="flex flex-col gap-2">
-									<label className="text-sm font-semibold text-gray-700">
-										Type
-									</label>
-									<select
-										value={issue.type}
-										onChange={e =>
-											setIssue({
-												...issue,
-												type: e.target.value as Issue['type']
-											})
-										}
-										disabled={!isEditing}
-										className={cn(
-											'border border-orange-200 bg-white/80 backdrop-blur-sm',
-											'flex h-10 w-full rounded-lg px-3 py-2 text-sm',
-											'transition-all duration-200',
-											'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2',
-											'disabled:opacity-50 disabled:cursor-not-allowed',
-											!isEditing && 'cursor-default'
+												</div>
+											</div>
 										)}
-									>
-										{ISSUE_TYPE_VALUES.map(type => (
-											<option key={type} value={type}>
-												{type
-													.split('_')
-													.map(
-														word => word.charAt(0).toUpperCase() + word.slice(1)
-													)
-													.join(' ')}
-											</option>
-										))}
-									</select>
-								</div>
 
-								{/* Description */}
-								<div className="flex flex-col gap-2">
-									<label className="text-sm font-semibold text-gray-700">
-										Description
-									</label>
-									<textarea
-										value={issue.description || ''}
-										readOnly={!isEditing}
-										disabled={!isEditing}
-										onChange={e =>
-											setIssue({ ...issue, description: e.target.value })
-										}
-										className={cn(
-											'border border-orange-200 bg-white/80 backdrop-blur-sm',
-											'flex min-h-[120px] w-full rounded-lg px-3 py-2 text-sm resize-none',
-											'transition-all duration-200',
-											'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2',
-											'disabled:opacity-50 disabled:cursor-not-allowed',
-											!isEditing && 'cursor-default'
+										{/* Description */}
+										{isEditing ? (
+											<FormTextarea
+												name="description"
+												label="Description"
+												rows={4}
+											/>
+										) : (
+											<div className="flex flex-col gap-2">
+												<label className="text-sm font-semibold text-gray-700">
+													Description
+												</label>
+												<div className="text-sm text-gray-800 whitespace-pre-wrap">
+													{issue.description || ''}
+												</div>
+											</div>
 										)}
-									/>
-								</div>
 
 								{/* Images */}
 								<div className="flex flex-col gap-2">
@@ -529,43 +549,37 @@ const IssueDetailView = ({
 									)}
 								</div>
 
-								{isEditing && (
-									<div className="pt-4 border-t border-orange-200/50 space-y-3">
-										{saveError && (
-											<div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-												{saveError}
+										{isEditing && (
+											<div className="pt-4 border-t border-orange-200/50 space-y-3">
+												<div className="flex gap-3">
+													<Button
+														type="button"
+														variant="outline"
+														size="lg"
+														animation="scale"
+														className="flex-1"
+														onClick={handleCancel}
+														disabled={isPending}
+													>
+														<X className="w-4 h-4" />
+														Cancel
+													</Button>
+													<SubmitButton
+														isLoading={isPending}
+														className="flex-1"
+													>
+														<Save className="w-4 h-4" />
+														Save Changes
+													</SubmitButton>
+												</div>
 											</div>
 										)}
-										<div className="flex gap-3">
-											<Button
-												variant="outline"
-												size="lg"
-												animation="scale"
-												className="flex-1"
-												onClick={handleCancel}
-												disabled={isSaving}
-											>
-												<X className="w-4 h-4" />
-												Cancel
-											</Button>
-											<Button
-												variant="default"
-												size="lg"
-												animation="scale"
-												className="flex-1"
-												onClick={handleSave}
-												disabled={isSaving}
-											>
-												<Save className="w-4 h-4" />
-												{isSaving ? 'Saving...' : 'Save Changes'}
-											</Button>
-										</div>
 									</div>
-								)}
+								</form>
 							</div>
 						</div>
 					</div>
-				</div>
+				</FormProvider>
 			</div>
 		</>
 	);
